@@ -39,6 +39,7 @@
         .card-reward { font-weight: bold; color: yellow; font-size: 0.9rem; margin-bottom: 15px; display: block;}
         .btn-action { background: #000; color: #0f0; border: 1px solid #0f0; padding: 10px; width: 100%; cursor: pointer; font-family: 'Share Tech Mono'; transition: 0.2s;}
         .btn-action:hover { background: #0f0; color: #000; }
+        .btn-permission { background: #ff00de; border-color: #ff00de; color: #fff; margin-bottom: 10px;}
 
         .post-form-box { background: rgba(0,255,0,0.05); border: 1px solid #0f0; padding: 20px; margin-bottom: 30px; }
         .post-form-box input, .post-form-box select { width: 100%; padding: 10px; background: #000; color: #0f0; border: 1px solid #333; margin-bottom: 15px; font-family: 'Share Tech Mono'; box-sizing: border-box;}
@@ -138,6 +139,10 @@
             <h1>SISTEMA DE TRANSFERÊNCIA MENTE-MÚSCULO</h1>
             <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 20px;">INICIALIZANDO CONEXÃO DE FITNESS REAL PARA O METAVERSO DE SOBREVIVÊNCIA...</p>
             <input type="text" id="login-username" placeholder="Seu Vulgo" style="width: 100%; padding: 15px; background: #000; border: 2px solid #0f0; color: #0f0; font-family: 'Press Start 2P'; font-size: 0.8rem; text-align: center; margin-bottom: 20px; box-sizing: border-box;">
+            
+            <button class="btn-action btn-permission" onclick="window.requestDevicePermissions()">PERMITIR ACESSO (Câmera e GPS)</button>
+            <div id="permission-status" style="font-size:0.7rem; color:yellow; margin-bottom: 15px;">É necessário acesso para validar provas de missões físicas.</div>
+            
             <button class="btn-base" onclick="window.hubLogin()" style="width: 100%;">SINCRONIZAR NEURÔNIOS</button>
         </div>
     </div>
@@ -178,7 +183,7 @@
                 <div class="post-form-box" id="quick-post-box" style="display:none;">
                     <h3 style="color:#0ff; font-family:'Press Start 2P'; font-size:0.8rem; margin-top:0;">📝 EVIDÊNCIA DO SEU ESFORÇO</h3>
                     <input type="text" id="task-desc" placeholder="Descreva...">
-                    <input type="file" id="task-file" accept="image/*" style="background:#222; padding:5px;">
+                    <input type="file" id="task-file" accept="image/*" capture="environment" style="background:#222; padding:5px;">
                     <canvas id="task-compress-canvas" style="display:none;"></canvas>
                     <button class="btn-action" onclick="window.submitTaskEvidence()">ENVIAR E CONSEGUIR BUFF IMEDIATO</button>
                     <div id="task-upload-status" style="color:yellow; font-size: 0.8rem; margin-top: 10px;"></div>
@@ -316,7 +321,7 @@
             <p id="death-flavor" style="color:#aaa; font-style:italic; margin-bottom:10px; font-weight: bold; font-size: 0.8rem;"></p>
             <p>WAVE FINAL: <span id="final-wave">0</span></p>
             <p style="color:yellow">SCORE/FARM DA SESSÃO SALVOS: <span id="final-score">0</span></p>
-            <div id="save-status" style="color: #0f0; font-size: 0.8rem; margin: 10px;">Salvando ouro e xp no backend neural...</div>
+            <div id="save-status" style="color: #0f0; font-size: 0.8rem; margin: 10px;">Sucesso. Salvando ouro e xp no Hub...</div>
             <button class="btn-base" onclick="window.returnToHubAndSave()">DESCONECTAR: VOLTAR AO HUB</button>
         </div>
     </div>
@@ -331,22 +336,34 @@ import { getDatabase, ref, set, onDisconnect, onValue, remove, update, push, onC
 
 const firebaseConfig = { apiKey: "AIzaSyCa3tr1mfYKvZ581A1omSQGFsVrIoQYOwQ", authDomain: "fishballserver.firebaseapp.com", projectId: "fishballserver", storageBucket: "fishballserver.firebasestorage.app", messagingSenderId: "626248800374", appId: "1:626248800374:web:fb912ed85fdfac23dba757" };
 let db, rtdb;
-try { const app = initializeApp(firebaseConfig); db = getFirestore(app); rtdb = getDatabase(app); } catch(e) { console.warn("Firebase Bypass mode ativado:", e); }
+try { const app = initializeApp(firebaseConfig); db = getFirestore(app); rtdb = getDatabase(app); } catch(e) { console.warn("Firebase falhou na injeção inicial:", e); }
 
 let hubProfile = { uid: null, username: "Anonimo", lvl: 1, xp: 0, gold: 0, avatar: "", buffs: { hp: 0, dmg: 0.0, spd: 0.0 }, skins: ['default'], equippedSkin: 'default' };
 
-if(sessionStorage.getItem('skipToHub') && sessionStorage.getItem('hubProfile_JSON')) {
-    hubProfile = JSON.parse(sessionStorage.getItem('hubProfile_JSON'));
-    document.getElementById('hub-login').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex';
-    syncUIWithProfile(); setupHubRealtime(); sessionStorage.removeItem('skipToHub'); 
-}
+// =========================================================================
+// 2. LÓGICA DO HUB (UI, Permissões, Missões, Gacha, Duel, Bypass)
+// =========================================================================
 
-// =========================================================================
-// 2. LÓGICA DO HUB (UI, Missões, Gacha, Bypass)
-// =========================================================================
+window.requestDevicePermissions = async function() {
+    let status = document.getElementById('permission-status');
+    status.innerText = "Solicitando permissão de Localização e Câmera...";
+    try {
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(()=>{}, ()=>{});
+        }
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        status.innerText = "Permissões de hardware concedidas!";
+        status.style.color = "#0f0";
+        document.querySelector('.btn-permission').style.display = 'none';
+    } catch (err) {
+        status.innerText = "Permissão negada. Você não poderá postar missões visuais diretamente da câmera.";
+        status.style.color = "#f00";
+    }
+};
+
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
-    if(!name) { alert("SISTEMA EXIGE VULGO."); return; }
+    if(!name) { alert("SISTEMA EXIGE NOME."); return; }
     name = name.toUpperCase(); document.querySelector('.login-box button').innerText = "SINCRONIZANDO...";
     try {
         if(!db) throw new Error("Offline db");
@@ -354,9 +371,9 @@ window.hubLogin = async function() {
         if (!qs.empty) { hubProfile = qs.docs[0].data(); hubProfile.uid = qs.docs[0].id; } 
         else { const res = await addDoc(collection(db, "hub_users"), { username: name, lvl: 1, xp: 0, gold: 0, buffs: { hp: 0, dmg: 0, spd: 0 }, skins: ['default'], equippedSkin: 'default' }); hubProfile.uid = res.id; hubProfile.username = name; }
     } catch(err) {
-        console.warn("Bloqueio de Permissão Detectado. BYPASS LOCAL:", err);
+        console.warn("Bloqueio de Permissão Detectado. BYPASS LOCAL ATIVADO.");
         hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name;
-        alert("⚠️ Firebase Sem Permissões! Entrando em MODO OFFLINE/LOCAL com sucesso.");
+        alert("⚠️ ATENÇÃO: Banco de dados bloqueado/offline. Bypass ativado. Você jogará em Modo Local Offline.");
     }
     document.getElementById('hub-login').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex';
     saveHubStateLocal(); syncUIWithProfile(); setupHubRealtime();
@@ -378,7 +395,7 @@ window.openTaskUploader = function(type) {
     currentTaskConfig = map[type]; document.getElementById('task-desc').placeholder = `Evidência de: ${currentTaskConfig.name}`; document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed');
 };
 window.submitTaskEvidence = function() {
-    if(!document.getElementById('task-file').files[0]) return alert("FOTOGRAFE E FAÇA O UPLOAD");
+    if(!document.getElementById('task-file').files[0]) return alert("FOTOGRAFE A MISSÃO PARA SER APROVADA PELO TRIBUNAL.");
     const reader = new FileReader();
     reader.onload = function(e) {
         hubProfile.xp += currentTaskConfig.xp || 0; hubProfile.gold += currentTaskConfig.gold || 0;
@@ -387,10 +404,10 @@ window.submitTaskEvidence = function() {
         try {
             if(!db || hubProfile.uid.startsWith('local_')) throw new Error("Offline mode");
             addDoc(collection(db, "hub_feed"), { uid: hubProfile.uid, author: hubProfile.username, taskName: currentTaskConfig.name, desc: document.getElementById('task-desc').value, imgBase64: e.target.result, rewardLog: currentTaskConfig, upvotes: {}, downvotes: {}, active: true, timestamp: serverTimestamp() }).then(() => {
-                document.getElementById('quick-post-box').style.display = 'none'; showModal("SUCESSO", "Postagem enviada ao Tribunal.");
+                document.getElementById('quick-post-box').style.display = 'none'; showModal("SUCESSO", "Postagem enviada ao Tribunal da Comunidade.");
             }).catch(()=>{ throw new Error("db Error"); });
         } catch(e) {
-            document.getElementById('quick-post-box').style.display = 'none'; showModal("OFFLINE BYPASS", "Conquistas computadas offline!");
+            document.getElementById('quick-post-box').style.display = 'none'; showModal("MODO LOCAL (BYPASS)", "Conquistas computadas offline apenas para você, já que a rede geral negou conexão.");
         }
     }; reader.readAsDataURL(document.getElementById('task-file').files[0]);
 }
@@ -401,10 +418,10 @@ function listenToFeed() {
         onSnapshot(query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
             const c = document.getElementById('feed-container-render'); c.innerHTML = "";
             snap.forEach((ds) => { let d = ds.data(); c.innerHTML += `<div class="feed-post ${!d.active?'revoked':''}"><div class="post-header"><span class="post-author">${d.author}</span><span class="post-type">${d.taskName}</span></div><div style="font-size:0.8rem">${d.desc}</div><div class="post-img-container"><img class="post-img" src="${d.imgBase64}"></div><div class="post-reward">Recompensa: XP+${d.rewardLog.xp||0} | ${d.rewardLog.gold?'GLD+'+d.rewardLog.gold:''}</div><div class="post-actions"><button class="vote-btn up" onclick="window.castVote('${ds.id}', 'up')">APROVAR</button><button class="vote-btn down" onclick="window.castVote('${ds.id}', 'down')">REPROVAR</button></div></div>`; });
-        });
-    } catch(e) { document.getElementById('feed-container-render').innerHTML = `<div style="text-align:center;color:red;padding:20px;">TRIBUNAL OFFLINE. (Modo Local ativo)</div>`; }
+        }, (error) => { throw error; });
+    } catch(e) { document.getElementById('feed-container-render').innerHTML = `<div style="text-align:center;color:red;padding:20px;">TRIBUNAL OFFLINE. (Permissões falharam). Missões ainda gerarão ouro local.</div>`; }
 }
-window.castVote = function(pId, t) { alert(hubProfile.uid.startsWith('local_') ? "Votos desativados no modo Bypass Local." : "Voto registrado! Processando smart contract..."); };
+window.castVote = function(pId, t) { alert(hubProfile.uid.startsWith('local_') ? "Votos desativados em Bypass Offline." : "Voto computado via rede."); };
 
 const HUB_SKINS =[ { id:'default', name:'PISTOLA', cost:0, tex:'gun_default', buff:'Nenhum'}, {id:'gold', name:'TAURUS', cost:1500, tex:'gun_gold', buff:'Dano Maior'}, {id:'banana', name:'BANANA', cost:3000, tex:'gun_banana', buff:'Penetração'}, {id:'finger', name:'DEDADA', cost:8000, tex:'gun_finger', buff:'Tiro Rápido'}];
 function renderHubShopWeapons() {
@@ -422,8 +439,9 @@ window.buyLootbox = function() {
     if(Math.random()<0.3) { hubProfile.buffs.hp += 150; alert("+150 HP!"); } else if(Math.random()<0.6) { hubProfile.buffs.dmg+=0.8; alert("+80% DANO!"); } else if(Math.random()<0.8) { hubProfile.xp+=3000; alert("+3K XP"); } else { hubProfile.buffs.spd-=0.5; alert("-0.5 VELOCIDADE (VERME)"); }
     saveHubStateLocal(); syncUIWithProfile();
 }
-window.hubHealFull = function() { if(hubProfile.gold<500)return alert("SEM GRANA!"); hubProfile.gold-=500; saveHubStateLocal(); syncUIWithProfile(); alert("Seguro ativado para proxima run!"); }
+window.hubHealFull = function() { if(hubProfile.gold<500)return alert("SEM GRANA!"); hubProfile.gold-=500; saveHubStateLocal(); syncUIWithProfile(); alert("Seguro de vida integral ativo para a arena."); }
 
+// === CORREÇÃO FUNCIONAL DO DUELO REAL TIME ===
 function setupHubRealtime() {
     try {
         if(!rtdb) throw new Error();
@@ -432,30 +450,129 @@ function setupHubRealtime() {
             document.getElementById('radar-loading').style.display = 'none'; document.getElementById('radar-list').innerHTML = "";
             let d = snap.val()||{}; Object.keys(d).forEach(k => { if(k!==hubProfile.uid) document.getElementById('radar-list').innerHTML += `<div class="radar-player"><span class="radar-name">♦ ${d[k].name}</span><button class="btn-duel" onclick="window.sendDuelChallenge('${k}', '${d[k].name}')">DUELAR IRL</button></div>`; });
         });
-        onChildAdded(ref(rtdb, 'hub_duels/' + hubProfile.uid), (snap) => { if(snap.val().state === 'request' && confirm(`DUELO IRL contra ${snap.val().challengerName}?`)) { update(ref(rtdb, `hub_duels/${snap.key}`), { state: 'ongoing' }); showModal("DUELO INICIADO", "Vá para fora lutar."); } });
+        
+        onChildAdded(ref(rtdb, 'hub_duels'), (snap) => { 
+            let d = snap.val(); 
+            if(d.targetId === hubProfile.uid && d.state === 'request') {
+                if(confirm(`⚔️ ALERTA DE COMBATE FÍSICO!\nO guerreiro(a) ${d.challengerName} propôs um duelo físico agressivo agora contra você!\nACEITAR PARA GANHAR GLÓRIA E OURO?`)) { 
+                    update(ref(rtdb, `hub_duels/${snap.key}`), { state: 'ongoing' }); 
+                    showModal("DUELO INICIADO IRL", "Saiam do computador/celular agora. Comecem a prova no mundo físico (Flexão até falhar, Corrida, etc)."); 
+                    setTimeout(()=> monitorOngoingDuel(snap.key), 3000);
+                } else {
+                    update(ref(rtdb, `hub_duels/${snap.key}`), { state: 'declined' }); 
+                }
+            }
+        });
         listenToFeed();
-    } catch(e) { document.getElementById('radar-loading').innerText = "RADAR OFF (Modo Local)."; listenToFeed(); }
+    } catch(e) { 
+        document.getElementById('radar-loading').innerText = "RADAR E DUELOS OFF (Modo Local/Sem Permissão de Rede detectado)."; 
+        listenToFeed(); 
+    }
 }
-window.sendDuelChallenge = function(tId, tN) { alert("Bypass local ativado: Radar não transmite sinais em offline."); }
-function showModal(t, d) { document.getElementById('modal-title').innerText=t; document.getElementById('modal-desc').innerText=d; document.getElementById('system-modal').style.display='flex'; }
+window.sendDuelChallenge = function(tId, tN) { 
+    if(!rtdb || hubProfile.uid.startsWith('local_')) return alert("Seu Firebase falhou conexões públicas, o radar de Duelos não transmitirá em modo Local.");
+    let keyId = push(ref(rtdb, 'hub_duels')).key;
+    set(ref(rtdb, 'hub_duels/'+keyId), { challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' });
+    alert(`O Desafio foi eviado diretamente para a tela de ${tN}! Aguardando aceite...`);
+    
+    onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
+        let v = s.val(); if(!v) return;
+        if(v.state === 'declined') { alert("O Alvo se acovardou e recusou a prova."); }
+        if(v.state === 'ongoing' && !v.resolvedChallengerAlert) {
+            update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); // evita spam loop
+            showModal("O ALVO ACEITOU A GUERRA FÍSICA!", "Levante-se da cadeira, vá derrotá-lo.");
+            setTimeout(()=> monitorOngoingDuel(s.key), 3000);
+        }
+    });
+};
+
+function monitorOngoingDuel(duelId) {
+    showModal("RESULTADO DO SANGUE", "A prova real acabou? Ambos os guerreiros devem concordar em quem venceu para o Gold ser transferido pelo Tribunal Seguro.", 
+    `<button class="btn-action" style="margin:5px;" onclick="window.submitDuelResult('${duelId}', '${hubProfile.uid}')">SOU O CAMPEÃO ABSOLUTO</button>
+    <button class="btn-action" style="background:#500; margin:5px;" onclick="window.submitDuelResult('${duelId}', 'OPONENTE_GANHOU')">FALHEI, ELE FOI MELHOR</button>`);
+}
+window.submitDuelResult = function(duelId, result) {
+    update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: result });
+    document.getElementById('system-modal').style.display = 'none';
+    alert("Voto registrado com dignidade. Aguardando sincronização com a confirmação do oponente.");
+    
+    onValue(ref(rtdb, 'hub_duels/'+duelId), (snap) => {
+        let d = snap.val(); if(!d.votes) return;
+        let vArr = Object.keys(d.votes);
+        if(vArr.length >= 2 && !d.resolved) {
+            update(ref(rtdb, 'hub_duels/'+duelId), { resolved: true });
+            let p1 = d.votes[vArr[0]].pick; let p2 = d.votes[vArr[1]].pick;
+            if(p1 === p2) { 
+                if(p1 === hubProfile.uid) { alert("DUPLA CONFIRMAÇÃO DO SANGUE! VOCÊ VENCEU E GANHOU $10.000 GOLD!"); hubProfile.gold+=10000; saveHubStateLocal(); syncUIWithProfile(); }
+                else { alert("Derrota reconhecida pela comunidade da rede. Honra mantida, embora sem lucros."); }
+            } else { alert("TENTATIVA DE FRAUDE DETECTADA NO VOTO CONJUNTO. Recompensas invalidadas, guerreem de novo."); }
+        }
+    });
+}
+function showModal(t, d, btns) { 
+    document.getElementById('modal-title').innerText=t; 
+    document.getElementById('modal-desc').innerText=d; 
+    if(btns) document.getElementById('modal-actions').innerHTML = btns; 
+    else document.getElementById('modal-actions').innerHTML = '<button class="btn-action" onclick="document.getElementById(\'system-modal\').style.display=\'none\'">CIENTE</button>';
+    document.getElementById('system-modal').style.display='flex'; 
+}
 
 
 // =========================================================================
-// 3. TRANSFERÊNCIA E CONEXÃO MOTOR 3D 
+// 3. O ENVELOPE DA MÁQUINA DE TRANSIÇÃO (HUB -> ENGINE 3D) E CORREÇÃO DO RELOAD "ÚTIL"
 // =========================================================================
+window.gameLoopInterval = null; 
+window.animationFrameId = null;
+
 window.prepareArena = function() {
-    document.getElementById('hub-container').style.display = 'none'; document.getElementById('game-wrapper').style.display = 'block';
-    window.inj_Gamemode = document.getElementById('hub-gamemode').value; window.inj_Difficulty = document.getElementById('hub-difficulty').value; window.inj_EnemyCol = document.getElementById('hub-color-enemy').value; window.inj_ChestTxt = document.getElementById('hub-chest-text').value;
+    document.getElementById('hub-container').style.display = 'none'; 
+    document.getElementById('game-wrapper').style.display = 'block';
+    
+    window.inj_Gamemode = document.getElementById('hub-gamemode').value; 
+    window.inj_Difficulty = document.getElementById('hub-difficulty').value; 
+    window.inj_EnemyCol = document.getElementById('hub-color-enemy').value; 
+    window.inj_ChestTxt = document.getElementById('hub-chest-text').value;
+    
     if(window.bgMusic) { window.bgMusic.volume = 0.5; window.bgMusic.play().catch(()=>{}); }
+    
+    // Reseta estado para evitar bug ao entrar multiplas vezes na msm sessao sem reload pesado
+    player.dead = false;
+    gameData.wave = 1;
+    document.getElementById('death-screen').style.display = 'none';
+    
     window._engineStartFromHub(hubProfile.username);
 }
+
+// === CORREÇÃO DA TRANSIÇÃO DE VOLTA AO HUB COM ZERO TRAVAMENTOS (Single Page SPA Clean) ===
 window.returnToHubAndSave = function() {
-    if(window.playerEngineRef) { hubProfile.gold = window.playerEngineRef.money; hubProfile.xp += window.playerEngineRef.score / 50; saveHubStateLocal(); }
-    sessionStorage.setItem('skipToHub', 'true'); location.reload();
+    document.exitPointerLock(); 
+    
+    // Transferência do Saldo e XP e salvamento
+    if(window.playerEngineRef) { 
+        hubProfile.gold = window.playerEngineRef.money; 
+        hubProfile.xp += Math.floor(window.playerEngineRef.score / 50); 
+        saveHubStateLocal(); 
+        syncUIWithProfile();
+    }
+    
+    // Parando a destruição de CPU na Engine Oculta
+    if(window.gameLoopInterval) clearInterval(window.gameLoopInterval);
+    if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId);
+    if(scene) {
+        while(scene.children.length > 0){ scene.remove(scene.children[0]); } // Purge 3D Objects
+        gameData.enemies = []; gameData.projectiles =[];
+    }
+
+    document.getElementById('death-screen').style.display = 'none';
+    document.getElementById('game-wrapper').style.display = 'none';
+    document.getElementById('hub-container').style.display = 'flex';
+    
+    alert("Dados Injetados. Você regressou em segurança para o Hub Físico.");
 }
 
+
 // =========================================================================
-// 4. ENGINE 100% INTACTA DO ORIGINAL: (MAPAS, CHEFÕES, WAVES, LORE, ETC.)
+// 4. ENGINE 100% INTACTA DO DOOM ORIGINAL
 // =========================================================================
 
 const bgMusic = new Audio('https://dn721901.ca.archive.org/0/items/doom-1993-ost-at-dooms-gate/DOOM%201993%20DOS%20-%20At%20Doom%27s%20Gate.mp3'); bgMusic.loop = true; bgMusic.volume = 0.5; window.bgMusic = bgMusic; 
@@ -463,7 +580,7 @@ const SOUND_ISAAC_ATK = new Audio('https://fishballsite.vercel.app/golpe.ogg'); 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 let myPlayerId = 'player_' + Math.floor(Math.random() * 10000000); let roomRefPath; let isHost = false; let globalWaveRef; let enemiesRef; let onlinePlayers = {}; let playerRef;
 
-let CONFIG = { gravity: 60.0, frictionBase: 10.0, frictionAir: 1.0, baseSpeed: 20.0 /* ERA 85! HARDCORE */, maxActiveEnemies: 45, intermissionTime: 5.0, timeScale: 1.0, mouseSensitivity: 0.002 };
+let CONFIG = { gravity: 60.0, frictionBase: 10.0, frictionAir: 1.0, baseSpeed: 20.0 /* ERA 85! EXTREMO C/ HUB*/, maxActiveEnemies: 45, intermissionTime: 5.0, timeScale: 1.0, mouseSensitivity: 0.002 };
 
 let player = { 
     hp: 100, maxHp: 100, money: 0, score: 0, speedMult: 1.0, dmgMult: 1.0, 
@@ -494,12 +611,19 @@ let ENEMY_TYPES =[
     { id: 'titan', name: 'Titan', hp: 500, speed: 15, scale: 22, weight: 2, money: 200 }
 ];
 const LORE_QUOTES =["O que vc quer? Quero Piru - Gao", "Hitler era 33% são - Isaac", "alguem mate a bianca pra mim comer ela - James", "o ovo chega tá pulsando - Teba", "eu gosto de da a bunda... não - Matias", "penso, logo desisto - Porra Games", "eu nunca vi o pinto do pedro, mostra ai - Teba", "VC É O MOTIVO SIM, MORRA IMEDIATAMENTE - Isaac", "calma ai que eu e o pedro vamo estupra um elefante - Teba", "tomara que eu morra no meio da semana que vem - Gao", "lorenzo, seu pai deu cf, cha de sumisso - Matias", "NÓS SOMOS OS GAYS DA QUADRA - Teba"];
-let gameData = { wave: 0, waveState: 'INTERMISSION', mode: 'survival', enemiesToSpawnThisWave: 0, enemiesSpawnedThisWave: 0, intermissionTimer: 0, enemies: [], projectiles: [], particles: [], activeParticles:[], atmosParticles:[], mapObjects:[], lastShotTime: 0, isShopOpen: false, isBigMapOpen: false, keyHistory: "", currentDiff: 'normal', cameraShake: 0, cheatMode: false, rgbMode: false, susMode: false, matrixMode: false, settings: { enemyColor: '#ff0000', gunColor: '#FFFFFF' }, bossActive: false, boss: null, rivotrilActive: 0, currentBiome: BIOMES.HUB, spawnTimer: 0, forceKanado: false, serverState: null };
+let gameData = { wave: 0, waveState: 'INTERMISSION', mode: 'survival', enemiesToSpawnThisWave: 0, enemiesSpawnedThisWave: 0, intermissionTimer: 0, enemies: [], projectiles:[], particles: [], activeParticles:[], atmosParticles:[], mapObjects:[], lastShotTime: 0, isShopOpen: false, isBigMapOpen: false, keyHistory: "", currentDiff: 'normal', cameraShake: 0, cheatMode: false, rgbMode: false, susMode: false, matrixMode: false, settings: { enemyColor: '#ff0000', gunColor: '#FFFFFF' }, bossActive: false, boss: null, rivotrilActive: 0, currentBiome: BIOMES.HUB, spawnTimer: 0, forceKanado: false, serverState: null };
 const DEATH_MSGS =["Seu condicionamento real está fraco.", "A falta de treinos resultou nisso.", "Rivotril Bateu. Vá puxar ferro.", "Comunidade da Vida bateu forte em vc.", "Punido Pela Engine Opressora."];
 const TEXTURES = { isaac: 'https://i.imgur.com/f301YRO.jpeg', isaac_drug: 'https://i.imgur.com/qZtSkf1.jpeg', isaac_atk: 'https://i.imgur.com/bHc7hHc.jpeg', kanado: 'https://fishballsite.vercel.app/kanado.png', james_forest: 'https://fishballsite.vercel.app/jamesfloresta.png', gun_default: 'https://pixelartmaker-data-78746291193.nyc3.digitaloceanspaces.com/image/22dc3ad864622ab.png', gun_gold: 'https://i.imgur.com/8Q5QY5A.png', gun_banana: 'https://i.imgur.com/wK5qQ5z.png', gun_finger: 'https://i.imgur.com/6Xy1K9m.png', puton_wall: 'https://img.freepik.com/premium-photo/hacker-matrix-code-background-3d-rendering_35658-94.jpg', puton_floor: 'https://t3.ftcdn.net/jpg/05/52/63/06/360_F_552630638_hyW6XhA2G5i35WjLzJ3yC5yH5yH5yH5y.jpg', puton_face: 'https://i.imgur.com/kKC1zaJ.png', puton_screen: 'https://thumbs.dreamstime.com/b/linux-terminal-screen-code-programming-technology-background-200593649.jpg', sand: 'https://i.imgur.com/3qC5xZt.jpeg', volleyball: 'https://img.freepik.com/premium-photo/volleyball-ball-isolated-white-background-3d-rendering_436402-232.jpg', env: { gao_building: 'https://i.imgur.com/sdDGFEy.png', cave_wall: 'https://t3.ftcdn.net/jpg/07/02/95/30/360_F_702953084_9zCnqtqEqXuxTVJvIt2EIJXuKKqDLKyT.jpg', sewer_wall: 'https://t3.ftcdn.net/jpg/08/89/06/08/360_F_889060860_HGOP5SXg0mYjfwJPfGIUVCo31hdu9Uie.jpg', tree_bark: 'https://media.posterstore.com/site_images/6862d669603ad773cc39a2e6_1187745778_PS52204-8.jpg', tree_leaves: 'https://longfellowsgreenhouses.com/wp-content/uploads/2020/03/bigstock-Nature-Of-Green-Leaves-Green-340757713.jpg', bush: 'https://longfellowsgreenhouses.com/wp-content/uploads/2020/03/bigstock-Nature-Of-Green-Leaves-Green-340757713.jpg', wall_generic: 'https://i.imgur.com/jAJfilc.png', floor_generic: 'https://i.imgur.com/71GDlYS.png' }, enemies: { normie: 'https://i.imgur.com/pJgzIXp.png', rusher: 'https://i.imgur.com/vWP8O9T.jpeg', tank: 'https://fishballsite.vercel.app/bila.png', ghost: 'https://i.imgur.com/kKC1zaJ.png', boomer: 'https://i.imgur.com/zCk2KYq.png', titan: 'https://i.imgur.com/NxZdju3.png' }};
 const ASSETS={animations:{}, isaac: {}, kanado: {}, env: {}}; let scene, camera, renderer, simplex; let muzzleLight, currentGunImg = new Image(); let worldMapCanvas = null; let velocity = new THREE.Vector3(); let move = { f: false, b: false, l: false, r: false, jump: false, sprint: false }; let mobileMove = {x:0,y:0};
 const audioCtx = new (window.AudioContext||window.webkitAudioContext)(); function playSound(t) { if(player.dead)return; const o=audioCtx.createOscillator(),g=audioCtx.createGain(),n=audioCtx.currentTime; o.connect(g);g.connect(audioCtx.destination); if(t=='shoot'){o.frequency.setValueAtTime(200,n);o.frequency.exponentialRampToValueAtTime(50,n+0.2);g.gain.setValueAtTime(0.1,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.1);o.type='triangle';}else if(t=='hit'){o.frequency.setValueAtTime(100,n);g.gain.setValueAtTime(0.1,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.1);o.type='square';}else if(t=='buy'){o.frequency.setValueAtTime(400,n);o.frequency.linearRampToValueAtTime(600,n+0.2);g.gain.setValueAtTime(0.1,n);g.gain.linearRampToValueAtTime(0,n+0.2);o.type='triangle';}o.start(n);o.stop(n+0.3); }
-document.addEventListener('click', ()=> { if(audioCtx.state === 'suspended') audioCtx.resume(); });
+
+// Bloqueia clique fantasma pós morte/hub travado no engine PointerLock
+document.addEventListener('click', ()=> { 
+    if(audioCtx.state === 'suspended') audioCtx.resume(); 
+    if(document.getElementById('game-wrapper').style.display === 'block' && !gameData.isBigMapOpen && !player.dead && !isMobile) {
+        document.body.requestPointerLock();
+    }
+});
 
 window._engineStartFromHub = function(nameFromHub) {
     player.speedMult = 1.0 + (hubProfile.buffs?.spd || 0); player.dmgMult = 1.0 + (hubProfile.buffs?.dmg || 0);
@@ -523,23 +647,35 @@ function initAssets() {
     ENEMY_TYPES.forEach(t => { ASSETS.animations[t.id] =[loader.load(TEXTURES.enemies[t.id]||TEXTURES.enemies.normie, optimizeTex)]; });
 }
 
-function continueEngineStart() { initThreeJS(); setInterval(updateGameLogic, 1000/30); animate(); initMultiplayer(hubProfile.username, gameData.currentDiff); }
+function continueEngineStart() { 
+    initThreeJS(); 
+    if(window.gameLoopInterval) clearInterval(window.gameLoopInterval);
+    window.gameLoopInterval = setInterval(updateGameLogic, 1000/30); 
+    animate(); 
+    initMultiplayer(hubProfile.username, gameData.currentDiff); 
+}
 
 function initThreeJS() {
+    // Caso seja um restart SPA para nao sobrepor canvas no append
+    let gw = document.getElementById('game-wrapper');
+    const existingCanvas = gw.querySelector('canvas:not(#gun-canvas)');
+    if(existingCanvas) existingCanvas.remove();
+
     scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x000000, 0.003); camera = new THREE.PerspectiveCamera(isMobile?100:80, window.innerWidth/window.innerHeight, 0.1, 1500); camera.rotation.order = "YXZ";
     renderer = new THREE.WebGLRenderer({antialias:false}); renderer.setSize(window.innerWidth * 0.25, window.innerHeight * 0.25, false); renderer.setPixelRatio(1);
-    document.getElementById('game-wrapper').appendChild(renderer.domElement);
+    gw.insertBefore(renderer.domElement, gw.firstChild);
+    
     const amb = new THREE.AmbientLight(0x222222); scene.add(amb);
     if(!isMobile) {
-        document.body.addEventListener('click', () => { if (!gameData.isBigMapOpen && !player.dead) document.body.requestPointerLock(); });
         document.addEventListener('mousemove', (e) => { if (document.pointerLockElement === document.body && !player.dead) { camera.rotation.y -= e.movementX * CONFIG.mouseSensitivity; camera.rotation.x = Math.max(-1.5, Math.min(1.5, camera.rotation.x - e.movementY * CONFIG.mouseSensitivity)); } });
-        document.addEventListener('mousedown', ()=>{ if(document.pointerLockElement === document.body) fireWeapon(); });
+        document.addEventListener('mousedown', ()=>{ if(document.pointerLockElement === document.body && !player.dead) fireWeapon(); });
     }
     player.flashlight = new THREE.SpotLight(0xffffff, 3.0, 150, 0.5, 0.5, 1); camera.add(player.flashlight); camera.add(player.flashlight.target);
     muzzleLight = new THREE.PointLight(gameData.settings.gunColor, 0, 30); muzzleLight.position.set(0,0,-2); camera.add(muzzleLight); scene.add(camera);
     createMap(); createAtmosphere();
     document.addEventListener('keydown', onKeyDown); document.addEventListener('keyup', (e)=>{ if(e.code==='KeyW') move.f=false; if(e.code==='KeyS') move.b=false; if(e.code==='KeyA') move.l=false; if(e.code==='KeyD') move.r=false; if(e.code==='ShiftLeft') move.sprint=false; if(e.code==='Space') move.jump=false; });
 }
+
 function onKeyDown(e) { if(e.code==='KeyW') move.f=true; if(e.code==='KeyS') move.b=true; if(e.code==='KeyA') move.l=true; if(e.code==='KeyD') move.r=true; if(e.code==='ShiftLeft') move.sprint=true; if(e.code==='Space') { if(player.canJetpack) velocity.y=25; else if(!move.jump && camera.position.y <= getTerrainHeight(camera.position.x, camera.position.z)+6){velocity.y=22;move.jump=true;} } if(e.code==='KeyM') window.toggleBigMapGame(); }
 function initMobileControls() {
     let jK = document.getElementById('joy-knob'); let jId = null; let jStartX=0, jStartY=0;
@@ -716,8 +852,27 @@ function updateGameLogic() {
         for(let i=gameData.activeParticles.length-1; i>=0; i--) { const p = gameData.activeParticles[i]; p.userData.life -= dt; p.position.add(p.userData.vel.clone().multiplyScalar(dt)); p.userData.vel.y -= 20 * dt; p.scale.setScalar((p.userData.life / p.userData.maxLife) * 0.8); if(p.position.y < getTerrainHeight(p.position.x, p.position.z) || p.userData.life <= 0) { scene.remove(p); gameData.activeParticles.splice(i, 1); } }
     }
 }
-function animate() { requestAnimationFrame(animate); if(gameData.isBigMapOpen) return; const ctx=document.getElementById('gun-canvas').getContext('2d'); ctx.clearRect(0,0,500,500); const bob = (move.f||move.b||move.l||move.r || isMobile && (mobileMove.x!==0 || mobileMove.y!==0)) ? Math.sin(performance.now()/80)*20 : 0; if(currentGunImg.complete) ctx.drawImage(currentGunImg, 250-225, 500-300+bob, 450, 300); renderer.render(scene, camera); }
-function checkDeath() { if(player.hp<=0 && !player.dead) { player.dead=true; document.exitPointerLock(); document.getElementById('death-screen').style.display='flex'; document.getElementById('death-flavor').innerText = DEATH_MSGS[Math.floor(Math.random()*DEATH_MSGS.length)]; document.getElementById('final-score').innerText = `+${Math.floor(player.score/50)} XP e $${player.money} GOLD TRANSFERIDOS PRA MENTE.`; if(playerRef) { try{ remove(playerRef); }catch(e){} } } }
+
+function animate() { 
+    window.animationFrameId = requestAnimationFrame(animate); 
+    if(gameData.isBigMapOpen) return; 
+    const ctx=document.getElementById('gun-canvas').getContext('2d'); ctx.clearRect(0,0,500,500); 
+    const bob = (move.f||move.b||move.l||move.r || isMobile && (mobileMove.x!==0 || mobileMove.y!==0)) ? Math.sin(performance.now()/80)*20 : 0; 
+    if(currentGunImg.complete) ctx.drawImage(currentGunImg, 250-225, 500-300+bob, 450, 300); 
+    renderer.render(scene, camera); 
+}
+
+function checkDeath() { 
+    if(player.hp<=0 && !player.dead) { 
+        player.dead=true; 
+        document.exitPointerLock(); 
+        document.getElementById('death-screen').style.display='flex'; 
+        document.getElementById('death-flavor').innerText = DEATH_MSGS[Math.floor(Math.random()*DEATH_MSGS.length)]; 
+        document.getElementById('final-score').innerText = `+${Math.floor(player.score/50)} XP e $${player.money} GOLD TRANSFERIDOS PRA MENTE.`; 
+        if(playerRef) { try{ remove(playerRef); }catch(e){} } 
+    } 
+}
+
 function updateHUD() { document.getElementById('hp-val').innerText=Math.floor(player.hp); document.getElementById('wave-val').innerText=gameData.wave; document.getElementById('money-display').innerText=`$${player.money}`; const p = (gameData.serverState && gameData.serverState.enemiesToSpawn) ? gameData.serverState.enemiesToSpawn : 0; document.getElementById('enemies-left').innerText = gameData.enemies.length + p;}
 function addMoney(amount) { player.money += amount; updateHUD(); }
 function showNotif(t){const n=document.createElement('div');n.className='pop-text';n.innerText=t;document.getElementById('notif-area').appendChild(n);setTimeout(()=>n.remove(),1500);}
@@ -730,7 +885,7 @@ function initMultiplayer(nick, difficulty) {
         get(roomPlayersRef).then(snap => { const pc = snap.exists() ? Object.keys(snap.val()).length : 0; if (pc === 0) { set(ref(rtdb, `${roomRefPath}`), { players: {}, gameState: { wave: 1, state: 'COOLDOWN', timer: 5, enemiesToSpawn: 20, kills: 0 }, enemies: {}, boss: null }).then(() => { joinServer(nick); }); } else { joinServer(nick); } });
     } catch(err) {
         console.warn("Multiplayer Offline no Ingame Bypass"); gameData.wave = 1; updateHUD();
-        setInterval(() => { if(gameData.enemies.length < 15) { const t = ENEMY_TYPES[0]; const an = Math.random()*Math.PI*2; const d = 30; const ex = camera.position.x + Math.cos(an)*d; const ez = camera.position.z + Math.sin(an)*d; let mesh = new THREE.Sprite(new THREE.SpriteMaterial({map:ASSETS.animations[t.id][0], color:0xffffff})); mesh.scale.set(t.scale, t.scale, 1); mesh.position.set(ex, getTerrainHeight(ex,ez)+t.scale/2, ez); scene.add(mesh); gameData.enemies.push({id: Math.random().toString(), mesh:mesh, hp:t.hp, type:t, hitTimer:0, targetPos: new THREE.Vector3(ex, mesh.position.y, ez)}); } }, 2000);
+        setInterval(() => { if(gameData.enemies.length < 15 && !player.dead && document.getElementById('game-wrapper').style.display==='block') { const t = ENEMY_TYPES[0]; const an = Math.random()*Math.PI*2; const d = 30; const ex = camera.position.x + Math.cos(an)*d; const ez = camera.position.z + Math.sin(an)*d; let mesh = new THREE.Sprite(new THREE.SpriteMaterial({map:ASSETS.animations[t.id][0], color:0xffffff})); mesh.scale.set(t.scale, t.scale, 1); mesh.position.set(ex, getTerrainHeight(ex,ez)+t.scale/2, ez); scene.add(mesh); gameData.enemies.push({id: Math.random().toString(), mesh:mesh, hp:t.hp, type:t, hitTimer:0, targetPos: new THREE.Vector3(ex, mesh.position.y, ez)}); } }, 2000);
     }
 }
 function joinServer(nick) {
