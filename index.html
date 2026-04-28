@@ -17,6 +17,8 @@
             --panel-border: #232533;
         }
 
+        * { box-sizing: border-box; }
+
         body { margin: 0; overflow: hidden; background: var(--dark-bg); user-select: none; font-family: 'Rajdhani', sans-serif; -webkit-touch-callout: none; color: #e0e0e0; touch-action: manipulation;}
         
         ::-webkit-scrollbar { width: 6px; height: 6px;}
@@ -46,7 +48,7 @@
         .stat-item { text-align: center; color: #888; font-size: 0.75rem; font-weight: 700;}
         .stat-item span { display: block; font-family: 'Orbitron', sans-serif; font-size: 1rem; margin-top: 5px; color: var(--neon-yellow); }
         
-        .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px 15px; gap: 8px; overflow-y: auto;}
+        .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 8px; overflow-y: auto;}
         .hub-nav-btn { background: transparent; color: #999; font-size: 1rem; text-align: left; padding: 14px 20px; border-radius: 8px; border: 1px solid transparent; letter-spacing: 1px;}
         .hub-nav-btn:hover { background: rgba(0, 243, 255, 0.05); color: #fff;}
         .hub-nav-btn.active { background: rgba(0, 243, 255, 0.1); color: var(--neon-blue); border-color: rgba(0, 243, 255, 0.3); font-weight: bold;}
@@ -151,7 +153,7 @@
             border: 2px solid var(--panel-border); 
             border-radius: 10px; 
             display:flex; flex-direction:column; justify-content: flex-start; align-items:center; 
-            cursor:pointer; position:relative; box-sizing: border-box; overflow: hidden; 
+            cursor:pointer; position:relative; overflow: hidden; 
             pointer-events: auto; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
         }
@@ -197,60 +199,63 @@
 
         #death-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.95); z-index: 110; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(8px);}
         
-        /* ================= RESPONSIVIDADE MOBILE DEFINITIVA ================= */
+        /* ================= RESPONSIVIDADE MOBILE LIMPA ================= */
         @media (max-width: 900px) {
-            html { font-size: 14px; }
-            #hub-container { flex-direction: column; }
             .hub-title { font-size: 1.4rem; margin-bottom: 15px; }
+            #hub-container { flex-direction: column; }
             
-            /* Sidebar Topo */
-            .hub-sidebar { width: 100%; order: -1; padding: 0; border-right: none; border-bottom: 1px solid #333; flex-direction: column; z-index: 100;}
-            .hub-profile-area { display: flex; align-items: center; text-align: left; padding: 10px;}
-            .hub-avatar-container { width: 50px; height: 50px; margin: 0 15px 0 0; }
-            .hub-username { font-size: 1.1rem; margin-bottom: 2px;}
-            .hub-stats-row { flex-direction: row; gap: 15px; margin: 0; padding: 5px; background: transparent; border:none;}
-            .stat-item { font-size: 0.65rem; } .stat-item span { font-size: 0.85rem; }
+            /* Sidebar de Perfil Topo - Menor e mais limpa */
+            .hub-sidebar { width: 100%; order: -1; padding: 5px; border-bottom: 2px solid var(--neon-blue); flex-direction: column; z-index: 100;}
+            .hub-profile-area { display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 10px; border-bottom: none;}
+            .hub-avatar-container { width: 55px; height: 55px; margin: 0; }
+            .hub-username { font-size: 1.1rem; text-align: right; margin-bottom: 2px;}
+            .hub-stats-row { flex-direction: row; gap: 15px; background: none; border: none; padding: 0; margin-top: 5px; justify-content: flex-end;}
+            .stat-item { text-align: right; font-size: 0.65rem; } .stat-item span { font-size: 0.85rem; }
             
-            /* Navbar Scroll Horizontal */
-            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 5px; padding: 5px 10px; background: #0b0c10; scrollbar-width: none;}
+            /* Navbar Scroll Horizontal Limpo */
+            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 8px; padding: 5px 10px 10px 10px; background: transparent; scrollbar-width: none;}
             .hub-nav::-webkit-scrollbar { display: none;}
-            .hub-nav-btn { font-size: 0.85rem; padding: 8px 12px; white-space:nowrap; border:none; background:#15161e;}
-            .hub-nav-btn.active { border-bottom: 2px solid var(--neon-blue); background:rgba(0,243,255,0.1); border-radius: 4px 4px 0 0;}
+            .hub-nav-btn { font-size: 0.8rem; padding: 8px 16px; border-radius: 20px; white-space:nowrap; border: 1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.4);}
+            .hub-nav-btn.active { border: 1px solid var(--neon-blue); background:rgba(0,243,255,0.1); }
+            
+            .hub-start-arena { margin: 5px 10px 10px 10px; padding: 12px; font-size: 0.9rem;}
+
+            /* Conteudo Hub */
+            .hub-main-content { padding: 15px 10px; }
+            
+            /* Cards Limpos */
+            .grid-cards { grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px;}
+            .action-card { padding: 20px; border-radius: 10px;}
+            .action-card h3 { font-size: 1rem; margin-bottom: 8px;}
+            .action-card p { font-size: 0.85rem; margin-bottom: 12px;}
+            .btn-neon { padding: 12px; font-size: 0.85rem; }
             
             /* Radar Inferior */
-            .hub-radar { width: 100%; border-left: none; border-top: 1px solid #333; padding: 15px; height: auto;}
-            .radar-title { font-size: 1rem; margin-bottom: 15px; padding-bottom: 10px;}
-            
-            .hub-main-content { padding: 15px; }
-            
-            /* Grid Cards Compactos */
-            .grid-cards { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;}
-            .action-card { padding: 15px; border-radius: 8px;}
-            .action-card h3 { font-size: 1rem; margin-bottom: 5px;}
-            .action-card p { font-size: 0.85rem; margin-bottom: 10px;}
-            .btn-neon { padding: 10px; font-size: 0.85rem; }
+            .hub-radar { width: 100%; border-left: none; border-top: 1px solid var(--neon-pink); padding: 15px; max-height: 250px;}
+            .radar-title { font-size: 1rem; margin-bottom: 10px; padding-bottom: 5px;}
+            .radar-list { gap: 10px; }
+            .radar-player { width: 100%; padding: 12px; margin:0;}
             
             /* Deck Consertado no Mobile (Micro Cartas) */
-            .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); padding: 10px; gap: 8px; }
-            .deck-slot { height: 90px; border-radius: 6px; }
+            .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); padding: 10px; gap: 10px; }
+            .deck-slot { height: 95px; border-radius: 6px; }
+            .battle-card { width: 100%; height: 95px; border-radius: 6px;}
+            .b-card-art { height: 25px; font-size: 1.1rem; margin: 15px auto 2px; }
+            .b-card-name { font-size: 0.45rem; padding: 0 2px; line-height: 1; margin-bottom: 2px;}
+            .b-card-cost { font-size: 0.55rem; padding: 2px 4px; }
+            .b-card-lvl { font-size: 0.5rem; top: 2px; right: 2px; }
             
             /* Arena HUD Mobile Extremo */
-            .top-bar-arena { padding: 5px 10px; }
-            .hp-hud { font-size: 0.8rem; padding: 5px; }
-            .btn-leave { font-size: 0.6rem; padding: 5px; }
-            .auto-btn { top: 45px; right: 10px; font-size: 0.65rem; padding: 5px 8px; }
+            .top-bar-arena { padding: 8px 12px; }
+            .hp-hud { font-size: 0.85rem; padding: 6px; }
+            .btn-leave { font-size: 0.7rem; padding: 6px; }
+            .auto-btn { top: 60px; right: 10px; font-size: 0.7rem; padding: 6px 10px; border-width: 1px;}
             
-            .bottom-ui-arena { padding-bottom: 10px; }
-            .energy-container { height: 14px; margin-bottom: 8px; max-width: 95%;}
-            .energy-text { line-height: 14px; font-size: 0.65rem; }
-            .cards-hand { gap: 4px; height: 85px; }
-            
-            /* Modificador Global de Carta para Mobile */
-            .battle-card { width: 60px; height: 85px; border-width: 1px; border-radius: 6px;}
-            .b-card-art { height: 25px; font-size: 1.2rem; margin: 12px auto 2px; }
-            .b-card-name { font-size: 0.45rem; padding: 0 2px; line-height: 1; }
-            .b-card-cost { font-size: 0.6rem; padding: 2px 4px; }
-            .b-card-lvl { font-size: 0.5rem; top: 2px; right: 2px; }
+            .bottom-ui-arena { padding-bottom: 15px; }
+            .energy-container { height: 16px; margin-bottom: 10px; max-width: 95%; border-width: 1px;}
+            .energy-text { line-height: 16px; font-size: 0.7rem; }
+            .cards-hand { gap: 8px; height: 95px; }
+            .cards-hand .battle-card { width: 65px; height: 100%; }
         }
 
         @keyframes pulseBtn { 0% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(0,243,255,0.7); } 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } }
@@ -327,15 +332,15 @@
             </div>
 
             <div class="hub-nav">
-                <button class="hub-nav-btn active" onclick="window.switchTab('tab-feed')">Feed da Comunidade</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-missoes')">Missões de Treino</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-deck')">Seu Exército</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-loja')">Mercado e Baús</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-perfil')">Menu Geral</button>
+                <button class="hub-nav-btn active" onclick="window.switchTab('tab-feed')">Feed Hub</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-missoes')">Treinos</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-deck')">Seu Deck</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-loja')">Mercado</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-perfil')">Perfil</button>
             </div>
             
-            <div style="padding: 15px; margin-top: auto;">
-                <button class="hub-start-arena" id="btn-pve-campaign" style="width: 100%;" onclick="window.startPvECampaign()">ARENA PVE BATTLE</button>
+            <div style="padding: 0px; margin-top: auto; width: 100%;">
+                <button class="hub-start-arena" id="btn-pve-campaign" style="width: calc(100% - 30px);" onclick="window.startPvECampaign()">ARENA PVE BATTLE</button>
             </div>
         </div>
 
@@ -344,11 +349,11 @@
                 <h2 class="hub-title">Rede Global de Atletas</h2>
                 
                 <div class="feed-filters">
-                    <button class="filter-btn active" onclick="window.filterFeed('todos', this)">Todas Atividades</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Força', this)">Treino/Força</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Cardio', this)">Cardio/Mobilidade</button>
+                    <button class="filter-btn active" onclick="window.filterFeed('todos', this)">Todas</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Força', this)">Força</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Cardio', this)">Cardio</button>
                     <button class="filter-btn" onclick="window.filterFeed('Dieta', this)">Nutrição</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Mente', this)" style="color:var(--neon-yellow); border-color:var(--neon-yellow);">Mente/Foco</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Mente', this)" style="color:var(--neon-yellow); border-color:var(--neon-yellow);">Foco</button>
                     <button class="filter-btn" onclick="window.filterFeed('Duelo', this)" style="color:var(--neon-pink); border-color:var(--neon-pink);">Confrontos</button>
                 </div>
 
@@ -366,8 +371,8 @@
                     <canvas id="task-compress-canvas" style="display:none;"></canvas>
                     
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button class="btn-neon green" id="btn-post-upload" style="flex:2;" onclick="window.submitTaskEvidence()">COMPROVAR E INJETAR BÔNUS</button>
-                        <button class="btn-neon" style="flex:1; border-color:#555; color:#aaa;" onclick="document.getElementById('quick-post-box').style.display='none'">CANCELAR</button>
+                        <button class="btn-neon green" id="btn-post-upload" style="flex:2;" onclick="window.submitTaskEvidence()">COMPROVAR TREINO</button>
+                        <button class="btn-neon" style="flex:1; border-color:#555; color:#aaa;" onclick="document.getElementById('quick-post-box').style.display='none'">X</button>
                     </div>
                 </div>
 
@@ -448,7 +453,7 @@
 
             <div id="tab-deck" class="hub-tab">
                 <h2 class="hub-title">Gerenciador de Cartas (Deck)</h2>
-                <p style="color:#aaa; font-size:1.05rem; margin-bottom: 25px;">Escale seu time. Apenas 8 tropas ou magias entram na Batalha com você.</p>
+                <p style="color:#aaa; font-size:0.95rem; margin-bottom: 25px;">Escale seu time. Apenas 8 tropas ou magias entram na Batalha com você.</p>
                 
                 <h3 style="color:var(--neon-blue); font-family:'Orbitron'; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">Tropa Invocável Ativa (Sua Mão)</h3>
                 <div class="deck-builder-grid" id="deck-active-render"></div>
@@ -462,9 +467,9 @@
                 <div class="grid-cards">
                     <div class="action-card" style="border-color: var(--neon-pink); align-items:center; text-align:center; grid-column: 1 / -1; max-width: 600px; margin: 0 auto;">
                         <h3 style="font-size: 1.5rem;" class="glow-pink">Pacote de Extração Gacha</h3>
-                        <p style="font-size:1.1rem; margin: 20px 0; color:#ddd;">Extraia fragmentos de tropas investindo o ouro que você consegue nas tarefas físicas. Abrem-se 3 Códigos genéticos.<br><br><span style="color:var(--neon-green)">Cartas extraídas repetidas evoluem de Level!</span></p>
-                        <button class="btn-neon pink" style="font-size: 1.3rem; padding: 20px; box-shadow: 0 0 20px rgba(255,0,234,0.4);" onclick="window.rollGacha()">HACKEAR UM PACOTE AGORA ($1000)</button>
-                        <div id="gacha-result" style="margin-top:25px; display:flex; justify-content:center; gap:15px; flex-wrap: wrap; min-height: 100px; width: 100%;"></div>
+                        <p style="font-size:1rem; margin: 20px 0; color:#ddd;">Extraia fragmentos de tropas investindo o ouro que você consegue nas tarefas físicas. Abrem-se 3 Códigos genéticos.<br><br><span style="color:var(--neon-green)">Cartas extraídas repetidas evoluem de Level!</span></p>
+                        <button class="btn-neon pink" style="font-size: 1.1rem; padding: 15px; box-shadow: 0 0 20px rgba(255,0,234,0.4);" onclick="window.rollGacha()">HACKEAR UM PACOTE AGORA ($1000)</button>
+                        <div id="gacha-result" style="margin-top:25px; display:flex; justify-content:center; gap:10px; flex-wrap: wrap; min-height: 100px; width: 100%;"></div>
                     </div>
                 </div>
             </div>
@@ -498,7 +503,7 @@
             <div id="radar-loading" style="font-size:0.85rem; color:#aaa; text-align:center;">Monitorando presenças no terminal...</div>
             <div class="radar-list" id="radar-list"></div>
             
-            <p style="font-size: 0.85rem; color: #666; margin-top: 25px; line-height: 1.5; border-top: 1px solid var(--panel-border); padding-top: 15px;">
+            <p style="font-size: 0.8rem; color: #666; margin-top: 25px; line-height: 1.5; border-top: 1px solid var(--panel-border); padding-top: 15px;">
                 Chame inimigos onlines para um <b>Treino Físico Mortal (IRL)</b> em sua própria casa, ou duele na <b>Arena Cyber Clash</b> sincronizada onde seus decks definem o campeão.
             </p>
         </div>
@@ -507,8 +512,8 @@
     <div class="hub-modal" id="system-modal">
         <div class="modal-content">
             <h2 class="modal-title glow-text" id="modal-title">Mensagem Direta</h2>
-            <p id="modal-desc" style="color:#d0d0d0; font-size:1.05rem; margin-bottom:25px; line-height: 1.6;"></p>
-            <div id="modal-actions" style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;"></div>
+            <p id="modal-desc" style="color:#d0d0d0; font-size:1rem; margin-bottom:25px; line-height: 1.6;"></p>
+            <div id="modal-actions" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;"></div>
         </div>
     </div>
 
@@ -520,7 +525,7 @@
                     <span style="font-size:0.6rem; color:#aaa; margin-bottom:5px; text-transform:uppercase;" id="enemy-name-display">Alvo Inimigo</span>
                     <div class="hp-hud" id="enemy-hp-text">CORE HP: 2000</div>
                 </div>
-                <button class="btn-leave" onclick="window.leaveArena()" style="background: rgba(255,0,0,0.2); border:1px solid red; color:red; padding: 10px;">DESLIGAR</button>
+                <button class="btn-leave" onclick="window.leaveArena()" style="background: rgba(255,0,0,0.2); border:1px solid red; color:red; padding: 10px;">DESISTIR</button>
             </div>
             
             <button class="auto-btn" id="btn-afk" onclick="window.toggleAFK()">COMANDO AFK IA (OFF)</button>
@@ -539,13 +544,13 @@
         
         <div id="death-screen" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,10,15,0.95); z-index:110; display:none; flex-direction:column; justify-content:center; align-items:center; font-family:'Orbitron'; padding: 30px; box-sizing:border-box; text-align:center; backdrop-filter: blur(8px);">
             <h1 id="end-title" style="font-size: 2.5rem; margin-bottom: 15px; color:var(--neon-blue); text-shadow:0 0 10px var(--neon-blue);">FIM DE TRANSMISSÃO</h1>
-            <p id="end-flavor" style="color:#ccc; font-family:'Rajdhani'; font-size: 1.3rem; max-width:600px; margin-bottom: 30px; line-height:1.5;"></p>
+            <p id="end-flavor" style="color:#ccc; font-family:'Rajdhani'; font-size: 1.1rem; max-width:600px; margin-bottom: 30px; line-height:1.5;"></p>
             
             <div style="background: rgba(0,0,0,0.6); padding: 25px; border-radius: 12px; border: 1px solid #333; margin-bottom: 30px; width: 100%; max-width: 400px; box-shadow: 0 0 20px inset rgba(0,0,0,0.8);">
-                <span style="color:#888; font-family:'Rajdhani'; font-size: 1.1rem; text-transform: uppercase; font-weight:bold;">Sua Porcentagem Saqueada:</span><br>
+                <span style="color:#888; font-family:'Rajdhani'; font-size: 1rem; text-transform: uppercase; font-weight:bold;">Sua Porcentagem Saqueada:</span><br>
                 <span id="final-score" class="glow-pink" style="font-size: 2.2rem; font-weight: 900; display:block; margin-top:10px;">0 Gold</span>
             </div>
-            <button class="btn-neon green" style="max-width:350px; font-size:1.1rem; padding:20px; font-weight:bold;" onclick="window.returnToHubAndSave()">RECEBER LUCROS E FECHAR MAPA</button>
+            <button class="btn-neon green" style="max-width:350px; font-size:1.1rem; padding:15px; font-weight:bold;" onclick="window.returnToHubAndSave()">SAIR DO MAPA</button>
         </div>
     </div>
 
@@ -714,7 +719,6 @@ if(sessionStorage.getItem('hubProfile_JSON')) {
 // =========================================================================
 // 4. GPS TRACKER E MISSÕES DO MUNDO FÍSICO
 // =========================================================================
-// (Mesma Lógica de antes)
 let trackingGeoId = null; let lastLat = null, lastLng = null; let totalKm = 0;
 
 window.toggleGPS = function() {
@@ -972,7 +976,7 @@ function setupHubRealtime() {
             <div class="radar-player" style="border-color:#555;">
                 <span class="radar-name glow-text" style="font-size:1.1rem;">IA INVASORA HOLOGRÁFICA M-22</span>
                 <span style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">Entidade local de Treino (Lv. Máximo). Simulando Atributos de Luta Perigosa (HP/Dmg Upados). Não há perdas, só vitórias puras aqui.</span>
-                <button class="btn-neon" style="background:#500; border-color:#f00; color:#fff; font-size:0.8rem; padding:12px;" onclick="window.startClash(false, {name:'Holograma Matriz Pura', lvl:35, buffs:{hp:500, spd:0.4, dmg:0.4}, deck:['Kamikaze','Barao','Hacker','Sniper','Striker'], cardLevels:{'Kamikaze':4,'Barao':2}})">LUTAR NO CYBER CLASH DIGITAL</button>
+                <button class="btn-neon" style="background:#500; border-color:#f00; color:#fff; font-size:0.8rem; padding:12px;" onclick="window.startClash(false, {username:'Holograma Matriz Pura', lvl:35, buffs:{hp:500, spd:0.4, dmg:0.4}, deck:['Kamikaze','Barao','Hacker','Sniper','Striker'], cardLevels:{'Kamikaze':4,'Barao':2}})">LUTAR NO CYBER CLASH DIGITAL</button>
             </div>`; 
         }, 1000);
         listenToFeed(); return;
@@ -980,29 +984,28 @@ function setupHubRealtime() {
     
     try {
         onDisconnect(ref(rtdb, 'hub_presence/'+hubProfile.uid)).remove(); 
-        set(ref(rtdb, 'hub_presence/'+hubProfile.uid), { uid: hubProfile.uid, name: hubProfile.username, lvl: hubProfile.lvl, buffs: hubProfile.buffs, deck: hubProfile.deck, cardLevels: hubProfile.cardLevels });
+        set(ref(rtdb, 'hub_presence/'+hubProfile.uid), { uid: hubProfile.uid, username: hubProfile.username, lvl: hubProfile.lvl, buffs: hubProfile.buffs, deck: hubProfile.deck, cardLevels: hubProfile.cardLevels });
         
         onValue(ref(rtdb, 'hub_presence'), (snap) => {
             document.getElementById('radar-loading').style.display = 'none'; document.getElementById('radar-list').innerHTML = ""; let d = snap.val()||{}; 
             Object.keys(d).forEach(k => { 
                 if(k!==hubProfile.uid) {
-                    let oppD = { name: d[k].name, lvl: d[k].lvl, buffs: d[k].buffs || {hp:0, dmg:0, spd:0}, deck: d[k].deck || [], cardLevels: d[k].cardLevels || {} };
+                    let oppD = { username: d[k].username, lvl: d[k].lvl, buffs: d[k].buffs || {hp:0, dmg:0, spd:0}, deck: d[k].deck || [], cardLevels: d[k].cardLevels || {} };
                     let htmlBts = `
                     <div style="display:flex; gap:10px; margin-top:10px; flex-direction:column;">
-                        <button class="btn-neon pink" style="font-size:0.7rem; padding:10px;" onclick="window.sendRealDuel('${k}', '${d[k].name}')">TREINO FÍSICO REAL (IRL)</button>
-                        <button class="btn-neon" style="font-size:0.7rem; padding:10px;" onclick='window.sendCyberPvpDuel("${k}", "${d[k].name}")'>ARENA CYBER CLASH (SYNC PVP)</button>
+                        <button class="btn-neon pink" style="font-size:0.7rem; padding:10px;" onclick="window.sendRealDuel('${k}', '${d[k].username}')">TREINO FÍSICO REAL (IRL)</button>
+                        <button class="btn-neon" style="font-size:0.7rem; padding:10px;" onclick='window.sendCyberPvpDuel("${k}", "${d[k].username}")'>ARENA CYBER CLASH (SYNC PVP)</button>
                     </div>`;
-                    document.getElementById('radar-list').innerHTML += `<div class="radar-player"><span class="radar-name glow-text">♦ ALVO CIBERNÉTICO [${d[k].name}] Lvl ${d[k].lvl}</span>${htmlBts}</div>`; 
+                    document.getElementById('radar-list').innerHTML += `<div class="radar-player"><span class="radar-name glow-text">♦ ALVO CIBERNÉTICO [${d[k].username}] Lvl ${d[k].lvl}</span>${htmlBts}</div>`; 
                 }
             });
         });
         
-        // Listener de Duelos IRL e Cyber
         onChildAdded(ref(rtdb, 'hub_duels'), (snap) => { 
             let d = snap.val(); 
             if(d.targetId === hubProfile.uid && d.state === 'request') {
                 if(d.type === 'cyber') {
-                    // CACHE OBRIGATÓRIO DO DESAFIANTE PARA NÃO DEPENDER DE GET() FUTURO!
+                    // CACHE DOS DADOS DO DESAFIANTE NO MOMENTO DA NOTIFICAÇÃO
                     window.pendingPvpData = d.challengerData;
                     window.showModal(`🔥 DESAFIO DE CYBER CLASH!`, `O Atleta ${d.challengerName} quer testar seu Deck de Cartas na arena de neon AGORA. O combate é sincronizado em tempo real. Aceitar o hack?`, 
                     `<button class="btn-neon green" style="margin:5px;" onclick="window.acceptCyberDuel('${snap.key}')">CONECTAR REDE NEURAL (LUTAR)</button> 
@@ -1020,10 +1023,11 @@ function setupHubRealtime() {
 }
 
 // =========================================================
-// SISTEMA DE DESAFIO CYBER (PVP SYNC) - FIXED FATAL BUG
+// SISTEMA DE DESAFIO CYBER (PVP SYNC) - CORREÇÃO DE OBJETO
 // =========================================================
 window.sendCyberPvpDuel = function(tId, tN) {
-    let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'cyber', challengerId: hubProfile.uid, challengerName: hubProfile.username, challengerData: hubProfile, targetId: tId, targetName: tN, state: 'request' }); 
+    let keyId = push(ref(rtdb, 'hub_duels')).key; 
+    set(ref(rtdb, 'hub_duels/'+keyId), { type: 'cyber', challengerId: hubProfile.uid, challengerName: hubProfile.username, challengerData: hubProfile, targetId: tId, targetName: tN, state: 'request' }); 
     window.showModal("Aguarde...", `Injetando protocolo de combate no terminal de ${tN}. Aguarde a aceitação para a conexão Real-Time.`);
     
     const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
@@ -1038,10 +1042,11 @@ window.sendCyberPvpDuel = function(tId, tN) {
     });
 }
 
-// Puxa os dados CACHEADOS no recebimento e não depende de promessa asíncrona falha
+// Sem depender do .get() que gera delay, lê os dados que já vieram no pacote do onChildAdded
 window.acceptCyberDuel = function(keyId) {
     document.getElementById('system-modal').style.display='none'; 
     if(!window.pendingPvpData) { window.showModal("Erro Fatal", "Dados do desafiante corrompidos no cache."); return; }
+    
     update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile });
     window.isPvPHost = false;
     window.startClash(true, { matchId: keyId, oppData: window.pendingPvpData });
@@ -1117,7 +1122,6 @@ let arenaW = 500; let arenaH = 900; let opponentAI = null; let isAFK = false;
 let entities = []; let projectiles =[]; let effects =[]; let spawnEffects =[]; let playerBase, enemyBase;
 let pvpMatchListener = null;
 
-// Botão de iniciar PVE Campaign
 window.startPvECampaign = function() {
     if(hubProfile.pveStage >= PVE_CAMPAIGN.length) {
         window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck: ['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido'], cardLevels:{}});
@@ -1126,7 +1130,7 @@ window.startPvECampaign = function() {
     }
 }
 
-// Inicia Combate (Seja PvE ou PvP)
+// Inicia Combate (Seja PvE ou PvP) - FIX DE NOME
 window.startClash = function(isPvP = false, matchData = null) {
     if(hubProfile.deck.length === 0) return window.showModal("Deck Inválido", "Você não possui nenhuma Tropa Invocável em sua Mão (Esquadrão Ativo). Vá até o menu Meu Deck.");
     
@@ -1141,12 +1145,18 @@ window.startClash = function(isPvP = false, matchData = null) {
     
     if(isPvP && matchData && matchData.matchId) {
         window.activeMatchId = matchData.matchId;
-        opponentAI = matchData.oppData;
-        if(!opponentAI.buffs) opponentAI.buffs = {hp:0, dmg:0, spd:0, magic:0};
+        opponentAI = matchData.oppData || {};
         setupPvPSyncListeners();
     } else {
-        opponentAI = matchData || { name: "I.A. Servidor", lvl: hubProfile.lvl, buffs: { hp: 50, spd: 0.1, dmg: 0.1 }, deck:['CorredorNeon','BioTank','Sniper'], cardLevels: {} };
+        opponentAI = matchData || {};
     }
+
+    // Tratamento Robusto de Objeto Oponente pra nunca mais dar Undefined
+    opponentAI.username = opponentAI.username || opponentAI.name || "Inimigo Desconhecido";
+    opponentAI.lvl = opponentAI.lvl || 1;
+    opponentAI.buffs = opponentAI.buffs || {hp:0, dmg:0, spd:0, magic:0};
+    opponentAI.deck = opponentAI.deck || ['CorredorNeon','BioTank','Sniper'];
+    opponentAI.cardLevels = opponentAI.cardLevels || {};
 
     isAFK = false; document.getElementById('btn-afk').classList.remove('active'); document.getElementById('btn-afk').innerText = "Batalha Automática (OFF)";
 
@@ -1160,20 +1170,19 @@ window.leaveArena = function() {
     if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); 
     document.getElementById('game-wrapper').style.display = 'none'; 
     document.getElementById('hub-container').style.display = 'flex'; 
-    if(pvpMatchListener && window.activeMatchId) off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions'));
+    if(pvpMatchListener && window.activeMatchId) { off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions')); pvpMatchListener = null; }
 }
 window.returnToHubAndSave = function() { saveHubStateLocal(); syncUIWithProfile(); window.leaveArena(); }
 
-// Sync PvP Listener - Recebe os comandos do oponente na arena
+// Sync PvP Listener
 function setupPvPSyncListeners() {
     const actionsRef = ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions');
     pvpMatchListener = onChildAdded(actionsRef, (snap) => {
         let action = snap.val();
         if(action.uid !== hubProfile.uid) {
-            // Se veio do oponente, spawna espelhado no Eixo Y pra ele vir de cima
             let mirroredY = arenaH - action.y;
             let mirroredX = arenaW - action.x; 
-            deployCard(action.cardId, 'enemy', mirroredX, mirroredY, action.lvl, opponentAI.buffs || {hp:0, dmg:0, spd:0});
+            deployCard(action.cardId, 'enemy', mirroredX, mirroredY, action.lvl, opponentAI.buffs);
             spawnEffects.push({t:'exp', x:mirroredX, y:mirroredY, life:0.5, col:'var(--neon-pink)'});
         }
     });
@@ -1183,21 +1192,23 @@ function getPlayerBuffs() { return hubProfile.buffs || {hp:0, dmg:0, spd:0, magi
 
 function resetArena() {
     entities = []; projectiles = []; effects =[]; spawnEffects =[]; energy = 2; 
-    let pB = getPlayerBuffs(); let oB = opponentAI.buffs || {hp:0, dmg:0, spd:0};
+    let pB = getPlayerBuffs(); let oB = opponentAI.buffs;
     
+    let oppDisplayTitle = opponentAI.username.toUpperCase();
+    document.getElementById('enemy-name-display').innerText = oppDisplayTitle;
+    document.getElementById('death-screen').style.display = 'none';
+
     playerBase = new Entity(CARD_DB["Barricada"], 'player', arenaW/2, arenaH - 50, pB, 1); playerBase.type = 'base'; playerBase.name="TORRE PRINCIPAL"; playerBase.maxHp = 2000 * (1+(pB.hp/200)); playerBase.hp = playerBase.maxHp; playerBase.w = 120; playerBase.h = 60; playerBase.range = 100; playerBase.dmg = 15 * (1+(pB.dmg||0)); playerBase.atkSpeed = 1.0;
-    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', arenaW/2, 50, oB, opponentAI.lvl || 1); enemyBase.type = 'base'; enemyBase.name = opponentAI.name; enemyBase.maxHp = 2000 * (1+(oB.hp/200)); enemyBase.hp = enemyBase.maxHp; enemyBase.w = 120; enemyBase.h = 60; enemyBase.range = 100; enemyBase.dmg = 15 * (1+(oB.dmg||0)); enemyBase.atkSpeed = 1.0;
+    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', arenaW/2, 50, oB, opponentAI.lvl); enemyBase.type = 'base'; enemyBase.name = oppDisplayTitle; enemyBase.maxHp = 2000 * (1+(oB.hp/200)); enemyBase.hp = enemyBase.maxHp; enemyBase.w = 120; enemyBase.h = 60; enemyBase.range = 100; enemyBase.dmg = 15 * (1+(oB.dmg||0)); enemyBase.atkSpeed = 1.0;
     
     entities.push(playerBase); entities.push(enemyBase);
-    document.getElementById('enemy-name-display').innerText = opponentAI.name.toUpperCase();
-    document.getElementById('death-screen').style.display = 'none';
 }
 
 function renderCardsHandUI() {
     let ui = document.getElementById('arena-hand-ui'); ui.innerHTML = "";
     hubProfile.deck.forEach((cId, index) => {
         let dbC = CARD_DB[cId]; 
-        if(!dbC) return; // Evita crash caso deck tenha carta inválida
+        if(!dbC) return; 
         let lvl = hubProfile.cardLevels[cId] || 1; 
         let d = document.createElement('div'); d.className = `battle-card rarity-${dbC.rarity}`; d.id = `card-ui-${index}`; 
         d.innerHTML = `
@@ -1219,14 +1230,17 @@ function selectCardToPlay(idx) {
 }
 
 window.arenaClick = function(e) {
-    if(activeCardIdx === null || isAFK) return;
+    if(activeCardIdx === null || isAFK) {
+        // Se clicar no meio do nada solta faisca visual
+        let rect = cvs.getBoundingClientRect(); let sX = arenaW / rect.width; let sY = arenaH / rect.height; let cx = (e.clientX - rect.left) * sX; let cy = (e.clientY - rect.top) * sY;
+        spawnEffects.push({t:'hit', x:cx, y:cy, life:0.2}); return;
+    }
     let rect = cvs.getBoundingClientRect(); let sX = arenaW / rect.width; let sY = arenaH / rect.height; let cx = (e.clientX - rect.left) * sX; let cy = (e.clientY - rect.top) * sY;
     let cId = hubProfile.deck[activeCardIdx]; let cD = CARD_DB[cId];
     if(cD.type !== 'spell' && cy < arenaH * 0.55) { spawnEffects.push({t:'text', txt:'Limites Ultrapassados (Invoque Cedo Em Sua Área Tática)', x:cx, y:cy, life:1.5, col:'var(--neon-yellow)'}); return;}
     
     let cLvl = hubProfile.cardLevels[cId]||1;
     
-    // Broadcast se for PvP Sync
     if(window.activeMatchId) {
         push(ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions'), { uid: hubProfile.uid, cardId: cId, x: cx, y: cy, lvl: cLvl, timestamp: serverTimestamp() });
     }
@@ -1235,7 +1249,7 @@ window.arenaClick = function(e) {
     spawnEffects.push({t:'exp', x:cx, y:cy, life:0.5, col:'var(--neon-blue)'});
 }
 
-window.toggleAFK = function() { isAFK = !isAFK; let b = document.getElementById('btn-afk'); if(isAFK) { b.classList.add('active'); b.innerText = "Piloto IA Automatico On (Ativo)"; if(activeCardIdx!==null) { let dc = document.getElementById(`card-ui-${activeCardIdx}`); if(dc) dc.classList.remove('active'); activeCardIdx=null; } } else { b.classList.remove('active'); b.innerText = "Batalha Automática (OFF)"; } }
+window.toggleAFK = function() { isAFK = !isAFK; let b = document.getElementById('btn-afk'); if(isAFK) { b.classList.add('active'); b.innerText = "Piloto IA (Ligado)"; if(activeCardIdx!==null) { let dc = document.getElementById(`card-ui-${activeCardIdx}`); if(dc) dc.classList.remove('active'); activeCardIdx=null; } } else { b.classList.remove('active'); b.innerText = "IA (Desligada)"; } }
 
 class Entity {
     constructor(dbData, team, x, y, ownerBuffs, level = 1) {
@@ -1259,7 +1273,7 @@ class Entity {
         if(this.cooldown > 0) this.cooldown -= dt;
         if(this.type === 'building' || this.type === 'base') return; 
         
-        if(this.mechanics.includes('spawn_drones') && Math.random() < 0.01) { deployCard('DroneRastreador', this.team, this.x, this.y, this.level, getPlayerBuffs()); }
+        if(this.mechanics.includes('spawn_drones') && Math.random() < 0.01) { deployCard('DroneRastreador', this.team, this.x, this.y, this.level, this.team === 'player' ? getPlayerBuffs() : opponentAI.buffs); }
         if(this.mechanics.includes('slow_trail') && Math.random() < 0.05) { effects.push(new EffectArea(this.x, this.y, 30, 'slow', 3, this.team)); }
 
         let target = this.findTarget();
@@ -1295,7 +1309,6 @@ class Entity {
         window.playSound('hit');
         spawnEffects.push({t:'text', txt:`-${Math.floor(amt)}`, x:this.x + (Math.random()*15), y:this.y-(Math.random()*15), life:0.4, col: '#f55'});
         
-        // NOVO: Partículas Detritos
         for(let j=0; j<3; j++) spawnEffects.push({t:'debris', x: this.x, y: this.y, vx: (Math.random()-0.5)*150, vy: (Math.random()-0.5)*150, life: 0.4, col: this.color});
 
         if(this.hp <= 0 && this.type !== 'base') {
@@ -1358,7 +1371,7 @@ let aiTimer = 0; let aiMana = 2;
 function updateAI(dt) {
     if(window.activeMatchId) return; // IA desativada se for PvP Real-time
 
-    let oBuffs = opponentAI.buffs || {hp:0, dmg:0, spd:0}; aiMana += (1.0 + oBuffs.spd) * dt; aiTimer -= dt;
+    let oBuffs = opponentAI.buffs; aiMana += (1.0 + oBuffs.spd) * dt; aiTimer -= dt;
     if(aiTimer <= 0) {
         aiTimer = 1.0 + Math.random()*1.5; 
         if(opponentAI.deck && opponentAI.deck.length > 0) {
@@ -1409,10 +1422,9 @@ function clashLoop() {
     }
     for(let i=effects.length-1; i>=0; i--) { effects[i].update(dt); if(effects[i].life<=0) effects.splice(i,1); }
     
-    // Process Particles & Effects
     for(let i=spawnEffects.length-1; i>=0; i--) { 
         let s = spawnEffects[i]; s.life -= dt; 
-        if(s.t === 'debris') { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 200 * dt; } // Gravidade nas partículas
+        if(s.t === 'debris') { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 200 * dt; } 
         if(s.life<=0) spawnEffects.splice(i,1); 
     }
 
