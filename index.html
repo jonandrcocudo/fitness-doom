@@ -48,7 +48,7 @@
         .stat-item { text-align: center; color: #888; font-size: 0.75rem; font-weight: 700;}
         .stat-item span { display: block; font-family: 'Orbitron', sans-serif; font-size: 1rem; margin-top: 5px; color: var(--neon-yellow); }
         
-        .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 8px; overflow-y: auto;}
+        .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px 15px; gap: 8px; overflow-y: auto;}
         .hub-nav-btn { background: transparent; color: #999; font-size: 1rem; text-align: left; padding: 14px 20px; border-radius: 8px; border: 1px solid transparent; letter-spacing: 1px;}
         .hub-nav-btn:hover { background: rgba(0, 243, 255, 0.05); color: #fff;}
         .hub-nav-btn.active { background: rgba(0, 243, 255, 0.1); color: var(--neon-blue); border-color: rgba(0, 243, 255, 0.3); font-weight: bold;}
@@ -85,11 +85,6 @@
         .input-cyber { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--panel-border); border-radius: 6px; margin-bottom: 15px; font-family: 'Rajdhani', sans-serif; font-size: 16px; box-sizing: border-box; transition: 0.3s;}
         .input-cyber:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.2) inset;}
 
-        /* GPS PANEL */
-        .gps-panel { background: #0b0c10; border: 1px dashed var(--neon-blue); border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center; display: none;}
-        .gps-status { color: #aaa; margin-top: 10px; font-size: 1rem; }
-        .gps-status span { color: var(--neon-green); font-family: 'Orbitron', sans-serif; font-size: 1.3rem;}
-
         /* FEED SOCIAL */
         .feed-filters { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;}
         .filter-btn { background: rgba(21, 22, 30, 0.9); border: 1px solid var(--panel-border); color: #888; padding: 10px 20px; border-radius: 20px; font-size: 0.95rem; white-space: nowrap;}
@@ -115,12 +110,6 @@
         .vote-btn { flex: 1; min-width: 120px; padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #ccc; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .vote-btn.up:hover { background: rgba(0, 255, 102, 0.2); color: var(--neon-green); }
         .vote-btn.down:hover { background: rgba(255, 0, 0, 0.2); color: #ff5555; }
-        
-        .post-comments { margin-top: 15px; background: rgba(11, 12, 16, 0.8); border-radius: 8px; padding: 15px; border: 1px solid var(--panel-border);}
-        .comments-list { display: flex; flex-direction: column; gap: 10px; max-height: 150px; overflow-y: auto; margin-bottom: 10px;}
-        .comment-item { font-size: 0.9rem; color: #ddd; line-height: 1.4; border-left: 2px solid var(--neon-blue); padding-left: 10px;}
-        .comment-item b { color: var(--neon-blue); font-size: 0.85rem; margin-right: 5px;}
-        .comment-input-area { display:flex; gap:10px;}
         
         /* RADAR PVP */
         .hub-radar { width: 300px; background: rgba(15, 16, 25, 0.85); border-left: 1px solid var(--panel-border); display: flex; flex-direction: column; padding: 25px 20px; overflow-y: auto; flex-shrink: 0; backdrop-filter: blur(15px);}
@@ -189,14 +178,16 @@
         .auto-btn { position: absolute; top: 75px; right: 15px; border: 2px solid var(--neon-yellow); background: rgba(0,0,0,0.7); color: var(--neon-yellow); font-size: 0.8rem; padding: 10px 15px; pointer-events: auto;}
         .auto-btn.active { background: var(--neon-yellow); color: #000; box-shadow: 0 0 15px var(--neon-yellow);}
 
+        /* GACHA ANIMATIONS */
+        .gacha-box-anim { font-size: 4rem; animation: shakeGacha 0.6s infinite; text-align: center; }
+        @keyframes shakeGacha { 0% {transform: rotate(0deg) scale(1);} 25% {transform: rotate(15deg) scale(1.1);} 50% {transform: rotate(0deg) scale(1);} 75% {transform: rotate(-15deg) scale(1.1);} 100% {transform: rotate(0deg) scale(1);} }
+        .gacha-flash { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #fff; z-index: 5000; pointer-events: none; animation: flashAnim 0.6s forwards; }
+        @keyframes flashAnim { 0% {opacity: 1;} 100% {opacity: 0;} }
+
         /* MODAIS E TELAS GERAIS */
         .hub-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
         .modal-content { background: #15161e; border: 1px solid var(--neon-blue); border-radius: 12px; padding: 35px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 50px rgba(0,243,255,0.2);}
         
-        #hub-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0c10; z-index: 3000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        .login-box { width: 90%; max-width: 400px; background: #15161e; padding: 40px; border-radius: 16px; border: 1px solid #333; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
-        .login-box h1 { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #fff; margin-bottom: 10px;}
-
         #death-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.95); z-index: 110; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(8px);}
         
         /* ================= RESPONSIVIDADE MOBILE LIMPA ================= */
@@ -204,7 +195,7 @@
             .hub-title { font-size: 1.4rem; margin-bottom: 15px; }
             #hub-container { flex-direction: column; }
             
-            /* Sidebar de Perfil Topo - Menor e mais limpa */
+            /* Sidebar de Perfil Topo - Compacta */
             .hub-sidebar { width: 100%; order: -1; padding: 5px; border-bottom: 2px solid var(--neon-blue); flex-direction: column; z-index: 100;}
             .hub-profile-area { display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 10px; border-bottom: none;}
             .hub-avatar-container { width: 55px; height: 55px; margin: 0; }
@@ -212,38 +203,39 @@
             .hub-stats-row { flex-direction: row; gap: 15px; background: none; border: none; padding: 0; margin-top: 5px; justify-content: flex-end;}
             .stat-item { text-align: right; font-size: 0.65rem; } .stat-item span { font-size: 0.85rem; }
             
-            /* Navbar Scroll Horizontal Limpo */
-            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 8px; padding: 5px 10px 10px 10px; background: transparent; scrollbar-width: none;}
+            /* Navbar Scroll Horizontal Limpo (Pílulas) */
+            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 10px; padding: 10px; background: transparent; scrollbar-width: none;}
             .hub-nav::-webkit-scrollbar { display: none;}
-            .hub-nav-btn { font-size: 0.8rem; padding: 8px 16px; border-radius: 20px; white-space:nowrap; border: 1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.4);}
-            .hub-nav-btn.active { border: 1px solid var(--neon-blue); background:rgba(0,243,255,0.1); }
+            .hub-nav-btn { font-size: 0.85rem; padding: 10px 18px; border-radius: 25px; white-space:nowrap; border: 1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.6);}
+            .hub-nav-btn.active { border: 1px solid var(--neon-blue); background:rgba(0,243,255,0.2); }
             
             .hub-start-arena { margin: 5px 10px 10px 10px; padding: 12px; font-size: 0.9rem;}
 
             /* Conteudo Hub */
-            .hub-main-content { padding: 15px 10px; }
+            .hub-main-content { padding: 15px 10px; flex: 1; overflow-y: auto; }
             
-            /* Cards Limpos */
-            .grid-cards { grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px;}
-            .action-card { padding: 20px; border-radius: 10px;}
-            .action-card h3 { font-size: 1rem; margin-bottom: 8px;}
-            .action-card p { font-size: 0.85rem; margin-bottom: 12px;}
-            .btn-neon { padding: 12px; font-size: 0.85rem; }
+            /* Cards Limpos com Margens Corretas */
+            .grid-cards { grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px;}
+            .action-card { padding: 20px; border-radius: 10px; }
+            .action-card h3 { font-size: 1.1rem; margin-bottom: 8px;}
+            .action-card p { font-size: 0.9rem; margin-bottom: 15px;}
+            .btn-neon { padding: 14px; font-size: 0.9rem; }
             
-            /* Radar Inferior */
-            .hub-radar { width: 100%; border-left: none; border-top: 1px solid var(--neon-pink); padding: 15px; max-height: 250px;}
-            .radar-title { font-size: 1rem; margin-bottom: 10px; padding-bottom: 5px;}
-            .radar-list { gap: 10px; }
-            .radar-player { width: 100%; padding: 12px; margin:0;}
+            /* Radar PvP Carrossel Horizontal - Fora do caminho do feed */
+            .hub-radar { width: 100%; flex-direction: row; overflow-x: auto; overflow-y: hidden; height: auto; border-left: none; border-top: 1px solid var(--panel-border); padding: 15px 10px; scrollbar-width: none; background: rgba(10,10,15,0.95); }
+            .hub-radar::-webkit-scrollbar { display: none; }
+            .radar-title { display: none; } /* Ocultar título no mobile pra dar espaço */
+            .radar-list { display: flex; flex-direction: row; gap: 15px; }
+            .radar-player { min-width: 260px; margin: 0; padding: 15px; flex-shrink: 0; }
             
-            /* Deck Consertado no Mobile (Micro Cartas) */
-            .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); padding: 10px; gap: 10px; }
-            .deck-slot { height: 95px; border-radius: 6px; }
-            .battle-card { width: 100%; height: 95px; border-radius: 6px;}
-            .b-card-art { height: 25px; font-size: 1.1rem; margin: 15px auto 2px; }
-            .b-card-name { font-size: 0.45rem; padding: 0 2px; line-height: 1; margin-bottom: 2px;}
-            .b-card-cost { font-size: 0.55rem; padding: 2px 4px; }
-            .b-card-lvl { font-size: 0.5rem; top: 2px; right: 2px; }
+            /* Deck Consertado no Mobile (Cartas ajustadas) */
+            .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); padding: 10px; gap: 10px; }
+            .deck-slot { height: 100px; border-radius: 6px; }
+            .battle-card { width: 100%; height: 100px; border-radius: 6px;}
+            .b-card-art { height: 30px; font-size: 1.2rem; margin: 15px auto 2px; }
+            .b-card-name { font-size: 0.5rem; padding: 0 2px; line-height: 1; margin-bottom: 2px;}
+            .b-card-cost { font-size: 0.6rem; padding: 2px 4px; }
+            .b-card-lvl { font-size: 0.55rem; top: 2px; right: 2px; }
             
             /* Arena HUD Mobile Extremo */
             .top-bar-arena { padding: 8px 12px; }
@@ -274,33 +266,32 @@
             const now = audioCtx.currentTime;
 
             if(type === 'click') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-                gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
+                gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
             } else if(type === 'deploy') {
-                osc.type = 'square'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
-                gainNode.gain.setValueAtTime(0.15, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
                 osc.start(now); osc.stop(now + 0.2);
             } else if(type === 'hit') {
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-                gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.type = 'square'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.1);
+                gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
                 osc.start(now); osc.stop(now + 0.1);
             } else if(type === 'shoot') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
-                gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(1200, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                gainNode.gain.setValueAtTime(0.03, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
                 osc.start(now); osc.stop(now + 0.1);
             } else if(type === 'explosion') {
-                osc.type = 'square'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(20, now + 0.4);
-                gainNode.gain.setValueAtTime(0.2, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                osc.start(now); osc.stop(now + 0.4);
+                osc.type = 'square'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(20, now + 0.3);
+                gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
             } else if(type === 'victory') {
                 osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(600, now + 0.2); osc.frequency.linearRampToValueAtTime(800, now + 0.4);
-                gainNode.gain.setValueAtTime(0.2, now); gainNode.gain.linearRampToValueAtTime(0.01, now + 0.8);
+                gainNode.gain.setValueAtTime(0.15, now); gainNode.gain.linearRampToValueAtTime(0.001, now + 0.8);
                 osc.start(now); osc.stop(now + 0.8);
             }
         };
 
-        // Escuta global para sons de botões
         document.addEventListener('click', (e) => {
             if(e.target.tagName === 'BUTTON' || e.target.closest('.battle-card') || e.target.closest('.action-card')) { window.playSound('click'); }
         });
@@ -316,7 +307,9 @@
     </div>
 
     <div id="hub-container" style="display: none;">
-        <canvas id="hub-bg-canvas"></canvas> <div class="hub-sidebar">
+        <canvas id="hub-bg-canvas"></canvas>
+
+        <div class="hub-sidebar">
             <div class="hub-profile-area">
                 <div class="hub-avatar-container">
                     <img id="hub-avatar-img" class="hub-avatar" src="https://i.imgur.com/kKC1zaJ.png">
@@ -383,7 +376,7 @@
 
             <div id="tab-missoes" class="hub-tab">
                 <h2 class="hub-title">Módulo de Atividades Físicas</h2>
-                <p style="color:#ccc; margin-bottom: 25px; font-size:1rem; line-height:1.5;">O seu corpo real alimenta a arena virtual. Realize as provas e aplique Buffs nas suas tropas dentro do Cyber Clash.</p>
+                <p style="color:#ccc; margin-bottom: 25px; font-size:1rem; line-height:1.5;">O seu corpo real alimenta a arena virtual. Ganhe Ouro aqui para focar no Gacha.</p>
                 
                 <h3 style="color:var(--neon-blue); font-family:'Orbitron'; margin-bottom: 10px;">Fôlego e Agilidade (BÔNUS DE ENERGIA)</h3>
                 <div class="grid-cards">
@@ -426,29 +419,6 @@
                         <button class="btn-neon yellow" onclick="window.openTaskUploader('Leitura Focada', 'Mente', this)">REGISTRAR LEITURA</button>
                     </div>
                 </div>
-
-                <h3 style="color:var(--neon-green); font-family:'Orbitron'; margin-top: 30px; margin-bottom: 10px;">Nutrição e Desafios Livres</h3>
-                <div class="grid-cards">
-                    <div class="action-card dieta">
-                        <h3 class="glow-green">Combustível Limpo (Dieta)</h3>
-                        <p>Proteína limpa e alimentação controlada escalarão a sua dominância natural e dão Dano global passivo às suas tropas.</p>
-                        <span class="card-reward">+300 XP | $800 | +0.2 Dano Global</span>
-                        <button class="btn-neon green" onclick="window.openTaskUploader('Refeição Segura', 'Dieta', this)">POSTAR O PRATO</button>
-                    </div>
-                    
-                    <div class="action-card" style="border-color: #ffaa00;">
-                        <h3 style="color:#ffaa00;">OBJETIVO PESSOAL (CUSTOMIZADO)</h3>
-                        <p style="margin-bottom:5px; font-size: 0.8rem;">Especifique seu próprio treino.</p>
-                        <input type="text" id="custom-task-name" class="input-cyber" placeholder="Ex: Fiz Bike por 40 min..." style="padding:10px; margin-bottom:10px; font-size:0.8rem;">
-                        <select id="custom-task-type" class="input-cyber" style="padding:10px; margin-bottom:15px; font-size:0.8rem;">
-                            <option value="Cardio">Ação: Cardio (Velocidade e Energia)</option>
-                            <option value="Força">Ação: Força (Vida Máxima e Resistência)</option>
-                            <option value="Dieta">Ação: Nutrição/Foco (Dano Adicional)</option>
-                            <option value="Mente">Ação: Mente (Dano Magico/Regen)</option>
-                        </select>
-                        <button class="btn-neon" style="color:#ffaa00; border-color:#ffaa00;" onclick="window.createCustomTask()">ENVIAR RELATÓRIO DO DIA</button>
-                    </div>
-                </div>
             </div>
 
             <div id="tab-deck" class="hub-tab">
@@ -488,24 +458,14 @@
                     
                     <button class="btn-neon" style="margin-top: 15px;" onclick="window.saveProfileEdits()">GRAVAR IDENTIDADE GLOBAL</button>
                 </div>
-                
-                <div class="post-form-box" style="border-color:red;">
-                    <h3 style="color:red; margin-top:0;">DADOS FÍSICOS (DANGER ZONE)</h3>
-                    <p style="font-size:0.9rem; color:#aaa;">Pressionar abaixo irá formatar toda a sua cache e zerar todas as cartas caso você queira iniciar uma rotina física do Zero completo.</p>
-                    <button class="btn-neon" style="border-color:red; color:red;" onclick="if(confirm('Formatar Perfil Completamente?')){ sessionStorage.clear(); localStorage.clear(); location.reload(); }">WIPE ACCOUNT</button>
-                </div>
             </div>
 
         </div>
 
         <div class="hub-radar">
             <h3 class="radar-title glow-pink">PVP E DUELOS IRL</h3>
-            <div id="radar-loading" style="font-size:0.85rem; color:#aaa; text-align:center;">Monitorando presenças no terminal...</div>
+            <div id="radar-loading" style="font-size:0.85rem; color:#aaa; text-align:center;">Monitorando presenças...</div>
             <div class="radar-list" id="radar-list"></div>
-            
-            <p style="font-size: 0.8rem; color: #666; margin-top: 25px; line-height: 1.5; border-top: 1px solid var(--panel-border); padding-top: 15px;">
-                Chame inimigos onlines para um <b>Treino Físico Mortal (IRL)</b> em sua própria casa, ou duele na <b>Arena Cyber Clash</b> sincronizada onde seus decks definem o campeão.
-            </p>
         </div>
     </div>
 
@@ -556,11 +516,8 @@
 
 
 <script type="module">
-// =========================================================================
-// 1. FIREBASE CONFIG & FALLBACK LOCAL SEGURO
-// =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where, updateDoc, doc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 import { getDatabase, ref, set, onDisconnect, onValue, update, push, off, onChildAdded, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
 const firebaseConfig = { apiKey: "AIzaSyCa3tr1mfYKvZ581A1omSQGFsVrIoQYOwQ", authDomain: "fishballserver.firebaseapp.com", projectId: "fishballserver", storageBucket: "fishballserver.firebasestorage.app", messagingSenderId: "626248800374", appId: "1:626248800374:web:fb912ed85fdfac23dba757" };
@@ -568,58 +525,39 @@ let db, rtdb;
 window.isFirebaseActive = false;
 let useLocalBypass = false; 
 
-try { 
-    const app = initializeApp(firebaseConfig); db = getFirestore(app); rtdb = getDatabase(app); 
-    window.isFirebaseActive = true;
-} catch(e) { 
-    useLocalBypass = true;
-}
+try { const app = initializeApp(firebaseConfig); db = getFirestore(app); rtdb = getDatabase(app); window.isFirebaseActive = true; } catch(e) { useLocalBypass = true; }
 
-// HUB PARTICLES BACKGROUND ANIMATION
 const hCv = document.getElementById('hub-bg-canvas'); const hCx = hCv.getContext('2d');
 let hPts = [];
 function resizeHubCanvas() { hCv.width = window.innerWidth; hCv.height = window.innerHeight; }
 window.addEventListener('resize', resizeHubCanvas); resizeHubCanvas();
 for(let i=0; i<40; i++) hPts.push({x: Math.random()*hCv.width, y: Math.random()*hCv.height, s: Math.random()*2+1, v: Math.random()*0.5+0.1});
 function animHubBg() {
-    hCx.clearRect(0,0,hCv.width,hCv.height);
-    hCx.fillStyle = 'rgba(0, 243, 255, 0.5)';
+    hCx.clearRect(0,0,hCv.width,hCv.height); hCx.fillStyle = 'rgba(0, 243, 255, 0.3)';
     hPts.forEach(p => { p.y -= p.v; if(p.y < 0) { p.y = hCv.height; p.x = Math.random()*hCv.width; } hCx.beginPath(); hCx.arc(p.x, p.y, p.s, 0, 6.28); hCx.fill(); });
     requestAnimationFrame(animHubBg);
 }
 animHubBg();
 
-// =========================================================================
-// 2. BANCO DE CARTAS E CAMPANHA PVE
-// =========================================================================
 const CARD_DB = {
-    // 1 - COMUM
     "Brawler": { id: "Brawler", name: "Lutador de Rua", icon: "🥊", cost: 2, rarity: 1, type: "unit", hp: 350, dmg: 40, range: 40, ms: 60, as: 1.2 },
     "CorredorNeon": { id: "CorredorNeon", name: "Corredor Rápido", icon: "⚡", cost: 1, rarity: 1, type: "unit", hp: 150, dmg: 20, range: 40, ms: 140, as: 0.8 },
     "DroneRastreador": { id: "DroneRastreador", name: "Drone Suporte", icon: "🚁", cost: 2, rarity: 1, type: "unit", hp: 200, dmg: 10, range: 120, ms: 80, as: 1.5, mechanics:['expose'] },
     "FalcaoSucata": { id: "FalcaoSucata", name: "Falcão Pássaro", icon: "🦅", cost: 2, rarity: 1, type: "unit", hp: 250, dmg: 35, range: 50, ms: 90, as: 1.0, isFlying: true },
-
-    // 2 - RARA
     "Kamikaze": { id: "Kamikaze", name: "Bot Explosivo", icon: "💣", cost: 3, rarity: 2, type: "unit", hp: 200, dmg: 300, range: 60, ms: 110, as: 1.0, mechanics: ['explode'] },
     "BioTank": { id: "BioTank", name: "Mutante Pesado", icon: "🧌", cost: 5, rarity: 2, type: "unit", hp: 1200, dmg: 60, range: 50, ms: 40, as: 2.0, isTank: true },
     "Fantasma": { id: "Fantasma", name: "Espírito Esquiva", icon: "👻", cost: 4, rarity: 2, type: "unit", hp: 300, dmg: 70, range: 50, ms: 75, as: 1.2, mechanics: ['dodge'] },
     "Assassino": { id: "Assassino", name: "Assassino Oculto", icon: "🥷", cost: 4, rarity: 2, type: "unit", hp: 250, dmg: 150, range: 40, ms: 120, as: 1.5, mechanics:['stealth'] },
     "Barricada": { id: "Barricada", name: "Muralha de Força", icon: "🛡️", cost: 3, rarity: 2, type: "building", hp: 800, dmg: 0, range: 0, ms: 0, as: 99, isTank: true },
-
-    // 3 - ÉPICA
     "Comandante": { id: "Comandante", name: "Comandante", icon: "🎖️", cost: 6, rarity: 3, type: "unit", hp: 600, dmg: 40, range: 80, ms: 60, as: 1.5, mechanics: ['aura_buff'] },
     "Striker": { id: "Striker", name: "Choque EMP", icon: "🔋", cost: 5, rarity: 3, type: "unit", hp: 450, dmg: 65, range: 50, ms: 100, as: 1.0, mechanics: ['death_stun'] },
     "Medica": { id: "Medica", name: "Enfermeira Base", icon: "💉", cost: 5, rarity: 3, type: "unit", hp: 400, dmg: -30, range: 150, ms: 65, as: 1.5, targetType: 'ally' }, 
     "Sniper": { id: "Sniper", name: "Sniper Longe", icon: "🎯", cost: 4, rarity: 3, type: "unit", hp: 180, dmg: 180, range: 250, ms: 50, as: 2.5 },
     "Toxico": { id: "Toxico", name: "Monstro Ácido", icon: "🧪", cost: 6, rarity: 3, type: "unit", hp: 500, dmg: 20, range: 120, ms: 55, as: 2.0, mechanics: ['acid_pool'] },
-
-    // 4 - LENDÁRIA
     "Mecha": { id: "Mecha", name: "Titã Destruidor", icon: "🤖", cost: 8, rarity: 4, type: "unit", hp: 1500, dmg: 40, range: 150, ms: 35, as: 0.5, mechanics:['cleave'], isTank: true },
     "Barao": { id: "Barao", name: "Barão do Lodo", icon: "🐙", cost: 9, rarity: 4, type: "unit", hp: 2000, dmg: 50, range: 60, ms: 30, as: 2.0, mechanics: ['slow_trail', 'spawn_drones'], isTank: true },
     "Hacker": { id: "Hacker", name: "Hacker Cérebro", icon: "💻", cost: 7, rarity: 4, type: "unit", hp: 500, dmg: 80, range: 180, ms: 55, as: 1.5, mechanics:['spawn_emp_base'] },
     "MestreParkour": { id: "MestreParkour", name: "Neo O Lenda", icon: "🕶️", cost: 8, rarity: 4, type: "unit", hp: 700, dmg: 120, range: 50, ms: 150, as: 1.0, mechanics: ['jump_backline'] },
-
-    // 5 - SPELLS
     "MagiaCrio": { id: "MagiaCrio", name: "Crio Congelante", icon: "❄️", cost: 3, rarity: 3, type: "spell", range: 100, mechanics:['spell_freeze'] },
     "MagiaOrbital": { id: "MagiaOrbital", name: "Laser Orbital", icon: "🛰️", cost: 4, rarity: 4, type: "spell", range: 60, dmg: 500, mechanics: ['spell_dmg'] },
     "MagiaAcido": { id: "MagiaAcido", name: "Chuva de Fogo", icon: "🔥", cost: 5, rarity: 3, type: "spell", range: 150, mechanics: ['spell_dot'] },
@@ -638,37 +576,23 @@ const PVE_CAMPAIGN = [
 let hubProfile = { 
     uid: null, username: "Jogador Alpha", bio: "O meu corpo garante a vitória da máquina.", lvl: 1, xp: 0, gold: 1000, avatar: "https://i.imgur.com/kKC1zaJ.png",
     buffs: { hp: 0, dmg: 0.0, spd: 0.0, magic: 0.0 }, 
-    cardsOwned:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], 
-    cardLevels: { 'Brawler': 1, 'CorredorNeon': 1, 'DroneRastreador':1, 'Barricada':1 },
-    deck:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'],
-    pveStage: 0
+    cardsOwned:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], cardLevels: { 'Brawler': 1, 'CorredorNeon': 1, 'DroneRastreador':1, 'Barricada':1 },
+    deck:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], pveStage: 0
 };
 
 window.gameLoopInterval = null; window.animationFrameId = null;
-
-// =========================================================================
-// 3. UI GLOBAL E PERMISSÕES
-// =========================================================================
 
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
     if(!name) { window.showModal("Aviso","O Login na matriz exige nome digital limpo."); return; }
     name = name.toUpperCase(); 
-    if(!db || useLocalBypass) {
-        useLocalBypass = true;
-        hubProfile.uid = 'local_' + Math.random().toString(36).substring(2,8); hubProfile.username = name;
-        finishLoginUI(); return;
-    }
+    if(!db || useLocalBypass) { useLocalBypass = true; hubProfile.uid = 'local_' + Math.random().toString(36).substring(2,8); hubProfile.username = name; finishLoginUI(); return; }
     try {
         const qs = await getDocs(query(collection(db, "hub_users"), where("username", "==", name)));
         if (!qs.empty) { hubProfile = { ...hubProfile, ...qs.docs[0].data() }; hubProfile.uid = qs.docs[0].id; } 
         else { const res = await addDoc(collection(db, "hub_users"), hubProfile); hubProfile.uid = res.id; hubProfile.username = name; }
         finishLoginUI();
-    } catch(err) {
-        useLocalBypass = true; hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name;
-        finishLoginUI();
-        window.showModal("ATENÇÃO - MODO OFFLINE LIGADO", "Não pudemos conectar com o banco original. Tudo ocorrerá sem a internet.");
-    }
+    } catch(err) { useLocalBypass = true; hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name; finishLoginUI(); }
 };
 
 function finishLoginUI() {
@@ -677,10 +601,7 @@ function finishLoginUI() {
     saveHubStateLocal(); syncUIWithProfile(); setupHubRealtime();
 }
 
-function saveHubStateLocal() {
-    sessionStorage.setItem('hubProfile_JSON', JSON.stringify(hubProfile));
-    try { if(db && hubProfile.uid && !hubProfile.uid.startsWith('local_')) updateDoc(doc(db, "hub_users", hubProfile.uid), hubProfile).catch(()=>{}); } catch(e) {}
-}
+function saveHubStateLocal() { sessionStorage.setItem('hubProfile_JSON', JSON.stringify(hubProfile)); try { if(db && hubProfile.uid && !hubProfile.uid.startsWith('local_')) updateDoc(doc(db, "hub_users", hubProfile.uid), hubProfile).catch(()=>{}); } catch(e) {} }
 
 function syncUIWithProfile() {
     hubProfile.lvl = 1 + Math.floor(hubProfile.xp / 1000);
@@ -688,11 +609,9 @@ function syncUIWithProfile() {
     document.getElementById('hub-ui-xp').innerText = Math.floor(hubProfile.xp); document.getElementById('hub-ui-gold').innerText = "$ " + Math.floor(hubProfile.gold);
     if(hubProfile.avatar) document.getElementById('hub-avatar-img').src = hubProfile.avatar;
     document.getElementById('prof-edit-name').value = hubProfile.username; document.getElementById('prof-edit-bio').value = hubProfile.bio;
-    
     let btnPvE = document.getElementById('btn-pve-campaign');
     if(hubProfile.pveStage >= PVE_CAMPAIGN.length) { btnPvE.innerText = "ARENA PVE BATTLE (SETOR MASTER)"; btnPvE.style.background = "linear-gradient(45deg, var(--neon-pink), #ff00aa)"; }
     else { btnPvE.innerText = `ARENA PVE BATTLE (${PVE_CAMPAIGN[hubProfile.pveStage].name})`; }
-    
     renderDeckBuilder();
 }
 
@@ -700,9 +619,7 @@ window.saveProfileEdits = function() {
     let n = document.getElementById('prof-edit-name').value.trim(); let b = document.getElementById('prof-edit-bio').value.trim(); let f = document.getElementById('prof-edit-avatar-file');
     if(n) hubProfile.username = n; if(b) hubProfile.bio = b;
     if(f.files && f.files[0]) {
-        let r = new FileReader(); r.onload = e=>{
-            let img = new Image(); img.onload = ()=>{ const cv=document.createElement('canvas'); const mx=120; const sc=mx/img.width; cv.width=mx; cv.height=img.height*sc; cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); hubProfile.avatar=cv.toDataURL('image/jpeg',0.8); finishPf(); }; img.src = e.target.result;
-        }; r.readAsDataURL(f.files[0]);
+        let r = new FileReader(); r.onload = e=>{ let img = new Image(); img.onload = ()=>{ const cv=document.createElement('canvas'); const mx=120; const sc=mx/img.width; cv.width=mx; cv.height=img.height*sc; cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); hubProfile.avatar=cv.toDataURL('image/jpeg',0.8); finishPf(); }; img.src = e.target.result; }; r.readAsDataURL(f.files[0]);
     } else finishPf();
     function finishPf(){ saveHubStateLocal(); syncUIWithProfile(); window.showModal("Ajustado", "Suas credenciais biométricas mudaram."); }
 }
@@ -710,35 +627,16 @@ window.saveProfileEdits = function() {
 window.switchTab = function(tabId) { document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
 window.showModal = function(title, desc, btnsHTML) { document.getElementById('modal-title').innerHTML=title; document.getElementById('modal-desc').innerHTML=desc; document.getElementById('modal-actions').innerHTML = btnsHTML || `<button class="btn-neon" style="width:200px;" onclick="document.getElementById('system-modal').style.display='none'">Fechar</button>`; document.getElementById('system-modal').style.display='flex'; }
 
-if(sessionStorage.getItem('hubProfile_JSON')) {
-    hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) };
-    if(hubProfile.uid && hubProfile.uid.startsWith('local_')) useLocalBypass = true;
-    finishLoginUI();
-}
+if(sessionStorage.getItem('hubProfile_JSON')) { hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) }; if(hubProfile.uid && hubProfile.uid.startsWith('local_')) useLocalBypass = true; finishLoginUI(); }
 
-// =========================================================================
-// 4. GPS TRACKER E MISSÕES DO MUNDO FÍSICO
-// =========================================================================
 let trackingGeoId = null; let lastLat = null, lastLng = null; let totalKm = 0;
-
 window.toggleGPS = function() {
     const btn = document.getElementById('btn-gps-toggle'); const display = document.getElementById('gps-dist');
-    if(trackingGeoId !== null) {
-        navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null;
-        btn.innerText = "📍 INICIAR GRAVAÇÃO DE ROTA"; btn.style.background = "transparent"; btn.style.borderColor = "var(--neon-blue)";
-        document.getElementById('task-desc').value += `\n[Distância de ${totalKm.toFixed(2)} km medida atestada.]`;
-        return;
-    }
-    if (!navigator.geolocation) return window.showModal("Falha Crítica", "As permissões foram negadas, tente o Chrome com SSL na porta.");
-    
+    if(trackingGeoId !== null) { navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null; btn.innerText = "📍 INICIAR GRAVAÇÃO DE ROTA"; btn.style.background = "transparent"; btn.style.borderColor = "var(--neon-blue)"; document.getElementById('task-desc').value += `\n[Distância de ${totalKm.toFixed(2)} km medida atestada.]`; return; }
+    if (!navigator.geolocation) return window.showModal("Falha Crítica", "As permissões foram negadas.");
     totalKm = 0; lastLat = null; lastLng = null; display.innerText = "0.00";
     btn.innerText = "⏸ SALVAR CONTAGEM ATUAL NO RELATO"; btn.style.background = "var(--neon-pink)"; btn.style.color = "#000"; btn.style.borderColor="var(--neon-pink)";
-    
-    trackingGeoId = navigator.geolocation.watchPosition((pos) => {
-        let lat = pos.coords.latitude; let lng = pos.coords.longitude;
-        if(lastLat !== null) { let d = calcDist(lastLat, lastLng, lat, lng); if(d > 0.005) { totalKm += d; lastLat = lat; lastLng = lng; } } else { lastLat = lat; lastLng = lng; }
-        display.innerText = totalKm.toFixed(2);
-    }, (err) => { }, { enableHighAccuracy: true, maximumAge: 10000 });
+    trackingGeoId = navigator.geolocation.watchPosition((pos) => { let lat = pos.coords.latitude; let lng = pos.coords.longitude; if(lastLat !== null) { let d = calcDist(lastLat, lastLng, lat, lng); if(d > 0.005) { totalKm += d; lastLat = lat; lastLng = lng; } } else { lastLat = lat; lastLng = lng; } display.innerText = totalKm.toFixed(2); }, (err) => { }, { enableHighAccuracy: true, maximumAge: 10000 });
 };
 
 function saveLocalFeed(postObj) { let l =[]; try { if(localStorage.getItem('localFeed')) l = JSON.parse(localStorage.getItem('localFeed')); }catch(e){} l.unshift(postObj); if(l.length > 20) l = l.slice(0, 20); localStorage.setItem('localFeed', JSON.stringify(l)); }
@@ -751,218 +649,98 @@ window.openTaskUploader = function(titulo, categoria) {
     if(categoria === 'Força') { curTaskConfig.buffHp = 100; curTaskConfig.buffDmg = 0.2; }
     if(categoria === 'Dieta') { curTaskConfig.buffDmg = 0.3; if(titulo.includes("Lixo")) curTaskConfig.buffSpd = -0.3; }
     if(categoria === 'Mente') { curTaskConfig.buffMagic = 0.3; curTaskConfig.buffSpd = 0.1; }
-
     document.getElementById('form-box-title').innerText = `CONCLUIR PROVA: ${titulo.toUpperCase()}`;
-    document.getElementById('quick-post-box').style.display = 'block'; 
-    window.switchTab('tab-feed');
+    document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed');
 };
-
-window.createCustomTask = function() {
-    let name = document.getElementById('custom-task-name').value.trim();
-    let type = document.getElementById('custom-task-type').value; 
-    if(!name) return window.showModal("Atenção", "Preencha primeiro o Treino na Categoria Livre.");
-    window.openTaskUploader(`TREINO EXTRA: ${name}`, type);
-}
+window.createCustomTask = function() { let name = document.getElementById('custom-task-name').value.trim(); let type = document.getElementById('custom-task-type').value; if(!name) return window.showModal("Atenção", "Preencha primeiro o Treino na Categoria Livre."); window.openTaskUploader(`TREINO EXTRA: ${name}`, type); }
 
 window.submitTaskEvidence = async function() {
-    if(!curTaskConfig) return;
-    const file = document.getElementById('task-file').files[0];
+    if(!curTaskConfig) return; const file = document.getElementById('task-file').files[0];
     if(!file && curTaskCat !== 'Duelo') return window.showModal("Aviso Opcional","Apenas fotografias concretizam missões seguras! Puxe a lente e ateste a verdade.");
-    
-    const btn = document.getElementById('btn-post-upload');
-    btn.innerText = "Construindo Base 64 e Enviando..."; btn.disabled = true;
+    const btn = document.getElementById('btn-post-upload'); btn.innerText = "Construindo Base 64 e Enviando..."; btn.disabled = true;
     const desc = document.getElementById('task-desc').value; 
-    
-    if(file && file.type.startsWith("video/")) { 
-        window.showModal("Lente de Vídeo Interceptada", "No módulo web seguro, salvamos seu vídeo temporário no Storage Cache Visual da Tela para a plataforma fluir com leveza extrema de gigabytes sem entupir seus Megabytes da Nuvem Google.");
-        const vURL = URL.createObjectURL(file); 
-        await window.executePostInjection(desc, vURL, "video"); 
-    } 
-    else if(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image(); 
-            img.onload = async function() {
-                const cvs = document.getElementById('task-compress-canvas'); const maxW = 320; const scale = maxW/img.width; cvs.width = maxW; cvs.height = img.height*scale; const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
-                await window.executePostInjection(desc, cvs.toDataURL('image/jpeg', 0.5), "image");
-            }; 
-            img.src = e.target.result;
-        }; 
-        reader.readAsDataURL(file);
-    } else { 
-        await window.executePostInjection(desc, "", "none"); 
-    } 
+    if(file && file.type.startsWith("video/")) { const vURL = URL.createObjectURL(file); await window.executePostInjection(desc, vURL, "video"); } 
+    else if(file) { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = async function() { const cvs = document.getElementById('task-compress-canvas'); const maxW = 320; const scale = maxW/img.width; cvs.width = maxW; cvs.height = img.height*scale; const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0, cvs.width, cvs.height); await window.executePostInjection(desc, cvs.toDataURL('image/jpeg', 0.5), "image"); }; img.src = e.target.result; }; reader.readAsDataURL(file); } else { await window.executePostInjection(desc, "", "none"); } 
 }
-
 window.executePostInjection = async function(desc, midiaURL, midiaType) {
     hubProfile.xp += curTaskConfig.xp||0; hubProfile.gold += curTaskConfig.gold||0;
-    if(curTaskConfig.buffHp) hubProfile.buffs.hp += curTaskConfig.buffHp; 
-    if(curTaskConfig.buffDmg) hubProfile.buffs.dmg += curTaskConfig.buffDmg; 
-    if(curTaskConfig.buffSpd) hubProfile.buffs.spd += curTaskConfig.buffSpd;
-    if(curTaskConfig.buffMagic) { hubProfile.buffs.magic = (hubProfile.buffs.magic || 0) + curTaskConfig.buffMagic; }
-
+    if(curTaskConfig.buffHp) hubProfile.buffs.hp += curTaskConfig.buffHp; if(curTaskConfig.buffDmg) hubProfile.buffs.dmg += curTaskConfig.buffDmg; if(curTaskConfig.buffSpd) hubProfile.buffs.spd += curTaskConfig.buffSpd; if(curTaskConfig.buffMagic) { hubProfile.buffs.magic = (hubProfile.buffs.magic || 0) + curTaskConfig.buffMagic; }
     saveHubStateLocal(); syncUIWithProfile(); 
-
     let feedObj = { uid: hubProfile.uid, author: hubProfile.username, avatar: hubProfile.avatar, taskName: curTaskConfig.name, category: curTaskCat, desc: desc, midiaURL: midiaURL, midiaType: midiaType||'none', rewardLog: curTaskConfig, upvotes: {}, downvotes: {}, comments:[], active: true, timestamp: Date.now() };
-
     let btn = document.getElementById('btn-post-upload'); btn.innerText = "COMPARTILHAR E GANHAR STATUS"; btn.disabled = false;
     document.getElementById('quick-post-box').style.display = 'none'; document.getElementById('task-file').value = ""; document.getElementById('task-desc').value = "";
-    
-    if(!useLocalBypass && db) {
-        try {
-            let clObj = { ...feedObj }; clObj.timestamp = serverTimestamp();
-            await addDoc(collection(db, "hub_feed"), clObj);
-            window.showModal("Publicação Validada", "Os Fibras aceitaram sua postagem. Seu status social aumentou.");
-            return;
-        } catch(e) { console.warn("Firewall reject on write. Going Local Cache", e); }
-    }
-    
-    feedObj.id = "localpost_" + Math.random().toString(36).substring(2,9); saveLocalFeed(feedObj); 
-    window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); 
-    window.showModal("Sucesso no Offline", "A conexão de segurança foi travada pelo Sistema (Firebase Firewall Localhost). Assim as recompensas e o registro do Diário permanecerão apenas nesse seu Dispositivo para leitura limpa.");
+    if(!useLocalBypass && db) { try { let clObj = { ...feedObj }; clObj.timestamp = serverTimestamp(); await addDoc(collection(db, "hub_feed"), clObj); window.showModal("Publicação Validada", "Os Fibras aceitaram sua postagem. Seu status social aumentou."); return; } catch(e) { } }
+    feedObj.id = "localpost_" + Math.random().toString(36).substring(2,9); saveLocalFeed(feedObj); window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); window.showModal("Sucesso no Offline", "Conexão de segurança travada. Registro Diário salvo no Dispositivo.");
 }
-
-// =========================================================================
-// 5. SOCIAL FEED, LIKES, TRIBUNAL AVALIATIVO
-// =========================================================================
 
 window.currentFeedFilter = "todos";
 window.filterFeed = function(tipo, btnEl) { window.currentFeedFilter = tipo; document.querySelectorAll('.filter-btn').forEach(e => e.classList.remove('active')); btnEl.classList.add('active'); renderFeedItems(); }
-
 window.lastCloudSnapshot =[]; 
 function listenToFeed() {
     if(useLocalBypass) { window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); return; }
-    try {
-        const unsub = onSnapshot(query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
-            window.lastCloudSnapshot =[]; snap.forEach((ds) => { let d = ds.data(); d.id = ds.id; window.lastCloudSnapshot.push(d); });
-            renderFeedItems();
-        }, (error) => { useLocalBypass = true; window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); });
-    } catch(e) { useLocalBypass = true; window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
+    try { const unsub = onSnapshot(query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(20)), (snap) => { window.lastCloudSnapshot =[]; snap.forEach((ds) => { let d = ds.data(); d.id = ds.id; window.lastCloudSnapshot.push(d); }); renderFeedItems(); }, (error) => { useLocalBypass = true; window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }); } catch(e) { useLocalBypass = true; window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
 }
 
 function renderFeedItems() {
     const c = document.getElementById('feed-container-render'); c.innerHTML = "";
     let dataSource = useLocalBypass ? getLocalFeed() : window.lastCloudSnapshot;
-    if(dataSource.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 40px; color:#555; font-size:1.1rem; line-height:1.5;">O Sistema Central está silenciado.<br>Nenhum guerreiro relatou uma dor hoje. Puxe algo na academia e seja o Alpha pioneiro.</div>`; return; }
-
+    if(dataSource.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 40px; color:#555; font-size:1.1rem; line-height:1.5;">Nenhum guerreiro relatou uma dor hoje. Seja o pioneiro.</div>`; return; }
     dataSource.forEach((d) => {
         if(window.currentFeedFilter !== "todos" && d.category !== window.currentFeedFilter) return;
-        let upArr = Object.keys(d.upvotes || {}); let dnArr = Object.keys(d.downvotes || {});
-        let av = d.avatar ? d.avatar : "https://i.imgur.com/kKC1zaJ.png";
-        
-        let midiaTag = "";
-        if(d.midiaType === 'video') midiaTag = `<video class="post-vid" controls src="${d.midiaURL}"></video>`; else if(d.midiaURL && d.midiaURL!=="") midiaTag = `<img class="post-img" src="${d.midiaURL}">`;
-
+        let upArr = Object.keys(d.upvotes || {}); let dnArr = Object.keys(d.downvotes || {}); let av = d.avatar ? d.avatar : "https://i.imgur.com/kKC1zaJ.png";
+        let midiaTag = ""; if(d.midiaType === 'video') midiaTag = `<video class="post-vid" controls src="${d.midiaURL}"></video>`; else if(d.midiaURL && d.midiaURL!=="") midiaTag = `<img class="post-img" src="${d.midiaURL}">`;
         let commentsHTML = (d.comments||[]).map(c => `<div class="comment-item"><b>${c.author}:</b> ${c.text}</div>`).join('');
-        
         let el = document.createElement('div'); el.className = `feed-post ${!d.active ? 'revoked' : ''}`; el.setAttribute("data-cat", d.category||""); 
-        el.innerHTML = `
-            <div class="post-header"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">${d.taskName} (${d.category||'GERAL'})</span> </div> </div>
-            <div style="color:#ddd; margin-bottom:15px; font-size:0.95rem; line-height: 1.5; font-family:'Rajdhani';">${d.desc}</div>
-            ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' }
-            <div class="post-actions">
-                <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">Aprovo o Empenho (${upArr.length})</button> 
-                <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">Mente / Exijo Morte (${dnArr.length})</button>
-            </div>
-            <div class="post-comments">
-                <div class="comments-list">${commentsHTML}</div>
-                <div class="comment-input-area"><input type="text" id="cmt-${d.id}" placeholder="Insurja neste perfil, diga seu adendo humano!..." class="input-cyber" style="margin:0; padding:10px; font-size:0.85rem;"><button class="btn-neon green" style="width:auto; padding:10px 15px;" onclick="window.addComment('${d.id}')">RESPONDER AQUI</button></div>
-            </div>
-        `;
+        el.innerHTML = `<div class="post-header"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">${d.taskName} (${d.category||'GERAL'})</span> </div> </div> <div style="color:#ddd; margin-bottom:15px; font-size:0.95rem; line-height: 1.5; font-family:'Rajdhani';">${d.desc}</div> ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' } <div class="post-actions"> <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">Aprovo o Empenho (${upArr.length})</button> <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">Mente / Exijo Morte (${dnArr.length})</button> </div> <div class="post-comments"> <div class="comments-list">${commentsHTML}</div> <div class="comment-input-area"><input type="text" id="cmt-${d.id}" placeholder="Insurja neste perfil, diga seu adendo humano!..." class="input-cyber" style="margin:0; padding:10px; font-size:0.85rem;"><button class="btn-neon green" style="width:auto; padding:10px 15px;" onclick="window.addComment('${d.id}')">RESPONDER</button></div> </div>`;
         c.appendChild(el);
     });
 }
-
-window.castVote = async function(postId, type) {
-    if(useLocalBypass) return window.showModal("Atenção à Ordem","No ambiente blindado offline suas métricas reagem de forma segura sem voto online.");
-    try {
-        const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef); if(!pSn.exists()) return; let p = pSn.data(); if(!p.active) return window.showModal("Erro", "A massa extirpou essa publicação para vala, e perdeu a contagem.");
-        if(type === 'up') { p.upvotes = p.upvotes || {}; p.upvotes[hubProfile.uid] = true; delete (p.downvotes||{})[hubProfile.uid]; } else { p.downvotes = p.downvotes || {}; p.downvotes[hubProfile.uid] = true; delete (p.upvotes||{})[hubProfile.uid]; }
-        let uCnt = Object.keys(p.upvotes).length; let dCnt = Object.keys(p.downvotes).length; if( (uCnt+dCnt) >= 3 && dCnt > uCnt ) { p.active = false; window.showModal("Alerta Global", "Os humanos e ateltas do Hub votaram o fim disso por não ser verídico os suores do relato! Buff do criminoso expurgado virtualmente."); }
-        await updateDoc(pRef, p);
-    } catch(e) { }
-};
-
-window.addComment = async function(postId) {
-    let txt = document.getElementById('cmt-'+postId).value.trim(); if(!txt) return;
-    let cmt = { uid: hubProfile.uid, author: hubProfile.username, text: txt, timestamp: Date.now() };
-    if(useLocalBypass) {
-        let lf = getLocalFeed(); let idx = lf.findIndex(x => x.id === postId);
-        if(idx > -1) { if(!lf[idx].comments) lf[idx].comments =[]; lf[idx].comments.push(cmt); localStorage.setItem('localFeed', JSON.stringify(lf)); window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
-        return;
-    }
-    try {
-        const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef);
-        if(pSn.exists()) { let pData = pSn.data(); if(!pData.comments) pData.comments =[]; pData.comments.push(cmt); await updateDoc(pRef, { comments: pData.comments }); document.getElementById('cmt-'+postId).value = "";}
-    } catch(e){}
-}
-
-// =========================================================================
-// 6. GERENCIADOR DE BANDA / GACHA CARTAS E MÃO ACTIVA DE DECK
-// =========================================================================
+window.castVote = async function(postId, type) { if(useLocalBypass) return window.showModal("Atenção à Ordem","Ambiente offline."); try { const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef); if(!pSn.exists()) return; let p = pSn.data(); if(!p.active) return; if(type === 'up') { p.upvotes = p.upvotes || {}; p.upvotes[hubProfile.uid] = true; delete (p.downvotes||{})[hubProfile.uid]; } else { p.downvotes = p.downvotes || {}; p.downvotes[hubProfile.uid] = true; delete (p.upvotes||{})[hubProfile.uid]; } let uCnt = Object.keys(p.upvotes).length; let dCnt = Object.keys(p.downvotes).length; if( (uCnt+dCnt) >= 3 && dCnt > uCnt ) p.active = false; await updateDoc(pRef, p); } catch(e) { } };
+window.addComment = async function(postId) { let txt = document.getElementById('cmt-'+postId).value.trim(); if(!txt) return; let cmt = { uid: hubProfile.uid, author: hubProfile.username, text: txt, timestamp: Date.now() }; if(useLocalBypass) { let lf = getLocalFeed(); let idx = lf.findIndex(x => x.id === postId); if(idx > -1) { if(!lf[idx].comments) lf[idx].comments =[]; lf[idx].comments.push(cmt); localStorage.setItem('localFeed', JSON.stringify(lf)); window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); } return; } try { const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef); if(pSn.exists()) { let pData = pSn.data(); if(!pData.comments) pData.comments =[]; pData.comments.push(cmt); await updateDoc(pRef, { comments: pData.comments }); document.getElementById('cmt-'+postId).value = "";} } catch(e){} }
 
 function renderDeckBuilder() {
     hubProfile.deck = (hubProfile.deck ||[]).filter(cId => hubProfile.cardsOwned.includes(cId));
     let dC = document.getElementById('deck-active-render'); dC.innerHTML="";
     for(let i=0; i<8; i++) {
-        let sid = hubProfile.deck[i];
-        let el = document.createElement('div'); el.className = 'deck-slot' + (sid ? ' filled' : '');
-        if(sid && CARD_DB[sid]) {
-            let cData = CARD_DB[sid]; let lvl = hubProfile.cardLevels[sid] || 1;
-            el.innerHTML = `
-                <div class="battle-card rarity-${cData.rarity}" style="pointer-events: none; width:100%; height:100%;">
-                    <div class="b-card-cost">${cData.cost} N</div>
-                    <div class="b-card-lvl">L${lvl}</div>
-                    <div class="b-card-art">${cData.icon}</div>
-                    <div class="b-card-name">${cData.name}</div>
-                </div>
-            `;
-            el.onclick = () => { hubProfile.deck.splice(i,1); saveHubStateLocal(); renderDeckBuilder(); };
+        let sid = hubProfile.deck[i]; let el = document.createElement('div'); el.className = 'deck-slot' + (sid ? ' filled' : '');
+        if(sid && CARD_DB[sid]) { let cData = CARD_DB[sid]; let lvl = hubProfile.cardLevels[sid] || 1; el.innerHTML = ` <div class="battle-card rarity-${cData.rarity}" style="pointer-events: none; width:100%; height:100%;"> <div class="b-card-cost">${cData.cost} N</div> <div class="b-card-lvl">L${lvl}</div> <div class="b-card-art">${cData.icon}</div> <div class="b-card-name">${cData.name}</div> </div> `; el.onclick = () => { hubProfile.deck.splice(i,1); saveHubStateLocal(); renderDeckBuilder(); };
         } else { el.innerHTML = `<span style="color:#555; font-size:0.5rem; font-family:'Orbitron'; text-align:center;">VAGA ABERTA</span>`; }
         dC.appendChild(el);
     }
-    
-    let cC = document.getElementById('collection-render'); cC.innerHTML="";
-    let dedup =[...new Set(hubProfile.cardsOwned)];
-    dedup.forEach(cId => {
-        if(hubProfile.deck.includes(cId) || !CARD_DB[cId]) return;
-        let cData = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1;
-        
-        let cv = document.createElement('div'); cv.className=`battle-card rarity-${cData.rarity}`; 
-        cv.innerHTML = `<div class="b-card-cost">${cData.cost} N</div><div class="b-card-lvl">L${lvl}</div><div class="b-card-art">${cData.icon}</div><div class="b-card-name">${cData.name}</div>`;
-        cv.onclick = () => { if(hubProfile.deck.length >= 8) return window.showModal("Aviso Estratégico","As portas cibernéticas suportam envio logistico de no máximo 8 Consciências Códigos."); hubProfile.deck.push(cId); saveHubStateLocal(); renderDeckBuilder(); };
-        cC.appendChild(cv);
-    });
+    let cC = document.getElementById('collection-render'); cC.innerHTML=""; let dedup =[...new Set(hubProfile.cardsOwned)];
+    dedup.forEach(cId => { if(hubProfile.deck.includes(cId) || !CARD_DB[cId]) return; let cData = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1; let cv = document.createElement('div'); cv.className=`battle-card rarity-${cData.rarity}`; cv.innerHTML = `<div class="b-card-cost">${cData.cost} N</div><div class="b-card-lvl">L${lvl}</div><div class="b-card-art">${cData.icon}</div><div class="b-card-name">${cData.name}</div>`; cv.onclick = () => { if(hubProfile.deck.length >= 8) return window.showModal("Aviso Estratégico","Capacidade máxima: 8."); hubProfile.deck.push(cId); saveHubStateLocal(); renderDeckBuilder(); }; cC.appendChild(cv); });
 }
 
 window.rollGacha = function() {
-    if(hubProfile.gold < 1000) return window.showModal("Aviso Opressor", "O Servidor exigiu $1.000 moedas. Faça Calistenias até rasgar pra conseguir grana!");
+    if(hubProfile.gold < 1000) return window.showModal("Aviso Opressor", "Sem grana! Vá fazer burpees e registrar na rede pra ganhar dinheiro real.");
     hubProfile.gold -= 1000;
     let cardIds = Object.keys(CARD_DB); let drops =[];
     const resUI = document.getElementById('gacha-result');
-    resUI.innerHTML = `<span style="color:var(--neon-blue); font-family:'Orbitron'; font-size:1.2rem; animation: pulseBtn 1s infinite;">ABRINDO BURACO NEGRO MATRIZ...</span>`;
+    // Animação de caixa tremendo e flash branco
+    resUI.innerHTML = `<div class="gacha-box-anim">🎁</div>`;
     
     setTimeout(()=> {
+        document.body.insertAdjacentHTML('beforeend', '<div class="gacha-flash"></div>');
+        setTimeout(() => document.querySelector('.gacha-flash').remove(), 600);
+        window.playSound('explosion');
+
         resUI.innerHTML = "";
         for(let i=0; i<3; i++) {
             let r = Math.random(); let targetRarity = (r < 0.05) ? 4 : (r < 0.20 ? 3 : (r < 0.50 ? 2 : 1));
             let filtered = cardIds.filter(id => CARD_DB[id].rarity === targetRarity);
             if(filtered.length === 0) filtered = cardIds;
             let droppedId = filtered[Math.floor(Math.random() * filtered.length)];
-            
             drops.push(CARD_DB[droppedId]);
             if(hubProfile.cardsOwned.includes(droppedId)) { hubProfile.cardLevels[droppedId] = (hubProfile.cardLevels[droppedId] || 1) + 1; } 
             else { hubProfile.cardsOwned.push(droppedId); hubProfile.cardLevels[droppedId] = 1; }
         }
-        
         drops.forEach(c => {
-            let el = document.createElement('div');
-            let bgC = c.rarity == 4 ? 'var(--neon-pink)' : (c.rarity == 3 ? 'var(--neon-yellow)' : (c.rarity == 2 ? 'var(--neon-blue)' : '#fff'));
-            el.innerHTML = `<div style="border:2px solid ${bgC}; padding:15px; background:rgba(0,0,0,0.5); border-radius: 8px; color:${bgC}; font-size:0.9rem; text-align:center; min-width: 80px; font-weight:bold; box-shadow: 0 0 10px ${bgC} inset;">${c.icon} ${c.name}<br><span style="font-size:0.7rem; color:#fff;">(+Nível Crescente)</span></div>`;
+            let el = document.createElement('div'); let bgC = c.rarity == 4 ? 'var(--neon-pink)' : (c.rarity == 3 ? 'var(--neon-yellow)' : (c.rarity == 2 ? 'var(--neon-blue)' : '#fff'));
+            el.innerHTML = `<div style="border:2px solid ${bgC}; padding:15px; background:rgba(0,0,0,0.8); border-radius: 8px; color:${bgC}; font-size:0.9rem; text-align:center; min-width: 80px; font-weight:bold; box-shadow: 0 0 10px ${bgC} inset; animation: fadeIn 0.4s ease-out;">${c.icon} ${c.name}<br><span style="font-size:0.7rem; color:#fff;">(+Nível)</span></div>`;
             resUI.appendChild(el);
         });
         saveHubStateLocal(); syncUIWithProfile(); renderDeckBuilder();
-    }, 1500);
+    }, 800);
 }
 
 // =========================================================================
@@ -971,12 +749,12 @@ window.rollGacha = function() {
 
 function setupHubRealtime() {
     if(useLocalBypass) {
-        document.getElementById('radar-loading').innerHTML = "Bypass Ativo (Falha ou Internet Caída) <br><br> As Máquinas não repousam. Crie o caos num embate mental local. Fique pronto.";
+        document.getElementById('radar-loading').innerHTML = "Modo Bypass. Conexões Matrix desligadas. IA Holográfica iniciada.";
         setTimeout(()=> { document.getElementById('radar-list').innerHTML = `
             <div class="radar-player" style="border-color:#555;">
                 <span class="radar-name glow-text" style="font-size:1.1rem;">IA INVASORA HOLOGRÁFICA M-22</span>
-                <span style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">Entidade local de Treino (Lv. Máximo). Simulando Atributos de Luta Perigosa (HP/Dmg Upados). Não há perdas, só vitórias puras aqui.</span>
-                <button class="btn-neon" style="background:#500; border-color:#f00; color:#fff; font-size:0.8rem; padding:12px;" onclick="window.startClash(false, {username:'Holograma Matriz Pura', lvl:35, buffs:{hp:500, spd:0.4, dmg:0.4}, deck:['Kamikaze','Barao','Hacker','Sniper','Striker'], cardLevels:{'Kamikaze':4,'Barao':2}})">LUTAR NO CYBER CLASH DIGITAL</button>
+                <span style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">Entidade de Treino. Sem perdas.</span>
+                <button class="btn-neon" style="background:#500; border-color:#f00; color:#fff; font-size:0.8rem; padding:12px;" onclick="window.startClash(false, {username:'Holograma Matriz Pura', lvl:35, buffs:{hp:500, spd:0.4, dmg:0.4}, deck:['Kamikaze','Barao','Hacker','Sniper','Striker'], cardLevels:{'Kamikaze':4,'Barao':2}})">LUTAR NA ARENA CYBER</button>
             </div>`; 
         }, 1000);
         listenToFeed(); return;
@@ -1005,7 +783,6 @@ function setupHubRealtime() {
             let d = snap.val(); 
             if(d.targetId === hubProfile.uid && d.state === 'request') {
                 if(d.type === 'cyber') {
-                    // CACHE DOS DADOS DO DESAFIANTE NO MOMENTO DA NOTIFICAÇÃO
                     window.pendingPvpData = d.challengerData;
                     window.showModal(`🔥 DESAFIO DE CYBER CLASH!`, `O Atleta ${d.challengerName} quer testar seu Deck de Cartas na arena de neon AGORA. O combate é sincronizado em tempo real. Aceitar o hack?`, 
                     `<button class="btn-neon green" style="margin:5px;" onclick="window.acceptCyberDuel('${snap.key}')">CONECTAR REDE NEURAL (LUTAR)</button> 
@@ -1017,14 +794,10 @@ function setupHubRealtime() {
                 }
             }
         });
-        
         listenToFeed();
     } catch(e) {}
 }
 
-// =========================================================
-// SISTEMA DE DESAFIO CYBER (PVP SYNC) - CORREÇÃO DE OBJETO
-// =========================================================
 window.sendCyberPvpDuel = function(tId, tN) {
     let keyId = push(ref(rtdb, 'hub_duels')).key; 
     set(ref(rtdb, 'hub_duels/'+keyId), { type: 'cyber', challengerId: hubProfile.uid, challengerName: hubProfile.username, challengerData: hubProfile, targetId: tId, targetName: tN, state: 'request' }); 
@@ -1042,7 +815,6 @@ window.sendCyberPvpDuel = function(tId, tN) {
     });
 }
 
-// Sem depender do .get() que gera delay, lê os dados que já vieram no pacote do onChildAdded
 window.acceptCyberDuel = function(keyId) {
     document.getElementById('system-modal').style.display='none'; 
     if(!window.pendingPvpData) { window.showModal("Erro Fatal", "Dados do desafiante corrompidos no cache."); return; }
@@ -1052,40 +824,15 @@ window.acceptCyberDuel = function(keyId) {
     window.startClash(true, { matchId: keyId, oppData: window.pendingPvpData });
 }
 
-// =========================================================
-// Funcoes Originais Duelo IRL
-// =========================================================
 window.sendRealDuel = function(tId, tN) { 
-    let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'irl', challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); window.showModal("Aguarde...", `Nós estamos hackeando a retina dele com sua Imagem do desafio. O terminal do Alvo[${tN}] foi chamado com uma sirene agressiva digital para provar um duelo Real Físico agora mesmo.`);
-    
-    const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
-        let v = s.val(); if(!v) return;
-        if(v.state === 'declined') { window.showModal("Rejeitado", "Fraco! Um fugitivo cibernético escorreu pros bueiros do Medo do seu Duelo de Luta Pessoal e apertou na tecla Não da Coragem Oportuna..."); unsub(); }
-        if(v.state === 'ongoing' && !v.resolvedChallengerAlert) { 
-            update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); 
-            window.showModal("GUERRA DEFINITIVA FISICA (BATERAM O MARTELO)", "Saia do Sistema agora e faça. Não importe O QUÊ mas quem fizer maior dor de MÚSCULO sem perder é declarado Triunfal de Ganhos pelo Julgamento que fará a si mesmos em 5, 2 horas que voltarem.", 
-            `<button class="btn-neon green" onclick="window.monitorOngoingDuel('${s.key}', '${tN}')">ABRIR OS DOCUMENTOS DA VITÓRIA JÁ TREINADOS! ESTAMOS RESOLVIDOS</button>`); 
-        }
-    });
+    let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'irl', challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); window.showModal("Aguarde...", `Injetando Sirene Agressiva na interface de ${tN}.`);
+    const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => { let v = s.val(); if(!v) return; if(v.state === 'declined') { window.showModal("Rejeitado", "O oponente tremeu."); unsub(); } if(v.state === 'ongoing' && !v.resolvedChallengerAlert) { update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); window.showModal("GUERRA DEFINITIVA", "Desligue e vá treinar. Só volte pra reportar resultado.", `<button class="btn-neon green" onclick="window.monitorOngoingDuel('${s.key}', '${tN}')">ESTAMOS RESOLVIDOS</button>`); } });
 };
-window.acceptRealDuel = function(keyId) {
-    document.getElementById('system-modal').style.display='none'; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'ongoing' });
-    window.showModal("CONFIANÇA BLINDADA EM BATALHA CORPOAL APROVADA", "Os Terminais pararam os logs. Faça suar suor grosso! Volte a esta Interface Opcional assim que fechar os punhos para sentar a chave de Justiça na Verdadeira Máquina. Se Mentirem, ninguém será validado ao Ouro e Honrarias Falsas na Lógica Artificial Matrix.", 
-    `<button class="btn-neon pink" onclick="window.monitorOngoingDuel('${keyId}', 'O Inimigo Rival')">ENCERRAMOS OS TERMOS NOS ESFORÇOS: JULGAR SUCESSOS DA NOSSA LUTA FÍSICA AGORA!</button>`);
-};
+window.acceptRealDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'ongoing' }); window.showModal("CONFIANÇA BLINDADA", "Feche o radar e sangre no asfalto.", `<button class="btn-neon pink" onclick="window.monitorOngoingDuel('${keyId}', 'O Inimigo')">IR PARA TELA DE JULGAMENTO</button>`); };
 window.declineRealDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'declined' }); }
-
-window.monitorOngoingDuel = function(duelId, opName) {
-    document.getElementById('system-modal').style.display='none';
-    window.currentDuelOpponent = opName || "OPONENTE DA RINHA";
-    window.showModal("O SANGUE ESTIOU DO GINÁSIO", `Se os dois concordarem sobre quem é o monstro ganhador, nós destravamos cofres neurais para o Campeão e devolvemos algo honroso pro Derrotado digno.\n\nSE OS DOIS APERTAREM COM EGOS DISTORCIDOS E DESTRUIDORES COMO "EU MESMO GANHEI" SEM JUSTIÇA A MÁQUINA ENTRARÁ COMO EXPURGO PRA TODOS SEM CONSEQÜÊNCIAS DE SUCESSOS.\n\nOPONENTE NO RADAR PRESENTE COM SEUS BATES EM VOCE: ${opName}`, 
-    `<button class="btn-neon green" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', '${hubProfile.uid}', '${opName}')">FUI DEUS CARNAL! (EU VENCI TODO MUNDO!)</button>
-     <button class="btn-neon pink" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', 'OPONENTE_WIN', '${opName}')">FOI PESADO DEMAIS E DERROTEI O MEU LIMITE! (MAS SIM EU PERDI PRA ELE CARA)</button>`);
-}
-
+window.monitorOngoingDuel = function(duelId, opName) { document.getElementById('system-modal').style.display='none'; window.currentDuelOpponent = opName || "OPONENTE DA RINHA"; window.showModal("JULGAMENTO DE GUERRA", `Se ambos entrarem em conflito de ego e disserem que ganharam, o Sistema pune os dois com banimento de moedas. Vote com honra contra ${opName}.`, `<button class="btn-neon green" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', '${hubProfile.uid}', '${opName}')">FUI UM MONSTRO (GANHEI)</button> <button class="btn-neon pink" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', 'OPONENTE_WIN', '${opName}')">ELE FOI MELHOR HOJE (PERDI)</button>`); }
 window.submitDuelResult = function(duelId, vpick, opName) {
-    update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: vpick }); document.getElementById('system-modal').style.display = 'none'; window.showModal("Cálculos no Espaço de Confirmação!", "Veredito travado nas pedras magnéticas, se não der pane moral com a ressonância alheia nós validaremos a Honra e Prêmios pra Quem Tiver.");
-    
+    update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: vpick }); document.getElementById('system-modal').style.display = 'none'; window.showModal("Cálculos de Matriz", "Aguardando veredito do oponente.");
     let isTreated = false;
     onValue(ref(rtdb, 'hub_duels/'+duelId), (snap) => {
         let d = snap.val(); if(!d.votes || isTreated) return; let vArr = Object.keys(d.votes);
@@ -1093,28 +840,17 @@ window.submitDuelResult = function(duelId, vpick, opName) {
             update(ref(rtdb, 'hub_duels/'+duelId), { resolved: true }); isTreated = true;
             let voteA = d.votes[vArr[0]].pick; let voteB = d.votes[vArr[1]].pick; 
             let wonId = null; if(voteA === vArr[0] && voteB === 'OPONENTE_WIN') wonId = vArr[0]; else if(voteB === vArr[1] && voteA === 'OPONENTE_WIN') wonId = vArr[1]; 
-            
             if(wonId) { 
-                if(wonId === hubProfile.uid) { hubProfile.gold += 12000; hubProfile.buffs.spd += 0.5; hubProfile.xp += 2000; saveHubStateLocal(); syncUIWithProfile();
-                    window.showModal("A CRENÇA E A DOR VIERAM", `Você é implacavelmente honrado e espartano em vitórias unânimes sem fraude contra Humanos Alheios nas Práticas que fez lá Fora no mundo Ocular! Ele atestou seu nível alto e superior, o ouro e a agilidade lhe foram atestados agora no Sangue Pessoal das Conexões Hub Mente!\n+ 12 Milhões (12.000) CyberGolds no Banco!!`, `<button class="btn-neon green" style="width:100%;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', true)">JOGAR TODAS AS LUZES NESSE RELATÓRIO DO SUCESSO AQUI PRA TODOS COMO MÍDIA DE ATESTADO COM MEUS FEITOS!</button>`);
-                } else { window.showModal("FORÇA ENTELECIONAL LIMPA!", `Cedeu e atestou que você assumiu não conseguir e ele suou os Pombos Brancos primeiro! Honra gigantesca do Samurai Oposto que não cometeria Crimes em Votar Falso Pra Roubo! Um pequeno estipêndio está limpo pra você por Otimismo Social Físico Real.\nCansado? Deseja exibir provas dos limites transbordados hoje num Duelo de Humilhação Honesta Visual como Post Geral??`,
-                    `<button class="btn-neon pink" style="width:100%; margin-bottom:5px;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', false)">MOSTRAR MEUS DESASTRES NUMA PUBLICAÇÃO RÚSTICA (Sim e aceito O Falso Fim)</button><br> <button class="btn-neon" style="background:#222; border-color:#222; width:100%;" onclick="document.getElementById('system-modal').style.display='none'">SILÊNCIO TÁTICO HOJE NÃO ME COBREM.</button>`); }
-            } else { window.showModal("DANO ALGORÍTMICO VERMELHO SEGURO - FALHA CRÍTICA HUMANISTA", "Os dois alegam que Murcharam o Oponente e Eles mesmos são Deuses Supremamente! Votos desordenados... Vocês dois roubaram nas declarações cruzadas tentando focar nos Cofres sem Físico Exaustivo... TODOS SOFREM CONSEQUÊNCIAS NEGATIVAS DA INTENÇÃO FALHA E NINGUÉM LUCRA NAS EVIDÊNCIAS DE CORTE CÍVEL!"); }
+                if(wonId === hubProfile.uid) { hubProfile.gold += 12000; hubProfile.buffs.spd += 0.5; hubProfile.xp += 2000; saveHubStateLocal(); syncUIWithProfile(); window.showModal("A CRENÇA VEIO", `Você massacrou. Ele atestou.\n+ 12.000 CyberGolds!!`, `<button class="btn-neon green" style="width:100%;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', true)">MOSTRAR MEUS FEITOS PRO MUNDO!</button>`);
+                } else { window.showModal("FORÇA ENTELECIONAL LIMPA!", `Você honrou sua palavra.\nCansado? Mostre pro mundo.`, `<button class="btn-neon pink" style="width:100%; margin-bottom:5px;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', false)">POSTAR DERROTA HONROSA</button><br> <button class="btn-neon" style="background:#222; border-color:#222; width:100%;" onclick="document.getElementById('system-modal').style.display='none'">SILÊNCIO TÁTICO HOJE</button>`); }
+            } else { window.showModal("DANO ALGORÍTMICO", "Votos conflitantes. Fraude detectada. Sistema punindo os dois!"); }
         }
     });
 }
-
-window.promptDuelPost = function(opponentName, won) {
-    document.getElementById('system-modal').style.display='none';
-    curTaskCat = 'Duelo'; curTaskConfig = { name: "Sangue e Ferro Honrado no Asfalto em Combate Corporal vs " + opponentName, xp: won ? 500 : 200, gold: won ? 500 : 50 }; 
-    let resTxt = won ? `Eu derreti completamente as fibras táticas do colega/inimigo humano @${opponentName} em total soberania e condicionamento absoluto hoje pelo chão e pela prova livre real que marcamos... As minhas evidências biológicas em arquivo em imagem pesam contra mim em glórias!` : `Destruído fisicamente de forma honrosa. Respirei muito mas meu suor foi fraco contra ele... A Força superior carnal reside nele @${opponentName} Hoje... Assumo com as glórias a quebra dos limiares da humanidade dele...`;
-    document.getElementById('task-desc').value = `${resTxt} \n[Adicione Relatos, O Que Vocês Duas Peças Fizeram Exatamente?? E Mande-me Suas Faces Sangrentas Por Aquela Câmera Alí de Evidências! O Relato Completo Vale a Regra De Hubs e O Mundo Estará Assistindo e Deixando Atestações Reais Para Suas Curiosidades Visuais nas Malhas Cyber!]`;
-    document.getElementById('form-box-title').innerText = `EXPOR TENSÕES OCORRIDAS GLOBALMENTE PRA TODO MUNDO`; document.getElementById('task-file').value = ""; document.getElementById('gps-panel').style.display = 'none';
-    document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed');
-}
+window.promptDuelPost = function(opponentName, won) { document.getElementById('system-modal').style.display='none'; curTaskCat = 'Duelo'; curTaskConfig = { name: "Combate Corporal vs " + opponentName, xp: won ? 500 : 200, gold: won ? 500 : 50 }; let resTxt = won ? `Derreti as fibras de @${opponentName} em soberania...` : `Destruído fisicamente de forma honrosa por @${opponentName}...`; document.getElementById('task-desc').value = `${resTxt} \n[Adicione Relatos]`; document.getElementById('form-box-title').innerText = `EXPOR TENSÕES OCORRIDAS`; document.getElementById('task-file').value = ""; document.getElementById('gps-panel').style.display = 'none'; document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed'); }
 
 // ==================================================================================
-// CYBER CLASH - AUTO BATTLER ARENA 2D DE BOTS CYBERNETICOS HACKER VS MATRIZ HUB-CORE
+// CYBER CLASH - AUTO BATTLER ARENA 2D DE BOTS CYBERNETICOS 
 // ==================================================================================
 
 let cvs, ctx; let engineState = 'MENU'; let lastTime = 0; let energy = 0; let MAX_ENERGY = 10;
@@ -1123,65 +859,43 @@ let entities = []; let projectiles =[]; let effects =[]; let spawnEffects =[]; l
 let pvpMatchListener = null;
 
 window.startPvECampaign = function() {
-    if(hubProfile.pveStage >= PVE_CAMPAIGN.length) {
-        window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck: ['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido'], cardLevels:{}});
-    } else {
-        window.startClash(false, PVE_CAMPAIGN[hubProfile.pveStage]);
-    }
+    if(hubProfile.pveStage >= PVE_CAMPAIGN.length) { window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck: ['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido'], cardLevels:{}});
+    } else { window.startClash(false, PVE_CAMPAIGN[hubProfile.pveStage]); }
 }
 
-// Inicia Combate (Seja PvE ou PvP) - FIX DE NOME
 window.startClash = function(isPvP = false, matchData = null) {
-    if(hubProfile.deck.length === 0) return window.showModal("Deck Inválido", "Você não possui nenhuma Tropa Invocável em sua Mão (Esquadrão Ativo). Vá até o menu Meu Deck.");
-    
+    if(hubProfile.deck.length === 0) return window.showModal("Deck Inválido", "Você não possui tropas no Esquadrão Ativo.");
     document.getElementById('hub-container').style.display = 'none'; let gw = document.getElementById('game-wrapper'); gw.style.display = 'block';
     cvs = document.getElementById('arena-canvas'); ctx = cvs.getContext('2d');
-    
     let winW = window.innerWidth; let winH = window.innerHeight; let ratio = arenaW / arenaH;
     if(winW / winH > ratio) { cvs.width = winH * ratio; cvs.height = winH; } else { cvs.width = winW; cvs.height = winW / ratio; }
     ctx.scale(cvs.width/arenaW, cvs.height/arenaH);
 
     window.activeMatchId = null;
-    
-    if(isPvP && matchData && matchData.matchId) {
-        window.activeMatchId = matchData.matchId;
-        opponentAI = matchData.oppData || {};
-        setupPvPSyncListeners();
-    } else {
-        opponentAI = matchData || {};
-    }
+    if(isPvP && matchData && matchData.matchId) { window.activeMatchId = matchData.matchId; opponentAI = matchData.oppData || {}; setupPvPSyncListeners(); } 
+    else { opponentAI = matchData || {}; }
 
-    // Tratamento Robusto de Objeto Oponente pra nunca mais dar Undefined
     opponentAI.username = opponentAI.username || opponentAI.name || "Inimigo Desconhecido";
     opponentAI.lvl = opponentAI.lvl || 1;
     opponentAI.buffs = opponentAI.buffs || {hp:0, dmg:0, spd:0, magic:0};
     opponentAI.deck = opponentAI.deck || ['CorredorNeon','BioTank','Sniper'];
     opponentAI.cardLevels = opponentAI.cardLevels || {};
 
-    isAFK = false; document.getElementById('btn-afk').classList.remove('active'); document.getElementById('btn-afk').innerText = "Batalha Automática (OFF)";
-
+    isAFK = false; document.getElementById('btn-afk').classList.remove('active'); document.getElementById('btn-afk').innerText = "Piloto IA (OFF)";
     resetArena(); renderCardsHandUI();
     engineState = 'PLAY'; lastTime = performance.now();
     if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); requestAnimationFrame(clashLoop);
 };
 
-window.leaveArena = function() { 
-    engineState = 'MENU'; 
-    if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); 
-    document.getElementById('game-wrapper').style.display = 'none'; 
-    document.getElementById('hub-container').style.display = 'flex'; 
-    if(pvpMatchListener && window.activeMatchId) { off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions')); pvpMatchListener = null; }
-}
+window.leaveArena = function() { engineState = 'MENU'; if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); document.getElementById('game-wrapper').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex'; if(pvpMatchListener && window.activeMatchId) { off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions')); pvpMatchListener = null; } }
 window.returnToHubAndSave = function() { saveHubStateLocal(); syncUIWithProfile(); window.leaveArena(); }
 
-// Sync PvP Listener
 function setupPvPSyncListeners() {
     const actionsRef = ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions');
     pvpMatchListener = onChildAdded(actionsRef, (snap) => {
         let action = snap.val();
         if(action.uid !== hubProfile.uid) {
-            let mirroredY = arenaH - action.y;
-            let mirroredX = arenaW - action.x; 
+            let mirroredY = arenaH - action.y; let mirroredX = arenaW - action.x; 
             deployCard(action.cardId, 'enemy', mirroredX, mirroredY, action.lvl, opponentAI.buffs);
             spawnEffects.push({t:'exp', x:mirroredX, y:mirroredY, life:0.5, col:'var(--neon-pink)'});
         }
@@ -1193,32 +907,21 @@ function getPlayerBuffs() { return hubProfile.buffs || {hp:0, dmg:0, spd:0, magi
 function resetArena() {
     entities = []; projectiles = []; effects =[]; spawnEffects =[]; energy = 2; 
     let pB = getPlayerBuffs(); let oB = opponentAI.buffs;
-    
-    let oppDisplayTitle = opponentAI.username.toUpperCase();
-    document.getElementById('enemy-name-display').innerText = oppDisplayTitle;
+    document.getElementById('enemy-name-display').innerText = opponentAI.username.toUpperCase();
     document.getElementById('death-screen').style.display = 'none';
 
     playerBase = new Entity(CARD_DB["Barricada"], 'player', arenaW/2, arenaH - 50, pB, 1); playerBase.type = 'base'; playerBase.name="TORRE PRINCIPAL"; playerBase.maxHp = 2000 * (1+(pB.hp/200)); playerBase.hp = playerBase.maxHp; playerBase.w = 120; playerBase.h = 60; playerBase.range = 100; playerBase.dmg = 15 * (1+(pB.dmg||0)); playerBase.atkSpeed = 1.0;
-    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', arenaW/2, 50, oB, opponentAI.lvl); enemyBase.type = 'base'; enemyBase.name = oppDisplayTitle; enemyBase.maxHp = 2000 * (1+(oB.hp/200)); enemyBase.hp = enemyBase.maxHp; enemyBase.w = 120; enemyBase.h = 60; enemyBase.range = 100; enemyBase.dmg = 15 * (1+(oB.dmg||0)); enemyBase.atkSpeed = 1.0;
-    
+    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', arenaW/2, 50, oB, opponentAI.lvl); enemyBase.type = 'base'; enemyBase.name = opponentAI.username.toUpperCase(); enemyBase.maxHp = 2000 * (1+(oB.hp/200)); enemyBase.hp = enemyBase.maxHp; enemyBase.w = 120; enemyBase.h = 60; enemyBase.range = 100; enemyBase.dmg = 15 * (1+(oB.dmg||0)); enemyBase.atkSpeed = 1.0;
     entities.push(playerBase); entities.push(enemyBase);
 }
 
 function renderCardsHandUI() {
     let ui = document.getElementById('arena-hand-ui'); ui.innerHTML = "";
     hubProfile.deck.forEach((cId, index) => {
-        let dbC = CARD_DB[cId]; 
-        if(!dbC) return; 
-        let lvl = hubProfile.cardLevels[cId] || 1; 
+        let dbC = CARD_DB[cId]; if(!dbC) return; let lvl = hubProfile.cardLevels[cId] || 1; 
         let d = document.createElement('div'); d.className = `battle-card rarity-${dbC.rarity}`; d.id = `card-ui-${index}`; 
-        d.innerHTML = `
-            <div class="b-card-cost">${dbC.cost} N</div>
-            <div class="b-card-lvl">L${lvl}</div>
-            <div class="b-card-art">${dbC.icon}</div>
-            <div class="b-card-name">${dbC.name}</div>
-        `;
-        d.onclick = (e) => { e.stopPropagation(); selectCardToPlay(index); };
-        ui.appendChild(d);
+        d.innerHTML = `<div class="b-card-cost">${dbC.cost} N</div><div class="b-card-lvl">L${lvl}</div><div class="b-card-art">${dbC.icon}</div><div class="b-card-name">${dbC.name}</div>`;
+        d.onclick = (e) => { e.stopPropagation(); selectCardToPlay(index); }; ui.appendChild(d);
     });
 }
 
@@ -1230,26 +933,25 @@ function selectCardToPlay(idx) {
 }
 
 window.arenaClick = function(e) {
-    if(activeCardIdx === null || isAFK) {
-        // Se clicar no meio do nada solta faisca visual
-        let rect = cvs.getBoundingClientRect(); let sX = arenaW / rect.width; let sY = arenaH / rect.height; let cx = (e.clientX - rect.left) * sX; let cy = (e.clientY - rect.top) * sY;
-        spawnEffects.push({t:'hit', x:cx, y:cy, life:0.2}); return;
-    }
     let rect = cvs.getBoundingClientRect(); let sX = arenaW / rect.width; let sY = arenaH / rect.height; let cx = (e.clientX - rect.left) * sX; let cy = (e.clientY - rect.top) * sY;
+    if(activeCardIdx === null || isAFK) { spawnEffects.push({t:'hit', x:cx, y:cy, life:0.2}); return; }
+    
     let cId = hubProfile.deck[activeCardIdx]; let cD = CARD_DB[cId];
-    if(cD.type !== 'spell' && cy < arenaH * 0.55) { spawnEffects.push({t:'text', txt:'Limites Ultrapassados (Invoque Cedo Em Sua Área Tática)', x:cx, y:cy, life:1.5, col:'var(--neon-yellow)'}); return;}
+    
+    // TÁTICA: OBRIGA O JOGADOR A POSICIONAR DO SEU LADO DO CAMPO (Y > METADE DA TELA)
+    if(cD.type !== 'spell' && cy < arenaH / 2) { 
+        spawnEffects.push({t:'text', txt:'ÁREA RESTRITA (JOGUE DO SEU LADO)', x:cx, y:cy, life:1.2, col:'var(--neon-yellow)'}); 
+        window.playSound('hit'); return;
+    }
     
     let cLvl = hubProfile.cardLevels[cId]||1;
-    
-    if(window.activeMatchId) {
-        push(ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions'), { uid: hubProfile.uid, cardId: cId, x: cx, y: cy, lvl: cLvl, timestamp: serverTimestamp() });
-    }
+    if(window.activeMatchId) { push(ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions'), { uid: hubProfile.uid, cardId: cId, x: cx, y: cy, lvl: cLvl, timestamp: serverTimestamp() }); }
 
     deployCard(cId, 'player', cx, cy, cLvl, getPlayerBuffs()); energy -= cD.cost; document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx = null;
     spawnEffects.push({t:'exp', x:cx, y:cy, life:0.5, col:'var(--neon-blue)'});
 }
 
-window.toggleAFK = function() { isAFK = !isAFK; let b = document.getElementById('btn-afk'); if(isAFK) { b.classList.add('active'); b.innerText = "Piloto IA (Ligado)"; if(activeCardIdx!==null) { let dc = document.getElementById(`card-ui-${activeCardIdx}`); if(dc) dc.classList.remove('active'); activeCardIdx=null; } } else { b.classList.remove('active'); b.innerText = "IA (Desligada)"; } }
+window.toggleAFK = function() { isAFK = !isAFK; let b = document.getElementById('btn-afk'); if(isAFK) { b.classList.add('active'); b.innerText = "Piloto IA (Ligado)"; if(activeCardIdx!==null) { let dc = document.getElementById(`card-ui-${activeCardIdx}`); if(dc) dc.classList.remove('active'); activeCardIdx=null; } } else { b.classList.remove('active'); b.innerText = "Piloto IA (Desligado)"; } }
 
 class Entity {
     constructor(dbData, team, x, y, ownerBuffs, level = 1) {
@@ -1257,60 +959,42 @@ class Entity {
         let mutSpd = 1.0; if(ownerBuffs.spd < 0) mutSpd = Math.max(0.2, 1.0 - Math.abs(ownerBuffs.spd)); 
         let fHpMod = Math.pow(1.1, level - 1) * (this.isTank ? (1 + (ownerBuffs.hp/100)) : 1);
         this.maxHp = dbData.hp * fHpMod; this.hp = this.maxHp;
-        
         let magicBonus = (this.team === 'player' && ownerBuffs.magic) ? ownerBuffs.magic : 0;
         this.dmg = dbData.dmg * Math.pow(1.1, level - 1) * (1 + ownerBuffs.dmg + magicBonus); 
-        
         this.range = dbData.range; this.atkSpeed = dbData.as * (ownerBuffs.spd < 0 ? (1 + Math.abs(ownerBuffs.spd)) : 1.0); this.moveSpeed = dbData.ms * mutSpd;
         this.cooldown = 0; this.stunTimer = 0; this.stealth = this.mechanics.includes('stealth');
         this.color = team === 'player' ? 'var(--neon-green)' : 'red'; if(dbData.rarity===4) this.color = 'var(--neon-pink)'; if(dbData.rarity===3) this.color = 'var(--neon-yellow)';
-        
         this.icon = dbData.icon;
     }
-
     update(dt) {
         if(this.stunTimer > 0) { this.stunTimer -= dt; return; }
         if(this.cooldown > 0) this.cooldown -= dt;
         if(this.type === 'building' || this.type === 'base') return; 
-        
         if(this.mechanics.includes('spawn_drones') && Math.random() < 0.01) { deployCard('DroneRastreador', this.team, this.x, this.y, this.level, this.team === 'player' ? getPlayerBuffs() : opponentAI.buffs); }
         if(this.mechanics.includes('slow_trail') && Math.random() < 0.05) { effects.push(new EffectArea(this.x, this.y, 30, 'slow', 3, this.team)); }
-
         let target = this.findTarget();
-        if(target) {
-            let dist = Math.hypot(target.x - this.x, target.y - this.y);
-            if(dist <= this.range) { if(this.cooldown <= 0) { this.stealth = false; this.attack(target); this.cooldown = this.atkSpeed; } } 
-            else { let dx = target.x - this.x; let dy = target.y - this.y; let len = Math.hypot(dx, dy); this.x += (dx/len) * this.moveSpeed * dt; this.y += (dy/len) * this.moveSpeed * dt; }
-        } else { let dirY = this.team === 'player' ? -1 : 1; this.y += dirY * this.moveSpeed * dt; }
+        if(target) { let dist = Math.hypot(target.x - this.x, target.y - this.y); if(dist <= this.range) { if(this.cooldown <= 0) { this.stealth = false; this.attack(target); this.cooldown = this.atkSpeed; } } else { let dx = target.x - this.x; let dy = target.y - this.y; let len = Math.hypot(dx, dy); this.x += (dx/len) * this.moveSpeed * dt; this.y += (dy/len) * this.moveSpeed * dt; } } else { let dirY = this.team === 'player' ? -1 : 1; this.y += dirY * this.moveSpeed * dt; }
     }
-    
     findTarget() {
         let bestDist = Infinity; let bestTarget = null;
         for(let e of entities) {
             if(e === this || e.hp <= 0) continue;
             if(this.targetType === 'ally') { if(e.team !== this.team || e.type==='base') continue; } else { if(e.team === this.team) continue; if(e.stealth) continue; if(e.type==='building' && this.isFlying) continue;}
-            let dist = Math.hypot(e.x - this.x, e.y - this.y);
-            if(this.mechanics.includes('jump_backline')) { if(e.type !== 'base' && dist > 100) dist -= 500; }
+            let dist = Math.hypot(e.x - this.x, e.y - this.y); if(this.mechanics.includes('jump_backline')) { if(e.type !== 'base' && dist > 100) dist -= 500; }
             if(dist < bestDist) { bestDist = dist; bestTarget = e; }
         }
         return bestTarget;
     }
-    
     attack(target) {
         if(this.mechanics.includes('cleave') && this.db.id==='Mecha') { window.playSound('shoot'); spawnEffects.push({t:'laser', x1:this.x, y1:this.y, x2:target.x, y2:target.y, life:0.3, col: this.color}); for(let e of entities) { if(e.team!==this.team && Math.hypot(e.x-target.x, e.y-target.y) < 40) e.receiveDmg(this.dmg, this); } } 
         else if (this.range > 60) { window.playSound('shoot'); projectiles.push({ x:this.x, y:this.y, tx:target.x, ty:target.y, speed: 450, dmg:this.dmg, shooter:this, tObj:target, col:this.color }); } 
         else { spawnEffects.push({t:'hit', x:target.x, y:target.y, life:0.2}); target.receiveDmg(this.dmg, this); }
     }
-    
     receiveDmg(amt, sourceEntity) {
         if(this.mechanics.includes('dodge') && Math.random() < 0.5) { spawnEffects.push({t:'text', txt:'ESQUIVOU', x:this.x, y:this.y-10, life:0.6}); return; }
-        if(this.exposed) amt *= 1.2; 
-        this.hp -= amt;
-        window.playSound('hit');
+        if(this.exposed) amt *= 1.2; this.hp -= amt; window.playSound('hit');
         spawnEffects.push({t:'text', txt:`-${Math.floor(amt)}`, x:this.x + (Math.random()*15), y:this.y-(Math.random()*15), life:0.4, col: '#f55'});
-        
         for(let j=0; j<3; j++) spawnEffects.push({t:'debris', x: this.x, y: this.y, vx: (Math.random()-0.5)*150, vy: (Math.random()-0.5)*150, life: 0.4, col: this.color});
-
         if(this.hp <= 0 && this.type !== 'base') {
             window.playSound('explosion');
             if(this.mechanics.includes('explode')) { effects.push(new EffectArea(this.x, this.y, 90, 'damage', 0.2, this.team, 300)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.5});}
@@ -1320,26 +1004,11 @@ class Entity {
             for(let j=0; j<6; j++) spawnEffects.push({t:'debris', x: this.x, y: this.y, vx: (Math.random()-0.5)*300, vy: (Math.random()-0.5)*300, life: 0.6, col: this.color});
         }
     }
-    
     render(c) {
         c.fillStyle = this.color;
-        if(this.type === 'base') { 
-            c.shadowColor = this.color; c.shadowBlur = 10;
-            c.fillRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h); 
-            c.shadowBlur = 0;
-            c.fillStyle = '#fff'; c.font = '10px Orbitron'; c.textAlign='center';
-            c.fillText(`${Math.floor(this.hp)} HP`, this.x, this.y + 3);
-        }
-        else { 
-            c.beginPath(); c.arc(this.x, this.y, this.w, 0, Math.PI*2); c.fill(); if(this.stealth) { c.globalAlpha=0.4; c.fillStyle="#fff"; c.fill(); c.globalAlpha=1; }
-            c.fillStyle = '#fff'; c.font = '14px sans-serif'; c.textAlign='center'; c.textBaseline='middle';
-            c.fillText(this.icon || '?', this.x, this.y);
-        }
-        
-        if(this.type !== 'base') {
-            let hPct = Math.max(0, this.hp / this.maxHp); c.fillStyle = '#f00'; c.fillRect(this.x - 12, this.y - this.w - 8, 24, 4); c.fillStyle = '#0f0'; c.fillRect(this.x - 12, this.y - this.w - 8, 24 * hPct, 4);
-            if(this.stunTimer>0) { c.fillStyle='#ffaa00'; c.font='bold 10px Rajdhani'; c.fillText('STUN', this.x, this.y-this.w-12); }
-        }
+        if(this.type === 'base') { c.shadowColor = this.color; c.shadowBlur = 10; c.fillRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h); c.shadowBlur = 0; c.fillStyle = '#fff'; c.font = '10px Orbitron'; c.textAlign='center'; c.fillText(`${Math.floor(this.hp)} HP`, this.x, this.y + 3); }
+        else { c.beginPath(); c.arc(this.x, this.y, this.w, 0, Math.PI*2); c.fill(); if(this.stealth) { c.globalAlpha=0.4; c.fillStyle="#fff"; c.fill(); c.globalAlpha=1; } c.fillStyle = '#fff'; c.font = '14px sans-serif'; c.textAlign='center'; c.textBaseline='middle'; c.fillText(this.icon || '?', this.x, this.y); }
+        if(this.type !== 'base') { let hPct = Math.max(0, this.hp / this.maxHp); c.fillStyle = '#f00'; c.fillRect(this.x - 12, this.y - this.w - 8, 24, 4); c.fillStyle = '#0f0'; c.fillRect(this.x - 12, this.y - this.w - 8, 24 * hPct, 4); if(this.stunTimer>0) { c.fillStyle='#ffaa00'; c.font='bold 10px Rajdhani'; c.fillText('STUN', this.x, this.y-this.w-12); } }
     }
 }
 
@@ -1350,9 +1019,7 @@ class EffectArea {
 }
 
 function deployCard(cId, team, tx, ty, lvl, buffsRef) {
-    let dbC = CARD_DB[cId];
-    if(!dbC) return;
-    window.playSound('deploy');
+    let dbC = CARD_DB[cId]; if(!dbC) return; window.playSound('deploy');
     if(dbC.type === 'spell') {
         let magicDmgBonus = buffsRef.magic ? (1 + buffsRef.magic) : 1;
         if(cId === 'MagiaCrio') effects.push(new EffectArea(tx, ty, dbC.range, 'freeze_spell', 3, team, 3));
@@ -1369,8 +1036,7 @@ function deployCard(cId, team, tx, ty, lvl, buffsRef) {
 
 let aiTimer = 0; let aiMana = 2; 
 function updateAI(dt) {
-    if(window.activeMatchId) return; // IA desativada se for PvP Real-time
-
+    if(window.activeMatchId) return; 
     let oBuffs = opponentAI.buffs; aiMana += (1.0 + oBuffs.spd) * dt; aiTimer -= dt;
     if(aiTimer <= 0) {
         aiTimer = 1.0 + Math.random()*1.5; 
@@ -1396,10 +1062,8 @@ function clashLoop() {
         let activeIdx = Math.floor(Math.random()*hubProfile.deck.length);
         let rndCard = hubProfile.deck[activeIdx]; let dbC = CARD_DB[rndCard];
         if(energy >= dbC.cost && dbC) { energy -= dbC.cost; let tX = 50 + Math.random()*(arenaW-100); let tY = dbC.type==='spell' ? 100 : arenaH - 80 - Math.random()*150; 
-            
             let cLvl = hubProfile.cardLevels[rndCard]||1;
             if(window.activeMatchId) { push(ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions'), { uid: hubProfile.uid, cardId: rndCard, x: tX, y: tY, lvl: cLvl, timestamp: serverTimestamp() }); }
-            
             deployCard(rndCard, 'player', tX, tY, cLvl, myBuffs); spawnEffects.push({t:'exp', x:tX, y:tY, life:0.4, col:'rgba(0,255,255,0.4)'});
             let cUi = document.getElementById(`card-ui-${activeIdx}`); if(cUi){ cUi.classList.add('active'); setTimeout(()=>{cUi.classList.remove('active');},200);}
         }
@@ -1413,7 +1077,7 @@ function clashLoop() {
         if(!window.activeMatchId) { hubProfile.pveStage++; saveHubStateLocal(); }
         endGame("SUCESSO ABSOLUTO!", "As muralhas do inimigo colapsaram frente aos seus Esquadrões Biológicos.", true); return; 
     }
-    if(playerBase.hp <= 0) { endGame("SISTEMAS EXTERMINADOS", "Seu condicionamento falhou ou sua Estratégia de Deck não se comprovou forte aqui...", false); return; }
+    if(playerBase.hp <= 0) { endGame("SISTEMAS EXTERMINADOS", "Seu condicionamento falhou... Vá treinar.", false); return; }
 
     for(let i=projectiles.length-1; i>=0; i--) {
         let p = projectiles[i]; let d = Math.hypot(p.tx-p.x, p.ty-p.y);
@@ -1422,11 +1086,7 @@ function clashLoop() {
     }
     for(let i=effects.length-1; i>=0; i--) { effects[i].update(dt); if(effects[i].life<=0) effects.splice(i,1); }
     
-    for(let i=spawnEffects.length-1; i>=0; i--) { 
-        let s = spawnEffects[i]; s.life -= dt; 
-        if(s.t === 'debris') { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 200 * dt; } 
-        if(s.life<=0) spawnEffects.splice(i,1); 
-    }
+    for(let i=spawnEffects.length-1; i>=0; i--) { let s = spawnEffects[i]; s.life -= dt; if(s.t === 'debris') { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 200 * dt; } if(s.life<=0) spawnEffects.splice(i,1); }
 
     drawArena();
     window.animationFrameId = requestAnimationFrame(clashLoop);
@@ -1439,6 +1099,12 @@ function drawArena() {
     for(let y=0; y<arenaH; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(arenaW,y); ctx.stroke(); }
     
     ctx.fillStyle = "rgba(255,0,234,0.15)"; ctx.fillRect(0, arenaH/2 - 2, arenaW, 4);
+
+    // HIGHLIGHT DA ÁREA DE POSICIONAMENTO
+    if (activeCardIdx !== null && !isAFK) {
+        ctx.fillStyle = "rgba(0, 255, 102, 0.05)";
+        ctx.fillRect(0, arenaH/2, arenaW, arenaH/2);
+    }
 
     effects.forEach(e => e.render(ctx)); entities.forEach(e => e.render(ctx));
     
@@ -1457,21 +1123,18 @@ function updateUIRealtime() {
     let p = Math.min(100, (energy/MAX_ENERGY)*100);
     document.getElementById('mana-fill').style.width = p + '%'; document.getElementById('mana-num').innerText = Math.floor(energy); 
     if(enemyBase && enemyBase.hp>0) document.getElementById('enemy-hp-text').innerText = `HP Base Alvo: ${Math.floor(enemyBase.hp)}`;
-    for(let i=0; i<8; i++) {
-        let cardDOM = document.getElementById(`card-ui-${i}`);
-        if(cardDOM && hubProfile.deck[i]) { 
-            let dbC = CARD_DB[hubProfile.deck[i]];
-            if(dbC && energy < dbC.cost) cardDOM.classList.add('disabled'); else cardDOM.classList.remove('disabled'); 
-        }
-    }
+    for(let i=0; i<8; i++) { let cardDOM = document.getElementById(`card-ui-${i}`); if(cardDOM && hubProfile.deck[i]) { let dbC = CARD_DB[hubProfile.deck[i]]; if(dbC && energy < dbC.cost) cardDOM.classList.add('disabled'); else cardDOM.classList.remove('disabled'); } }
 }
 
 function endGame(tit, flv, win) {
     engineState = 'DEAD';
     if(win) window.playSound('victory'); else window.playSound('explosion');
-    let recompensa = (enemyBase.hp <= 0) ? (2000 + Math.floor(Math.random()*1500)) : 300; 
+    
+    // NERF BRUTAL NA ECONOMIA DO JOGO PARA INCENTIVAR A VIDA REAL (IRL Tasks)
+    let recompensa = (enemyBase.hp <= 0) ? (150 + Math.floor(Math.random()*100)) : 25; 
+    
     document.getElementById('end-title').innerText = tit; document.getElementById('end-flavor').innerText = flv; document.getElementById('final-score').innerText = `$ ${recompensa}`; 
-    hubProfile.gold += recompensa; hubProfile.xp += (enemyBase.hp<=0) ? 300 : 50;
+    hubProfile.gold += recompensa; hubProfile.xp += (enemyBase.hp<=0) ? 100 : 10;
     document.getElementById('death-screen').style.display='flex';
 }
 </script>
