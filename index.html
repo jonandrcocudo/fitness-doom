@@ -48,15 +48,17 @@
         .stat-item { text-align: center; color: #888; font-size: 0.75rem; font-weight: 700;}
         .stat-item span { display: block; font-family: 'Orbitron', sans-serif; font-size: 1rem; margin-top: 5px; color: var(--neon-yellow); }
         
-        .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px 15px; gap: 8px; overflow-y: auto;}
+        .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 8px; overflow-y: auto;}
         .hub-nav-btn { background: transparent; color: #999; font-size: 1rem; text-align: left; padding: 14px 20px; border-radius: 8px; border: 1px solid transparent; letter-spacing: 1px;}
         .hub-nav-btn:hover { background: rgba(0, 243, 255, 0.05); color: #fff;}
         .hub-nav-btn.active { background: rgba(0, 243, 255, 0.1); color: var(--neon-blue); border-color: rgba(0, 243, 255, 0.3); font-weight: bold;}
         
-        .hub-start-arena { margin: 15px; padding: 18px; background: linear-gradient(45deg, var(--neon-blue), #00aaff); color: #000; font-size: 1rem; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); animation: pulseBtn 2s infinite;}
+        /* Botão PvE Fixo na Base */
+        .pve-btn-wrapper { padding: 15px; border-top: 1px solid var(--panel-border); background: rgba(0,0,0,0.3); flex-shrink: 0; }
+        .hub-start-arena { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--neon-blue), #00aaff); color: #000; font-size: 1rem; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); animation: pulseBtn 2s infinite;}
 
         /* CONTEÚDO PRINCIPAL HUB */
-        .hub-main-content { flex: 1; padding: 30px 40px; overflow-y: auto; scroll-behavior: smooth; position: relative;}
+        .hub-main-content { flex: 1; padding: 30px 40px 80px 40px; overflow-y: auto; scroll-behavior: smooth; position: relative;}
         .hub-tab { display: none; animation: fadeIn 0.4s ease-out; }
         .hub-tab.active { display: block; }
         .hub-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 10px; margin-top: 0; margin-bottom: 25px; color: #fff; letter-spacing: 1px;}
@@ -125,6 +127,10 @@
         #arena-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: radial-gradient(circle at center, #101018, #050508);}
         
         #arena-ui { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between;}
+        
+        /* IMPORTANTE: A reativação do clique na arena! */
+        #arena-clickable-zone { flex-grow: 1; width: 100%; position: relative; pointer-events: auto; cursor: crosshair; }
+        
         .top-bar-arena { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; font-family: 'Orbitron', sans-serif; color: #fff; pointer-events: auto; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);}
         .hp-hud { background: rgba(255,0,0,0.2); border: 1px solid red; padding: 8px 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: #ff5555;}
         
@@ -146,27 +152,13 @@
             pointer-events: auto; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
         }
-        .battle-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,243,255,0.05) 2px, rgba(0,243,255,0.05) 4px);
-            pointer-events: none; z-index: 0;
-        }
+        .battle-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,243,255,0.05) 2px, rgba(0,243,255,0.05) 4px); pointer-events: none; z-index: 0; }
         .battle-card.active { border-color: var(--neon-blue); transform: translateY(-15px) scale(1.05); box-shadow: 0 0 25px rgba(0,243,255,0.6), inset 0 0 15px rgba(0,243,255,0.3);}
         .battle-card.disabled { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
         
-        .battle-card.rarity-1 { border-color: #888; }
-        .battle-card.rarity-2 { border-color: var(--neon-blue); }
-        .battle-card.rarity-3 { border-color: var(--neon-yellow); }
-        .battle-card.rarity-4 { border-color: var(--neon-pink); }
+        .battle-card.rarity-1 { border-color: #888; } .battle-card.rarity-2 { border-color: var(--neon-blue); } .battle-card.rarity-3 { border-color: var(--neon-yellow); } .battle-card.rarity-4 { border-color: var(--neon-pink); }
         
-        .b-card-art {
-            height: 45px; width: calc(100% - 10px); margin: 20px auto 5px;
-            background: rgba(0,0,0,0.6); border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; border: 1px solid rgba(255,255,255,0.1);
-            z-index: 1; text-shadow: 0 0 10px rgba(255,255,255,0.3);
-        }
-        
+        .b-card-art { height: 45px; width: calc(100% - 10px); margin: 20px auto 5px; background: rgba(0,0,0,0.6); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; border: 1px solid rgba(255,255,255,0.1); z-index: 1; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
         .b-card-cost { position:absolute; top:0; left:0; background:rgba(0,0,0,0.8); color:#fff; font-family:'Orbitron'; font-size:0.8rem; padding:4px 8px; border-bottom-right-radius:8px; border-right: 1px solid inherit; border-bottom: 1px solid inherit; z-index:2; font-weight:900;}
         .b-card-lvl { position:absolute; top:4px; right:6px; color:var(--neon-yellow); font-family:'Orbitron'; font-size:0.7rem; font-weight:bold; z-index:2;}
         .b-card-name { font-size:0.6rem; color:#fff; text-align:center; font-weight: bold; z-index:2; padding:0 4px; text-transform:uppercase; line-height: 1.1; text-shadow: 1px 1px 2px #000;}
@@ -203,23 +195,22 @@
             .hub-stats-row { flex-direction: row; gap: 15px; background: none; border: none; padding: 0; margin-top: 5px; justify-content: flex-end;}
             .stat-item { text-align: right; font-size: 0.65rem; } .stat-item span { font-size: 0.85rem; }
             
-            /* Navbar Scroll Horizontal Limpo (Pílulas) */
+            /* Navbar Scroll Horizontal Limpo */
             .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 10px; padding: 10px; background: transparent; scrollbar-width: none;}
             .hub-nav::-webkit-scrollbar { display: none;}
             .hub-nav-btn { font-size: 0.85rem; padding: 10px 18px; border-radius: 25px; white-space:nowrap; border: 1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.6);}
             .hub-nav-btn.active { border: 1px solid var(--neon-blue); background:rgba(0,243,255,0.2); }
             
-            .hub-start-arena { margin: 5px 10px 10px 10px; padding: 12px; font-size: 0.9rem;}
+            /* O botão PvE some da base do sidebar no mobile, então realocamos ele */
+            .pve-btn-wrapper { padding: 10px; border-top: none; background: transparent; }
+            .hub-start-arena { margin: 0; padding: 12px; font-size: 0.9rem;}
 
-            /* Conteudo Hub */
-            .hub-main-content { padding: 15px 10px; flex: 1; overflow-y: auto; }
+            /* Conteudo Hub com respiro no fundo pro scroll funcionar bem */
+            .hub-main-content { padding: 15px 10px 60px 10px; flex: 1; overflow-y: auto; }
             
-            /* Cards Limpos com Margens Corretas */
+            /* Cards Limpos */
             .grid-cards { grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px;}
             .action-card { padding: 20px; border-radius: 10px; }
-            .action-card h3 { font-size: 1.1rem; margin-bottom: 8px;}
-            .action-card p { font-size: 0.9rem; margin-bottom: 15px;}
-            .btn-neon { padding: 14px; font-size: 0.9rem; }
             
             /* Radar PvP Carrossel Horizontal - Fora do caminho do feed */
             .hub-radar { width: 100%; flex-direction: row; overflow-x: auto; overflow-y: hidden; height: auto; border-left: none; border-top: 1px solid var(--panel-border); padding: 15px 10px; scrollbar-width: none; background: rgba(10,10,15,0.95); }
@@ -228,7 +219,7 @@
             .radar-list { display: flex; flex-direction: row; gap: 15px; }
             .radar-player { min-width: 260px; margin: 0; padding: 15px; flex-shrink: 0; }
             
-            /* Deck Consertado no Mobile (Cartas ajustadas) */
+            /* Deck Consertado no Mobile */
             .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); padding: 10px; gap: 10px; }
             .deck-slot { height: 100px; border-radius: 6px; }
             .battle-card { width: 100%; height: 100px; border-radius: 6px;}
@@ -332,8 +323,8 @@
                 <button class="hub-nav-btn" onclick="window.switchTab('tab-perfil')">Perfil</button>
             </div>
             
-            <div style="padding: 0px; margin-top: auto; width: 100%;">
-                <button class="hub-start-arena" id="btn-pve-campaign" style="width: calc(100% - 30px);" onclick="window.startPvECampaign()">ARENA PVE BATTLE</button>
+            <div class="pve-btn-wrapper">
+                <button class="hub-start-arena" id="btn-pve-campaign" style="width: 100%; margin: 0;" onclick="window.startPvECampaign()">ARENA PVE BATTLE</button>
             </div>
         </div>
 
@@ -408,7 +399,7 @@
                 <div class="grid-cards">
                     <div class="action-card mente">
                         <h3 style="color:var(--neon-yellow); text-shadow: 0 0 10px rgba(255,234,0,0.6);">Overclock Cerebral (Estudos)</h3>
-                        <p>Foque nos estudos da escola, mergulhe na lógica de programação ou avance nos seus projetos de microcontroladores (hardware). Calibre o processador da sua mente.</p>
+                        <p>Foque nos estudos da escola, mergulhe na lógica de programação ou avance nos seus projetos (hardware). Calibre a mente.</p>
                         <span class="card-reward">+500 XP | $900 | +0.2 Dano Magias</span>
                         <button class="btn-neon yellow" onclick="window.openTaskUploader('Sessão de Estudos/Código', 'Mente', this)">COMPROVAR ESTUDO</button>
                     </div>
@@ -417,6 +408,29 @@
                         <p>Pausa para leitura de livros, artigos técnicos ou manuais. A inteligência te dá vantagem tática com recarga mais rápida.</p>
                         <span class="card-reward">+300 XP | $600 | +0.1 Regen Energy</span>
                         <button class="btn-neon yellow" onclick="window.openTaskUploader('Leitura Focada', 'Mente', this)">REGISTRAR LEITURA</button>
+                    </div>
+                </div>
+
+                <h3 style="color:var(--neon-green); font-family:'Orbitron'; margin-top: 30px; margin-bottom: 10px;">Nutrição e Desafios Livres</h3>
+                <div class="grid-cards">
+                    <div class="action-card dieta">
+                        <h3 class="glow-green">Combustível Limpo (Dieta)</h3>
+                        <p>Proteína limpa e alimentação controlada escalarão a sua dominância natural e dão Dano global passivo às suas tropas.</p>
+                        <span class="card-reward">+300 XP | $800 | +0.2 Dano Global</span>
+                        <button class="btn-neon green" onclick="window.openTaskUploader('Refeição Segura', 'Dieta', this)">POSTAR O PRATO</button>
+                    </div>
+                    
+                    <div class="action-card" style="border-color: #ffaa00;">
+                        <h3 style="color:#ffaa00;">OBJETIVO PESSOAL (CUSTOMIZADO)</h3>
+                        <p style="margin-bottom:5px; font-size: 0.8rem;">Especifique seu próprio treino.</p>
+                        <input type="text" id="custom-task-name" class="input-cyber" placeholder="Ex: Fiz Bike por 40 min..." style="padding:10px; margin-bottom:10px; font-size:0.8rem;">
+                        <select id="custom-task-type" class="input-cyber" style="padding:10px; margin-bottom:15px; font-size:0.8rem;">
+                            <option value="Cardio">Ação: Cardio (Velocidade e Energia)</option>
+                            <option value="Força">Ação: Força (Vida Máxima e Resistência)</option>
+                            <option value="Dieta">Ação: Nutrição/Foco (Dano Adicional)</option>
+                            <option value="Mente">Ação: Mente (Dano Magico/Regen)</option>
+                        </select>
+                        <button class="btn-neon" style="color:#ffaa00; border-color:#ffaa00;" onclick="window.createCustomTask()">ENVIAR RELATÓRIO DO DIA</button>
                     </div>
                 </div>
             </div>
@@ -490,7 +504,7 @@
             
             <button class="auto-btn" id="btn-afk" onclick="window.toggleAFK()">COMANDO AFK IA (OFF)</button>
 
-            <div style="flex-grow:1; width:100%; position:relative;" id="arena-clickable-zone" onclick="window.arenaClick(event)">
+            <div id="arena-clickable-zone" onclick="window.arenaClick(event)">
                 </div>
             
             <div class="bottom-ui-arena">
@@ -716,7 +730,6 @@ window.rollGacha = function() {
     hubProfile.gold -= 1000;
     let cardIds = Object.keys(CARD_DB); let drops =[];
     const resUI = document.getElementById('gacha-result');
-    // Animação de caixa tremendo e flash branco
     resUI.innerHTML = `<div class="gacha-box-anim">🎁</div>`;
     
     setTimeout(()=> {
@@ -742,10 +755,6 @@ window.rollGacha = function() {
         saveHubStateLocal(); syncUIWithProfile(); renderDeckBuilder();
     }, 800);
 }
-
-// =========================================================================
-// 7. INTEGRAÇÃO REAL PVP IRL E COMBATES ASÍNCRONOS HOLOGRÁFICOS
-// =========================================================================
 
 function setupHubRealtime() {
     if(useLocalBypass) {
@@ -932,13 +941,14 @@ function selectCardToPlay(idx) {
     activeCardIdx = idx; let n = document.getElementById(`card-ui-${idx}`); if(n) n.classList.add('active');
 }
 
+// FIX: A zona de clique da arena! Pointer Events reativados
 window.arenaClick = function(e) {
     let rect = cvs.getBoundingClientRect(); let sX = arenaW / rect.width; let sY = arenaH / rect.height; let cx = (e.clientX - rect.left) * sX; let cy = (e.clientY - rect.top) * sY;
     if(activeCardIdx === null || isAFK) { spawnEffects.push({t:'hit', x:cx, y:cy, life:0.2}); return; }
     
     let cId = hubProfile.deck[activeCardIdx]; let cD = CARD_DB[cId];
     
-    // TÁTICA: OBRIGA O JOGADOR A POSICIONAR DO SEU LADO DO CAMPO (Y > METADE DA TELA)
+    // TÁTICA: OBRIGA O JOGADOR A POSICIONAR DO SEU LADO DO CAMPO
     if(cD.type !== 'spell' && cy < arenaH / 2) { 
         spawnEffects.push({t:'text', txt:'ÁREA RESTRITA (JOGUE DO SEU LADO)', x:cx, y:cy, life:1.2, col:'var(--neon-yellow)'}); 
         window.playSound('hit'); return;
@@ -1100,7 +1110,7 @@ function drawArena() {
     
     ctx.fillStyle = "rgba(255,0,234,0.15)"; ctx.fillRect(0, arenaH/2 - 2, arenaW, 4);
 
-    // HIGHLIGHT DA ÁREA DE POSICIONAMENTO
+    // HIGHLIGHT DA ÁREA DE POSICIONAMENTO TÁTICO
     if (activeCardIdx !== null && !isAFK) {
         ctx.fillStyle = "rgba(0, 255, 102, 0.05)";
         ctx.fillRect(0, arenaH/2, arenaW, arenaH/2);
@@ -1130,7 +1140,7 @@ function endGame(tit, flv, win) {
     engineState = 'DEAD';
     if(win) window.playSound('victory'); else window.playSound('explosion');
     
-    // NERF BRUTAL NA ECONOMIA DO JOGO PARA INCENTIVAR A VIDA REAL (IRL Tasks)
+    // NERF DA ECONOMIA DO JOGO PARA INCENTIVAR A VIDA REAL (Tasks dão Ouro, Lutas dão pouco)
     let recompensa = (enemyBase.hp <= 0) ? (150 + Math.floor(Math.random()*100)) : 25; 
     
     document.getElementById('end-title').innerText = tit; document.getElementById('end-flavor').innerText = flv; document.getElementById('final-score').innerText = `$ ${recompensa}`; 
