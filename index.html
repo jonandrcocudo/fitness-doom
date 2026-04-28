@@ -830,7 +830,7 @@ function showModal(t, d, btns) {
 }
 
 // =========================================================================
-// 8. ENGINE 2D - CLASH ARENA E AUDIO NATIVO
+// 8. ENGINE 2D - CLASH ARENA (VISUAIS JUICY)
 // =========================================================================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playSound(type) {
@@ -854,24 +854,49 @@ let hand =[]; let drawPile = []; let entities =[]; let particles =[]; let p1Base
 let enemyAI = { deck:[], inv: {}, buffs: {regen:0, hp:0, dmg:0, slow:0}, energy: 0 };
 let playerStats = { buffs: {regen:0, hp:0, dmg:0, slow:0}, inv: {} };
 let selectedCardId = null; 
+let screenShake = 0;
+
+function applyShake(amount) { screenShake = Math.max(screenShake, amount); }
 
 class Base {
     constructor(team, hpMultiplier) {
         this.team = team; this.maxHp = 2500 * (1 + (hpMultiplier||0)); this.hp = this.maxHp;
         this.x = cw / 2; this.y = team === 0 ? ch - 100 : 100; this.radius = 40; this.isBase = true;
         this.data = { tags: ['building', 'ground'], type: 'building' };
-        this.status = []; // FIX: Base agora tem array de status para não quebrar com buffs/debuffs
+        this.status = [];
+        this.angle = 0; // Para o anel de energia
+        this.flashTime = 0;
     }
     update(dt) {
-        // FIX: Base também precisa processar e limpar o tempo dos debuffs que recebe (como expose do drone)
+        this.angle += dt;
+        if(this.flashTime > 0) this.flashTime -= dt;
         for(let i=this.status.length-1; i>=0; i--) { 
             this.status[i].timer -= dt; 
             if(this.status[i].timer <= 0) this.status.splice(i, 1); 
         }
     }
     draw(ctx) {
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-        ctx.fillStyle = this.team === 0 ? '#0ff' : '#f00'; ctx.shadowBlur = 20; ctx.shadowColor = ctx.fillStyle; ctx.fill(); ctx.shadowBlur = 0;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        
+        let c = this.team === 0 ? '#0ff' : '#f00';
+        let drawColor = this.flashTime > 0 ? '#fff' : c;
+        
+        // Base Core
+        ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI*2);
+        ctx.fillStyle = drawColor; ctx.shadowBlur = 20; ctx.shadowColor = drawColor; ctx.fill(); ctx.shadowBlur = 0;
+        
+        // Energy Rings
+        ctx.strokeStyle = drawColor; ctx.lineWidth = 3;
+        ctx.rotate(this.angle * (this.team===0?1:-1));
+        ctx.setLineDash([15, 10]);
+        ctx.beginPath(); ctx.arc(0,0, this.radius + 15, 0, Math.PI*2); ctx.stroke();
+        
+        ctx.rotate(-this.angle*2.5);
+        ctx.beginPath(); ctx.arc(0,0, this.radius + 25, 0, Math.PI*2); ctx.stroke();
+        
+        ctx.restore();
+        
         ctx.fillStyle = '#000'; ctx.font = 'bold 16px Rajdhani'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText("BASE", this.x, this.y);
     }
 }
@@ -886,12 +911,22 @@ class Unit {
         this.spd = data.spd * (1 - (globalBuffs.slow||0)); this.atkSpd = data.atkSpd * (1 - (globalBuffs.slow||0));
         this.radius = data.tags.includes('tank') ? 18 : 12; this.target = null; this.atkCooldown = 0; this.state = 'move'; this.status =[];
         this.color = team === 0 ? '#0ff' : '#f00'; this.yOffset = data.tags.includes('flyer') ? -20 : 0; this.isStealth = data.ability === 'stealth';
+        
+        this.trail = [];
+        this.flashTime = 0;
+        this.angle = team === 0 ? -Math.PI/2 : Math.PI/2;
     }
     
     update(dt) {
         if(this.hp <= 0) return;
         let isFrozen = false; let atkMod = 1; let spdMod = 1;
         
+        if(this.flashTime > 0) this.flashTime -= dt;
+        
+        // Trail update
+        if(Math.random() < 0.3) this.trail.push({x: this.x, y: this.y});
+        if(this.trail.length > 5) this.trail.shift();
+
         for(let i=this.status.length-1; i>=0; i--) { 
             let s = this.status[i]; s.timer -= dt; 
             if(s.type === 'freeze' || s.type === 'stun') isFrozen = true; 
@@ -909,6 +944,9 @@ class Unit {
             
             if(dist <= this.data.range + this.radius + this.target.radius) {
                 this.state = 'attack'; 
+                // Face target
+                this.angle = Math.atan2(dy, dx);
+                
                 if(this.atkCooldown <= 0) {
                     if (this.atkSpd > 0) {
                         this.attack(this.target); 
@@ -921,12 +959,15 @@ class Unit {
             } else { 
                 this.state = 'move'; 
                 if(this.spd > 0 && dist > 0) {
+                    this.angle = Math.atan2(dy, dx);
                     this.x += (dx/dist) * this.spd * spdMod * dt; 
                     this.y += (dy/dist) * this.spd * spdMod * dt; 
                 }
             }
         } else { 
             if(this.spd > 0) {
+                this.state = 'move';
+                this.angle = this.team === 0 ? -Math.PI/2 : Math.PI/2;
                 this.y += (this.team === 0 ? -1 : 1) * this.spd * spdMod * dt; 
             }
         }
@@ -946,56 +987,168 @@ class Unit {
     
     attack(tgt) {
         if(this.data.tags.includes('healer')) { tgt.hp = Math.min(tgt.maxHp, tgt.hp - this.dmg); createText("Cura", tgt.x, tgt.y, '#0f0'); return; }
+        
         playSound('hit');
+        
         if(this.data.ability === 'explode') { 
             this.hp = 0; 
+            applyShake(15);
             entities.forEach(e => { 
                 if(e.team !== this.team && !e.isBase) { 
                     let d=Math.sqrt((e.x-this.x)**2 + (e.y-this.y)**2); 
-                    if(d<100) e.hp -= this.dmg; 
+                    if(d<100) { e.hp -= this.dmg; e.flashTime = 0.1; }
                 } 
             }); 
             createExplosion(this.x, this.y, 100); 
             return; 
         }
+        
         if(this.data.ability === 'expose') { tgt.status.push({type:'expose', timer:3}); }
         
         let finalDmg = this.dmg; if(tgt.status.some(s=>s.type==='expose')) finalDmg *= 1.2;
         if(tgt.data && tgt.data.ability === 'dodge' && Math.random() < 0.5) { createText("Esquiva!", tgt.x, tgt.y, '#fff'); return; }
         
-        if(this.data.tags.includes('ranged')) particles.push(new Projectile(this.x, this.y, tgt, finalDmg, this.color));
-        else { tgt.hp -= finalDmg; createText(`-${Math.floor(finalDmg)}`, tgt.x, tgt.y, '#f00'); }
+        if(this.data.tags.includes('ranged')) {
+            particles.push(new Projectile(this.x, this.y, tgt, finalDmg, this.color));
+        } else { 
+            tgt.hp -= finalDmg; 
+            tgt.flashTime = 0.1; // Hit flash
+            if(tgt.isBase) applyShake(5);
+            
+            // Spawn Sparks
+            for(let i=0; i<5; i++) particles.push(new Spark(tgt.x, tgt.y, this.color, 150));
+            
+            let dt = createText(`-${Math.floor(finalDmg)}`, tgt.x, tgt.y, '#f00');
+            dt.vy = -30; // Float up faster
+        }
     }
+    
     die() {
-        if(this.data.ability === 'death_stun') { entities.forEach(e => { if(e.team !== this.team && !e.isBase) { let d=Math.sqrt((e.x-this.x)**2 + (e.y-this.y)**2); if(d<80) e.status.push({type:'stun',timer:2}); } }); createExplosion(this.x, this.y, 80, '#ff0'); }
+        // Spawn death particles
+        for(let i=0; i<15; i++) particles.push(new Spark(this.x, this.y, this.color, 250));
+        
+        if(this.data.ability === 'death_stun') { 
+            applyShake(10);
+            entities.forEach(e => { if(e.team !== this.team && !e.isBase) { let d=Math.sqrt((e.x-this.x)**2 + (e.y-this.y)**2); if(d<80) e.status.push({type:'stun',timer:2}); } }); 
+            createExplosion(this.x, this.y, 80, '#ff0'); 
+        }
     }
+    
     draw(ctx) {
         if(this.isStealth) ctx.globalAlpha = 0.4;
-        ctx.beginPath(); ctx.arc(this.x, this.y + this.yOffset, this.radius, 0, Math.PI*2);
-        ctx.fillStyle = this.color; ctx.shadowBlur = 10; ctx.shadowColor = this.color; ctx.fill(); ctx.shadowBlur = 0; ctx.globalAlpha = 1.0;
+        
+        // Draw Trail
+        if(this.trail.length > 1) {
+            ctx.beginPath();
+            ctx.moveTo(this.trail[0].x, this.trail[0].y + this.yOffset);
+            for(let i=1; i<this.trail.length; i++) ctx.lineTo(this.trail[i].x, this.trail[i].y + this.yOffset);
+            ctx.strokeStyle = this.color; ctx.lineWidth = this.radius*0.8; ctx.globalAlpha = 0.2; 
+            ctx.lineCap = 'round'; ctx.stroke(); ctx.globalAlpha = 1.0;
+        }
+
+        ctx.save();
+        ctx.translate(this.x, this.y + this.yOffset);
+        ctx.rotate(this.angle);
+
+        let drawColor = this.flashTime > 0 ? '#fff' : this.color;
+        ctx.shadowBlur = 15; ctx.shadowColor = drawColor;
+        
+        // Shape based on tags
+        if(this.data.tags.includes('tank')) {
+            ctx.fillStyle = drawColor; ctx.fillRect(-this.radius, -this.radius, this.radius*2, this.radius*2);
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.strokeRect(-this.radius, -this.radius, this.radius*2, this.radius*2);
+        } else if(this.data.tags.includes('ranged')) {
+            ctx.beginPath(); ctx.moveTo(this.radius, 0); ctx.lineTo(-this.radius*0.5, this.radius); ctx.lineTo(-this.radius*0.5, -this.radius); ctx.closePath();
+            ctx.fillStyle = drawColor; ctx.fill();
+        } else {
+            ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI*2);
+            ctx.fillStyle = drawColor; ctx.fill();
+            ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(this.radius*0.5, 0, 3, 0, Math.PI*2); ctx.fill(); 
+        }
+
+        ctx.restore();
+        ctx.shadowBlur = 0; ctx.globalAlpha = 1.0;
+        
+        // HP Bar
         ctx.fillStyle = '#f00'; ctx.fillRect(this.x - 15, this.y + this.yOffset - 20, 30, 4);
         ctx.fillStyle = '#0f0'; ctx.fillRect(this.x - 15, this.y + this.yOffset - 20, 30 * (this.hp/this.maxHp), 4);
     }
 }
 
+class Spark {
+    constructor(x, y, color, speed) {
+        this.x = x; this.y = y; this.color = color;
+        let a = Math.random() * Math.PI * 2; let v = Math.random() * speed;
+        this.vx = Math.cos(a) * v; this.vy = Math.sin(a) * v;
+        this.life = 0.3 + Math.random()*0.3; this.maxLife = this.life;
+    }
+    update(dt) { this.x += this.vx*dt; this.y += this.vy*dt; this.life -= dt; }
+    draw(ctx) {
+        ctx.globalAlpha = Math.max(0, this.life/this.maxLife);
+        ctx.fillStyle = this.color; ctx.shadowBlur = 5; ctx.shadowColor = this.color;
+        ctx.fillRect(this.x-2, this.y-2, 4, 4);
+        ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    }
+}
+
 class Projectile {
-    constructor(x, y, target, dmg, color) { this.x = x; this.y = y; this.target = target; this.dmg = dmg; this.color = color; this.spd = 300; this.active = true; }
+    constructor(x, y, target, dmg, color) { 
+        this.x = x; this.y = y; this.target = target; this.dmg = dmg; this.color = color; this.spd = 400; this.active = true; 
+        this.trail = [];
+    }
     update(dt) {
         if(!this.target || this.target.hp <= 0) { this.active = false; return; }
+        
+        this.trail.push({x: this.x, y: this.y});
+        if(this.trail.length > 4) this.trail.shift();
+        
         let dx = this.target.x - this.x; let dy = this.target.y - this.y; let d = Math.sqrt(dx*dx + dy*dy);
-        if(d < 10) { this.target.hp -= this.dmg; createText(`-${Math.floor(this.dmg)}`, this.target.x, this.target.y, '#f00'); this.active = false; return; }
+        if(d < 15) { 
+            this.target.hp -= this.dmg; 
+            this.target.flashTime = 0.1;
+            if(this.target.isBase) applyShake(2);
+            for(let i=0; i<3; i++) particles.push(new Spark(this.target.x, this.target.y, this.color, 100));
+            
+            let dt = createText(`-${Math.floor(this.dmg)}`, this.target.x, this.target.y, '#f00');
+            dt.vy = -30;
+            this.active = false; return; 
+        }
         this.x += (dx/d) * this.spd * dt; this.y += (dy/d) * this.spd * dt;
     }
-    draw(ctx) { ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI*2); ctx.fill(); }
+    draw(ctx) { 
+        if(this.trail.length > 1) {
+            ctx.beginPath(); ctx.moveTo(this.trail[0].x, this.trail[0].y);
+            for(let i=1; i<this.trail.length; i++) ctx.lineTo(this.trail[i].x, this.trail[i].y);
+            ctx.strokeStyle = this.color; ctx.lineWidth = 4; ctx.globalAlpha = 0.5; ctx.stroke(); ctx.globalAlpha = 1.0;
+        }
+        ctx.fillStyle = '#fff'; ctx.shadowBlur = 10; ctx.shadowColor = this.color;
+        ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI*2); ctx.fill(); 
+        ctx.shadowBlur = 0;
+    }
 }
-class VisualEffect {
-    constructor(x, y, text, color, life) { this.x=x; this.y=y; this.text=text; this.color=color; this.life=life; this.maxLife=life; }
-    update(dt) { this.life -= dt; this.y -= 20*dt; }
-    draw(ctx) { ctx.globalAlpha = Math.max(0, this.life/this.maxLife); ctx.fillStyle=this.color; ctx.font='bold 14px Share Tech Mono'; ctx.fillText(this.text, this.x, this.y); ctx.globalAlpha=1; }
-}
-function createText(t, x, y, c) { particles.push(new VisualEffect(x, y, t, c, 1.0)); }
-function createExplosion(x, y, r, c='#f00') { ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle=c; ctx.globalAlpha=0.3; ctx.fill(); ctx.globalAlpha=1.0; }
 
+class VisualEffect {
+    constructor(x, y, text, color, life) { this.x=x; this.y=y; this.text=text; this.color=color; this.life=life; this.maxLife=life; this.vy = -20; }
+    update(dt) { this.life -= dt; this.y += this.vy*dt; }
+    draw(ctx) { 
+        let a = Math.max(0, this.life/this.maxLife);
+        ctx.globalAlpha = a; ctx.fillStyle=this.color; 
+        ctx.font = `bold ${14 + (1-a)*5}px Share Tech Mono`; // Cresce levemente enquanto apaga
+        ctx.shadowBlur = 5; ctx.shadowColor = '#000';
+        ctx.fillText(this.text, this.x, this.y); 
+        ctx.globalAlpha=1; ctx.shadowBlur=0;
+    }
+}
+function createText(t, x, y, c) { 
+    let eff = new VisualEffect(x, y, t, c, 0.8);
+    particles.push(eff); 
+    return eff;
+}
+function createExplosion(x, y, r, c='#f00') { 
+    applyShake(r * 0.1);
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle=c; ctx.globalAlpha=0.4; ctx.fill(); ctx.globalAlpha=1.0; 
+    for(let i=0; i<20; i++) particles.push(new Spark(x, y, c, r*2));
+}
 
 // -------------------------------------------------------------------------
 // INICIALIZADORES DO CLASH E BOT
@@ -1036,6 +1189,7 @@ function startBattle(enemyData) {
     enemyAI = enemyData;
     p1Base = new Base(0, playerStats.buffs.hp); p2Base = new Base(1, enemyAI.buffs.hp);
     entities =[p1Base, p2Base]; particles =[]; energy = 0; drawPile =[...hubProfile.deck]; hand =[];
+    screenShake = 0;
     for(let i=0; i<4; i++) drawCard();
     renderHand(); lastTime = performance.now(); isGameRunning = true; 
     
@@ -1073,7 +1227,7 @@ function deployCard(id, team, x, y) {
     playSound(c.type === 'spell' ? 'spell' : 'deploy');
     if(c.type === 'spell') {
         createExplosion(x, y, c.radius || 50, colorMap[c.cat]);
-        if(c.effect === 'damage') { entities.forEach(e => { if(e.team !== team) { let d=Math.sqrt((e.x-x)**2 + (e.y-y)**2); if(d<c.radius) e.hp -= c.dmg; } }); } 
+        if(c.effect === 'damage') { entities.forEach(e => { if(e.team !== team) { let d=Math.sqrt((e.x-x)**2 + (e.y-y)**2); if(d<c.radius) { e.hp -= c.dmg; e.flashTime = 0.1; } } }); } 
         else if(c.effect === 'freeze') { entities.forEach(e => { if(e.team !== team) { let d=Math.sqrt((e.x-x)**2 + (e.y-y)**2); if(d<c.radius) e.status.push({type:'freeze',timer:c.duration}); } }); } 
         else if(c.effect === 'buff_atkspd') { entities.forEach(e => { if(e.team === team) { let d=Math.sqrt((e.x-x)**2 + (e.y-y)**2); if(d<c.radius) e.status.push({type:'buff_atkspd',timer:c.duration}); } }); }
     } else { entities.push(new Unit(c, lvl, team, x, y, buffs)); }
@@ -1102,18 +1256,38 @@ function gameLoop(now) {
     energy += (energyRegenRate * (1 + (playerStats.buffs.regen||0))) * dt; if(energy > MAX_ENERGY) energy = MAX_ENERGY;
     updateAI(dt); if(isAutoMode) updateAutoMode();
     
+    // Process entities
     for(let i=entities.length-1; i>=0; i--) { let e = entities[i]; if(e.update) e.update(dt); if(e.hp <= 0) { if(e.die) e.die(); entities.splice(i, 1); } }
     
+    // Process particles
     for(let i=particles.length-1; i>=0; i--) { 
-        let p = particles[i];
-        p.update(dt); 
+        let p = particles[i]; p.update(dt); 
         if(p.active === false || p.life <= 0) particles.splice(i, 1); 
     }
     
+    // Shake decay
+    if(screenShake > 0) { screenShake -= dt * 30; if(screenShake < 0) screenShake = 0; }
+    
+    // Render
     ctx.clearRect(0, 0, cw, ch);
+    ctx.save();
+    
+    // Apply Shake
+    if(screenShake > 0) {
+        let sx = (Math.random()-0.5) * screenShake;
+        let sy = (Math.random()-0.5) * screenShake;
+        ctx.translate(sx, sy);
+    }
+    
+    // Middle Line
     ctx.strokeStyle = '#223'; ctx.setLineDash([10, 10]); ctx.beginPath(); ctx.moveTo(0, ch/2); ctx.lineTo(cw, ch/2); ctx.stroke(); ctx.setLineDash([]);
+    
+    // Draw all
     entities.forEach(e => e.draw(ctx)); particles.forEach(p => p.draw(ctx));
     
+    ctx.restore();
+    
+    // UI Update
     document.getElementById('energy-bar-fill').style.width = `${(energy/MAX_ENERGY)*100}%`; document.getElementById('energy-text').innerText = energy.toFixed(1);
     document.getElementById('player-hp-fill').style.width = `${Math.max(0, p1Base.hp/p1Base.maxHp*100)}%`; document.getElementById('player-hp-txt').innerText = `${Math.floor(p1Base.hp)}/${p1Base.maxHp}`;
     document.getElementById('enemy-hp-fill').style.width = `${Math.max(0, p2Base.hp/p2Base.maxHp*100)}%`; document.getElementById('enemy-hp-txt').innerText = `${Math.floor(p2Base.hp)}/${p2Base.maxHp}`;
