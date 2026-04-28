@@ -83,7 +83,6 @@
         /* CARDS DE AÇÃO E FORMS */
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;}
         
-        /* CORREÇÃO DO BUG DO CSS GHOST CLICK AQUI (pointer-events: none) */
         .action-card { background: rgba(21, 22, 30, 0.9); border: 1px solid var(--panel-border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; transition: 0.3s; position: relative; overflow: hidden; backdrop-filter: blur(5px);}
         .action-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background: var(--neon-blue); transition: width 0.3s; pointer-events: none; z-index: 0;}
         .action-card:hover::before { width: 100%; opacity: 0.05; }
@@ -776,6 +775,14 @@ window.switchTab = function(tabId) {
     if(tabId === 'tab-mundo') { window.setupMap(); } 
     if(tabId === 'tab-social') { window.renderFriendsList(); }
 }
+
+// ==== CORREÇÃO VITAL DO MOTOR DE AVISOS ====
+window.showModal = function(title, desc, btnsHTML) { 
+    document.getElementById('modal-title').innerHTML = title; 
+    document.getElementById('modal-desc').innerHTML = desc; 
+    document.getElementById('modal-actions').innerHTML = btnsHTML || `<button class="btn-neon" style="width:200px;" onclick="document.getElementById('system-modal').style.display='none'">FECHAR</button>`; 
+    document.getElementById('system-modal').style.display = 'flex'; 
+};
 
 if(sessionStorage.getItem('hubProfile_JSON')) { hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) }; if(hubProfile.uid && hubProfile.uid.startsWith('local_')) useLocalBypass = true; finishLoginUI(); }
 
