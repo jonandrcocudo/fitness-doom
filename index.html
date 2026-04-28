@@ -35,13 +35,14 @@
         ::-webkit-scrollbar-track { background: var(--dark-bg); }
         ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
         
-        button { cursor: pointer; border: none; font-family: 'Orbitron', sans-serif; transition: all 0.2s; border-radius: 6px; font-weight: bold; text-transform: uppercase; position: relative; z-index: 5;}
-        button:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        button { cursor: pointer; border: none; font-family: 'Orbitron', sans-serif; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-radius: 6px; font-weight: bold; text-transform: uppercase; position: relative; z-index: 5;}
+        button:hover { filter: brightness(1.2); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,243,255,0.2); }
         button:active { transform: translateY(1px); }
 
         .glow-text { text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); color: var(--neon-blue); }
         .glow-pink { text-shadow: 0 0 10px rgba(255, 0, 234, 0.6); color: var(--neon-pink); }
         .glow-green { text-shadow: 0 0 10px rgba(0, 255, 102, 0.6); color: var(--neon-green); }
+        .glow-yellow { text-shadow: 0 0 10px rgba(255, 234, 0, 0.6); color: var(--neon-yellow); }
         .glow-red { text-shadow: 0 0 10px rgba(255, 51, 51, 0.6); color: var(--neon-red); }
 
         #hub-container { display: flex; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000; background: radial-gradient(circle at 50% 0%, #1a1a2e, var(--dark-bg)); overflow: hidden;}
@@ -51,8 +52,9 @@
         .hub-sidebar { width: 280px; background: rgba(15, 16, 25, 0.85); border-right: 1px solid var(--panel-border); display: flex; flex-direction: column; z-index: 1010; flex-shrink: 0; backdrop-filter: blur(15px); box-shadow: 5px 0 30px rgba(0,0,0,0.5);}
         .hub-profile-area { padding: 25px 20px; text-align: center; border-bottom: 1px solid var(--panel-border); position: relative;}
         .hub-avatar-container { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; }
-        .hub-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #222; border: 2px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);}
-        .hub-lvl-badge { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); background: var(--neon-blue); color: #000; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: 900;}
+        .hub-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #222; border: 2px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); transition: transform 0.3s;}
+        .hub-avatar:hover { transform: scale(1.05); border-color: var(--neon-pink); box-shadow: 0 0 25px rgba(255, 0, 234, 0.6);}
+        .hub-lvl-badge { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); background: var(--neon-blue); color: #000; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: 900; box-shadow: 0 0 10px var(--neon-blue);}
         .hub-username { font-size: 1.3rem; font-weight: bold; color: #fff; margin-bottom: 5px; font-family: 'Orbitron', sans-serif;}
         .hub-faction-badge { font-size: 0.75rem; font-weight: bold; padding: 3px 8px; border-radius: 12px; display: inline-block; margin-bottom: 10px; border: 1px solid transparent; }
         
@@ -61,9 +63,9 @@
         .stat-item span { display: block; font-family: 'Orbitron', sans-serif; font-size: 1rem; margin-top: 5px; color: var(--neon-yellow); }
         
         .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 8px; overflow-y: auto;}
-        .hub-nav-btn { background: transparent; color: #999; font-size: 1rem; text-align: left; padding: 14px 20px; border-radius: 8px; border: 1px solid transparent; letter-spacing: 1px;}
-        .hub-nav-btn:hover { background: rgba(0, 243, 255, 0.05); color: #fff;}
-        .hub-nav-btn.active { background: rgba(0, 243, 255, 0.1); color: var(--neon-blue); border-color: rgba(0, 243, 255, 0.3); font-weight: bold;}
+        .hub-nav-btn { background: transparent; color: #999; font-size: 1rem; text-align: left; padding: 14px 20px; border-radius: 8px; border: 1px solid transparent; letter-spacing: 1px; transition: 0.3s;}
+        .hub-nav-btn:hover { background: rgba(0, 243, 255, 0.05); color: #fff; transform: translateX(5px);}
+        .hub-nav-btn.active { background: rgba(0, 243, 255, 0.1); color: var(--neon-blue); border-color: rgba(0, 243, 255, 0.3); font-weight: bold; transform: translateX(5px);}
         
         .pve-btn-wrapper { padding: 15px; border-top: 1px solid var(--panel-border); background: rgba(0,0,0,0.3); flex-shrink: 0; }
         .hub-start-arena { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--neon-blue), #00aaff); color: #000; font-size: 1rem; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); animation: pulseBtn 2s infinite;}
@@ -86,7 +88,7 @@
         .action-card { background: rgba(21, 22, 30, 0.9); border: 1px solid var(--panel-border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; transition: 0.3s; position: relative; overflow: hidden; backdrop-filter: blur(5px);}
         .action-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background: var(--neon-blue); transition: width 0.3s; pointer-events: none; z-index: 0;}
         .action-card:hover::before { width: 100%; opacity: 0.05; }
-        .action-card:hover { border-color: rgba(0,243,255,0.4); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
+        .action-card:hover { border-color: rgba(0,243,255,0.4); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,243,255,0.2);}
         .action-card.forca::before { background: var(--neon-pink); }
         .action-card.dieta::before { background: var(--neon-green); }
         .action-card.mente::before { background: var(--neon-yellow); }
@@ -108,8 +110,9 @@
 
         /* FEED SOCIAL */
         .feed-filters { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;}
-        .filter-btn { background: rgba(21, 22, 30, 0.9); border: 1px solid var(--panel-border); color: #888; padding: 10px 20px; border-radius: 20px; font-size: 0.95rem; white-space: nowrap;}
-        .filter-btn.active { background: var(--neon-blue); color: #000; font-weight: bold; border-color: var(--neon-blue);}
+        .filter-btn { background: rgba(21, 22, 30, 0.9); border: 1px solid var(--panel-border); color: #888; padding: 10px 20px; border-radius: 20px; font-size: 0.95rem; white-space: nowrap; transition: 0.3s; cursor: pointer;}
+        .filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .filter-btn.active { background: var(--neon-blue); color: #000; font-weight: bold; border-color: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue);}
         
         .feed-container { display: flex; flex-direction: column; gap: 25px; padding-bottom: 30px;}
         .feed-post { background: rgba(21, 22, 30, 0.85); border-radius: 12px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); position: relative; border-top: 3px solid #333; backdrop-filter: blur(5px);}
@@ -129,10 +132,10 @@
         .post-img, .post-vid { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;}
         .post-img-container:hover .post-img { transform: scale(1.02); }
         
-        .post-actions { display: flex; gap: 15px; border-top: 1px solid var(--panel-border); padding-top: 15px; flex-wrap: wrap;}
-        .vote-btn { flex: 1; min-width: 120px; padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #ccc; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .vote-btn.up:hover { background: rgba(0, 255, 102, 0.2); color: var(--neon-green); }
-        .vote-btn.down:hover { background: rgba(255, 0, 0, 0.2); color: #ff5555; }
+        .post-actions { display: flex; gap: 10px; border-top: 1px solid var(--panel-border); padding-top: 15px; flex-wrap: wrap;}
+        .vote-btn { flex: 1; min-width: 100px; padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #ccc; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid transparent;}
+        .vote-btn.up:hover { background: rgba(0, 255, 102, 0.2); color: var(--neon-green); border-color: var(--neon-green); }
+        .vote-btn.down:hover { background: rgba(255, 0, 0, 0.2); color: #ff5555; border-color: var(--neon-red); }
         
         /* MODAL DE ZOOM IMAGEM */
         #image-zoom-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; cursor: zoom-out; backdrop-filter: blur(10px); }
@@ -169,11 +172,12 @@
             border-radius: 10px; 
             display:flex; flex-direction:column; justify-content: flex-start; align-items:center; 
             cursor:pointer; position:relative; overflow: hidden; 
-            pointer-events: auto; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
         }
         .battle-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,243,255,0.05) 2px, rgba(0,243,255,0.05) 4px); pointer-events: none; z-index: 0; }
-        .battle-card.active { border-color: var(--neon-blue); transform: translateY(-15px) scale(1.05); box-shadow: 0 0 25px rgba(0,243,255,0.6), inset 0 0 15px rgba(0,243,255,0.3);}
+        .battle-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 8px 20px rgba(0,243,255,0.5), inset 0 0 15px rgba(0,243,255,0.3); border-color: var(--neon-blue); }
+        .battle-card.active { border-color: var(--neon-blue); transform: translateY(-15px) scale(1.1); box-shadow: 0 0 25px rgba(0,243,255,0.8), inset 0 0 25px rgba(0,243,255,0.5);}
         .battle-card.disabled { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
         
         .battle-card.rarity-1 { border-color: #888; } .battle-card.rarity-2 { border-color: var(--neon-blue); } .battle-card.rarity-3 { border-color: var(--neon-yellow); } .battle-card.rarity-4 { border-color: var(--neon-pink); }
@@ -202,6 +206,10 @@
         
         #death-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.95); z-index: 110; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(8px);}
         
+        /* TUTORIAL OVERLAY */
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        #tutorial-box { animation: slideDown 0.5s ease-out; background:#15161e; border:2px solid var(--neon-blue); padding:30px; border-radius:12px; max-width:400px; box-shadow: 0 0 30px rgba(0,243,255,0.4); pointer-events:auto; text-align: center;}
+        
         /* RESPONSIVIDADE MOBILE */
         @media (max-width: 900px) {
             .hub-title { font-size: 1.4rem; margin-bottom: 15px; }
@@ -215,7 +223,7 @@
             .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 10px; padding: 10px; background: transparent; scrollbar-width: none;}
             .hub-nav::-webkit-scrollbar { display: none;}
             .hub-nav-btn { font-size: 0.85rem; padding: 10px 18px; border-radius: 25px; white-space:nowrap; border: 1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.6);}
-            .hub-nav-btn.active { border: 1px solid var(--neon-blue); background:rgba(0,243,255,0.2); }
+            .hub-nav-btn.active { border: 1px solid var(--neon-blue); background:rgba(0,243,255,0.2); transform: translateY(-2px);}
             .pve-btn-wrapper { padding: 10px; border-top: none; background: transparent; }
             .hub-start-arena { margin: 0; padding: 12px; font-size: 0.9rem;}
             .hub-main-content { padding: 15px 10px 60px 10px; flex: 1; overflow-y: auto; }
@@ -237,6 +245,7 @@
             .energy-text { line-height: 16px; font-size: 0.7rem; }
             .cards-hand { gap: 8px; height: 95px; }
             .cards-hand .battle-card { width: 65px; height: 100%; }
+            .vote-btn { min-width: 30%; font-size: 0.8rem; padding: 8px;}
         }
 
         @keyframes pulseBtn { 0% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(0,243,255,0.7); } 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } }
@@ -247,49 +256,62 @@
 
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // MOTOR DE SOM APRIMORADO E VICIANTE
         window.playSound = function(type) {
             if(audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0.5; // Controle de volume mestre equilibrado
+            masterGain.connect(audioCtx.destination);
+
+            function playOsc(freqStart, freqEnd, typeOsc, dur, vol) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = typeOsc;
+                osc.connect(gain);
+                gain.connect(masterGain);
+                
+                osc.frequency.setValueAtTime(freqStart, now);
+                if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, now + dur);
+                
+                gain.gain.setValueAtTime(vol, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+                
+                osc.start(now);
+                osc.stop(now + dur);
+            }
 
             if(type === 'click') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
-                gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-                osc.start(now); osc.stop(now + 0.05);
+                playOsc(600, 800, 'sine', 0.1, 0.3);
             } else if(type === 'deploy') {
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
-                gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-                osc.start(now); osc.stop(now + 0.2);
+                playOsc(300, 800, 'triangle', 0.3, 0.4);
+                playOsc(200, 600, 'sine', 0.3, 0.3);
             } else if(type === 'hit') {
-                osc.type = 'square'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.1);
-                gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
+                playOsc(150, 40, 'square', 0.15, 0.3);
             } else if(type === 'shoot') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(1200, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-                gainNode.gain.setValueAtTime(0.03, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
+                playOsc(1200, 600, 'sine', 0.1, 0.2);
             } else if(type === 'explosion') {
-                osc.type = 'square'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(20, now + 0.3);
-                gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-                osc.start(now); osc.stop(now + 0.3);
+                playOsc(100, 20, 'square', 0.4, 0.5);
+                playOsc(80, 10, 'sawtooth', 0.4, 0.3);
             } else if(type === 'victory') {
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(600, now + 0.2); osc.frequency.linearRampToValueAtTime(800, now + 0.4);
-                gainNode.gain.setValueAtTime(0.15, now); gainNode.gain.linearRampToValueAtTime(0.001, now + 0.8);
-                osc.start(now); osc.stop(now + 0.8);
+                playOsc(440, 660, 'sine', 0.3, 0.3);
+                setTimeout(() => playOsc(554, 880, 'sine', 0.4, 0.3), 150);
+                setTimeout(() => playOsc(660, 1100, 'sine', 0.6, 0.4), 300);
             } else if(type === 'epic') {
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.5);
-                gainNode.gain.setValueAtTime(0.2, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
-                osc.start(now); osc.stop(now + 1.0);
+                playOsc(300, 1200, 'sawtooth', 0.8, 0.3);
+                playOsc(200, 800, 'triangle', 0.8, 0.3);
             } else if(type === 'scan') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(1500, now); osc.frequency.linearRampToValueAtTime(2000, now + 0.1);
-                gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.linearRampToValueAtTime(0.001, now + 0.2);
-                osc.start(now); osc.stop(now + 0.2);
+                playOsc(800, 1200, 'sine', 0.2, 0.2);
+                setTimeout(() => playOsc(1200, 1600, 'sine', 0.2, 0.2), 100);
             } else if(type === 'boss_hit') {
-                osc.type = 'square'; osc.frequency.setValueAtTime(50, now); osc.frequency.exponentialRampToValueAtTime(20, now + 0.4);
-                gainNode.gain.setValueAtTime(0.2, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-                osc.start(now); osc.stop(now + 0.4);
+                playOsc(80, 30, 'square', 0.3, 0.6);
+            } else if(type === 'error') {
+                playOsc(200, 150, 'sawtooth', 0.2, 0.3);
+                setTimeout(() => playOsc(150, 100, 'sawtooth', 0.3, 0.3), 150);
+            } else if(type === 'success') {
+                playOsc(400, 600, 'sine', 0.2, 0.3);
+                setTimeout(() => playOsc(600, 800, 'sine', 0.3, 0.3), 100);
             }
         };
 
@@ -301,10 +323,31 @@
         document.addEventListener('click', (e) => {
             if(e.target.tagName === 'BUTTON' || e.target.closest('.battle-card')) { window.playSound('click'); }
         });
+        
+        // FUNÇÃO DE CRIPTOGRAFIA SEGURA SHA-256
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        window.sha256 = sha256;
     </script>
 
     <div id="image-zoom-modal" onclick="this.style.display='none'">
         <img id="image-zoom-content" src="" alt="Zoom Imagem">
+    </div>
+
+    <!-- MODAL DE TUTORIAL OVERLAY -->
+    <div id="tutorial-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; flex-direction:column; backdrop-filter: blur(5px);">
+        <div id="tutorial-box">
+            <h2 id="tut-title" class="glow-text" style="margin-top:0; font-family:'Orbitron';"></h2>
+            <p id="tut-text" style="color:#ddd; line-height:1.5; font-size:1.1rem; margin-bottom:25px;"></p>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button class="btn-neon" style="color:#888; border-color:#555;" onclick="window.skipTutorial()">PULAR</button>
+                <button class="btn-neon green" onclick="window.nextTutorial()">PRÓXIMO PASSO</button>
+            </div>
+        </div>
     </div>
 
     <div id="hub-login">
@@ -312,12 +355,13 @@
             <h1 class="glow-text" style="font-family:'Orbitron'; font-size:2.5rem; margin-top:0;">CYBER FITNESS</h1>
             <p style="color:#aaa; font-size: 0.95rem; margin-bottom: 25px;">Sincronize seu corpo físico com o Servidor Tático Central.</p>
             <input type="text" id="login-username" class="input-cyber" placeholder="Seu Nome / Vulgo..." style="text-align: center; margin-bottom: 10px;">
+            <input type="password" id="login-password" class="input-cyber" placeholder="Senha da Matriz (Segura)..." style="text-align: center; margin-bottom: 10px;">
             <select id="login-faction" class="input-cyber" style="text-align: center; margin-bottom: 25px;">
                 <option value="Sindicato Neon">Facção: Sindicato Neon (Mobilidade)</option>
                 <option value="Clã de Sangue">Facção: Clã de Sangue (Força Bruta)</option>
                 <option value="Cromo Tático">Facção: Cromo Tático (Inteligência)</option>
             </select>
-            <button class="btn-neon" style="font-size: 1.1rem; padding: 15px; background: rgba(0,243,255,0.1);" onclick="window.hubLogin()">Iniciar Uplink</button>
+            <button class="btn-neon" style="font-size: 1.1rem; padding: 15px; background: rgba(0,243,255,0.1);" onclick="window.hubLogin()">Iniciar Uplink Seguro</button>
         </div>
     </div>
 
@@ -335,7 +379,7 @@
                     <div class="hub-faction-badge" id="hub-ui-faction" style="color:var(--neon-blue); border-color:var(--neon-blue);">SINDICATO NEON</div>
                     <div class="hub-stats-row">
                         <div class="stat-item">XP <span id="hub-ui-xp" class="glow-green">0</span></div>
-                        <div class="stat-item">Ouro <span id="hub-ui-gold" style="color:var(--neon-yellow); text-shadow: 0 0 10px rgba(255,234,0,0.5);">0</span></div>
+                        <div class="stat-item">Ouro <span id="hub-ui-gold" class="glow-yellow">0</span></div>
                     </div>
                 </div>
             </div>
@@ -410,10 +454,10 @@
                     
                     <div id="gps-panel" class="gps-panel">
                         <button class="btn-neon" id="btn-gps-toggle" onclick="window.toggleGPS()">Iniciar GPS na Rota</button>
-                        <div class="gps-status">Medição Atual: <span id="gps-dist">0.00</span> km</div>
+                        <div class="gps-status" style="margin-top:10px; color:#aaa;">Medição Atual: <span id="gps-dist" style="color:var(--neon-blue); font-weight:bold;">0.00</span> km</div>
                     </div>
 
-                    <p style="font-size:0.85rem; color:#aaa; margin-bottom:10px;">Adicione uma Imagem para registrar no painel:</p>
+                    <p style="font-size:0.85rem; color:#aaa; margin-bottom:10px; margin-top:15px;">Adicione uma Imagem para registrar no painel:</p>
                     <input type="file" id="task-file" class="input-cyber" accept="image/*" capture="environment" style="padding: 10px;">
                     <canvas id="task-compress-canvas" style="display:none;"></canvas>
                     
@@ -565,6 +609,13 @@
                     <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; margin-top:10px; display:block;">Fotografia de Perfil do Avatar:</label>
                     <input type="file" id="prof-edit-avatar-file" class="input-cyber" accept="image/*" style="padding: 10px;">
                     
+                    <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; margin-top:10px; display:block;">Cosmético da Base de Combate:</label>
+                    <select id="prof-edit-base" class="input-cyber" style="margin-bottom:15px;">
+                        <option value="Padrao">Fortaleza Padrão</option>
+                        <option value="Piramide">Pirâmide Ciber (Level 5+)</option>
+                        <option value="Cubo">Cubo Tesseract (Level 10+)</option>
+                    </select>
+
                     <button class="btn-neon" style="margin-top: 15px;" onclick="window.saveProfileEdits()">GRAVAR IDENTIDADE GLOBAL</button>
                 </div>
             </div>
@@ -631,7 +682,7 @@ let useLocalBypass = false;
 try { const app = initializeApp(firebaseConfig); db = getFirestore(app); rtdb = getDatabase(app); window.isFirebaseActive = true; } catch(e) { useLocalBypass = true; }
 
 const hCv = document.getElementById('hub-bg-canvas'); const hCx = hCv.getContext('2d');
-let hPts = [];
+let hPts =[];
 function resizeHubCanvas() { hCv.width = window.innerWidth; hCv.height = window.innerHeight; }
 window.addEventListener('resize', resizeHubCanvas); resizeHubCanvas();
 for(let i=0; i<40; i++) hPts.push({x: Math.random()*hCv.width, y: Math.random()*hCv.height, s: Math.random()*2+1, v: Math.random()*0.5+0.1});
@@ -646,7 +697,7 @@ animHubBg();
 const CARD_DB = {
     "Brawler": { id: "Brawler", name: "Lutador de Rua", icon: "🥊", cost: 2, rarity: 1, type: "unit", hp: 350, dmg: 40, range: 40, ms: 60, as: 1.2 },
     "CorredorNeon": { id: "CorredorNeon", name: "Corredor Rápido", icon: "⚡", cost: 1, rarity: 1, type: "unit", hp: 150, dmg: 20, range: 40, ms: 140, as: 0.8 },
-    "DroneRastreador": { id: "DroneRastreador", name: "Drone Suporte", icon: "🚁", cost: 2, rarity: 1, type: "unit", hp: 200, dmg: 10, range: 120, ms: 80, as: 1.5, mechanics:['expose'] },
+    "DroneRastreador": { id: "DroneRastreador", name: "Drone Suporte", icon: "🚁", cost: 2, rarity: 1, type: "unit", hp: 200, dmg: 10, range: 120, ms: 80, as: 1.5, mechanics:['expose'], isFlying: true },
     "FalcaoSucata": { id: "FalcaoSucata", name: "Falcão Pássaro", icon: "🦅", cost: 2, rarity: 1, type: "unit", hp: 250, dmg: 35, range: 50, ms: 90, as: 1.0, isFlying: true },
     "Kamikaze": { id: "Kamikaze", name: "Bot Explosivo", icon: "💣", cost: 3, rarity: 2, type: "unit", hp: 200, dmg: 300, range: 60, ms: 110, as: 1.0, mechanics: ['explode'] },
     "BioTank": { id: "BioTank", name: "Mutante Pesado", icon: "🧌", cost: 5, rarity: 2, type: "unit", hp: 1200, dmg: 60, range: 50, ms: 40, as: 2.0, isTank: true },
@@ -659,9 +710,9 @@ const CARD_DB = {
     "Sniper": { id: "Sniper", name: "Sniper Longe", icon: "🎯", cost: 4, rarity: 3, type: "unit", hp: 180, dmg: 180, range: 250, ms: 50, as: 2.5 },
     "Toxico": { id: "Toxico", name: "Monstro Ácido", icon: "🧪", cost: 6, rarity: 3, type: "unit", hp: 500, dmg: 20, range: 120, ms: 55, as: 2.0, mechanics: ['acid_pool'] },
     "VampiroDigital": { id: "VampiroDigital", name: "Sugador de Dados", icon: "🧛", cost: 6, rarity: 3, type: "unit", hp: 400, dmg: 60, range: 40, ms: 80, as: 1.2, mechanics:['lifesteal'] },
-    "MagaHolografica": { id: "MagaHolografica", name: "Ilusionista", icon: "🧚", cost: 4, rarity: 3, type: "unit", hp: 200, dmg: 40, range: 100, ms: 60, as: 1.5, mechanics:['dodge_aura'] },
+    "MagaHolografica": { id: "MagaHolografica", name: "Ilusionista", icon: "🧚", cost: 4, rarity: 3, type: "unit", hp: 200, dmg: 40, range: 100, ms: 60, as: 1.5, mechanics:['dodge_aura'], isFlying: true },
     "Mecha": { id: "Mecha", name: "Titã Destruidor", icon: "🤖", cost: 8, rarity: 4, type: "unit", hp: 1500, dmg: 40, range: 150, ms: 35, as: 0.5, mechanics:['cleave'], isTank: true },
-    "Barao": { id: "Barao", name: "Barão do Lodo", icon: "🐙", cost: 9, rarity: 4, type: "unit", hp: 2000, dmg: 50, range: 60, ms: 30, as: 2.0, mechanics: ['slow_trail', 'spawn_drones'], isTank: true },
+    "Barao": { id: "Barao", name: "Barão do Lodo", icon: "🐙", cost: 9, rarity: 4, type: "unit", hp: 2000, dmg: 50, range: 60, ms: 30, as: 2.0, mechanics:['slow_trail', 'spawn_drones'], isTank: true },
     "Hacker": { id: "Hacker", name: "Hacker Cérebro", icon: "💻", cost: 7, rarity: 4, type: "unit", hp: 500, dmg: 80, range: 180, ms: 55, as: 1.5, mechanics:['spawn_emp_base'] },
     "MestreParkour": { id: "MestreParkour", name: "Neo O Lenda", icon: "🕶️", cost: 8, rarity: 4, type: "unit", hp: 700, dmg: 120, range: 50, ms: 150, as: 1.0, mechanics: ['jump_backline'] },
     "TitanRaio": { id: "TitanRaio", name: "Deus da Rede", icon: "🌩️", cost: 10, rarity: 4, type: "unit", hp: 2500, dmg: 120, range: 80, ms: 25, as: 1.0, mechanics:['chain_lightning', 'cleave'], isTank: true },
@@ -672,16 +723,16 @@ const CARD_DB = {
     "MagiaOverclock": { id: "MagiaOverclock", name: "Velocidade Soro", icon: "💊", cost: 2, rarity: 2, type: "spell", range: 60, mechanics: ['spell_haste'] }
 };
 
-const PVE_CAMPAIGN = [
+const PVE_CAMPAIGN =[
     { name: "Setor 1: Gangue dos Brawlers", lvl: 1, buffs: {hp: 0, dmg: 0, spd: 0}, deck: ['Brawler', 'CorredorNeon'], cardLevels: {} },
     { name: "Setor 2: Patrulha de Drones", lvl: 3, buffs: {hp: 50, dmg: 0.1, spd: 0.1}, deck: ['DroneRastreador', 'Sniper', 'Barricada'], cardLevels: {} },
     { name: "Setor 3: Mutação Tóxica", lvl: 6, buffs: {hp: 200, dmg: 0.2, spd: 0.1}, deck: ['BioTank', 'Toxico', 'Kamikaze'], cardLevels: {} },
-    { name: "Setor 4: Elite Hacker", lvl: 10, buffs: {hp: 500, dmg: 0.3, spd: 0.3}, deck: ['Hacker', 'Striker', 'Fantasma', 'Mecha'], cardLevels: {} },
-    { name: "Setor 5: O Cérebro Matriz", lvl: 15, buffs: {hp: 1000, dmg: 0.5, spd: 0.5}, deck: ['Barao', 'MestreParkour', 'MagiaOrbital', 'TitanRaio'], cardLevels: {} }
+    { name: "Setor 4: Elite Hacker", lvl: 10, buffs: {hp: 500, dmg: 0.3, spd: 0.3}, deck:['Hacker', 'Striker', 'Fantasma', 'Mecha'], cardLevels: {} },
+    { name: "Setor 5: O Cérebro Matriz", lvl: 15, buffs: {hp: 1000, dmg: 0.5, spd: 0.5}, deck:['Barao', 'MestreParkour', 'MagiaOrbital', 'TitanRaio'], cardLevels: {} }
 ];
 
 let hubProfile = { 
-    uid: null, username: "Jogador Alpha", bio: "O meu corpo garante a vitória da máquina.", clan: "", faction: "Sindicato Neon", friends: [], lvl: 1, xp: 0, gold: 1000, avatar: "https://i.imgur.com/kKC1zaJ.png",
+    uid: null, username: "Jogador Alpha", bio: "O meu corpo garante a vitória da máquina.", clan: "", faction: "Sindicato Neon", baseCosmetic: "Padrao", friends:[], lvl: 1, xp: 0, gold: 1000, avatar: "https://i.imgur.com/kKC1zaJ.png",
     buffs: { hp: 0, dmg: 0.0, spd: 0.0, magic: 0.0 }, 
     cardsOwned:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], cardLevels: { 'Brawler': 1, 'CorredorNeon': 1, 'DroneRastreador':1, 'Barricada':1 },
     deck:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], pveStage: 0
@@ -708,6 +759,7 @@ window.showProfileModal = function(userStr) {
                 <p style="color:#aaa; font-style:italic; font-size:0.9rem;">"${p.bio || 'Sem bio.'}"</p>
                 <p style="color:#fff; font-weight:bold;">CLÃ: <span style="color:var(--neon-yellow);">${p.clan || 'Lobo Solitário'}</span></p>
                 <p style="color:var(--neon-green);">Level: ${p.lvl}</p>
+                <button class="btn-neon red" style="font-size:0.7rem; padding:10px; margin-top:10px;" onclick="window.reportPlayer('${p.uid}')">DENUNCIAR JOGADOR</button>
             </div>
         `);
     } catch(e) {}
@@ -717,26 +769,55 @@ window.showMyProfileModal = function() { window.showProfileModal(encodeURICompon
 
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
+    let pwd = document.getElementById('login-password').value.trim();
     let faction = document.getElementById('login-faction').value;
-    if(!name) { window.showModal("Aviso","O Login na matriz exige nome digital limpo."); return; }
+    
+    if(!name || !pwd) { window.playSound('error'); return window.showModal("Aviso","O Login exige Nome e Senha segura."); }
     name = name.toUpperCase(); 
-    if(!db || useLocalBypass) { useLocalBypass = true; hubProfile.uid = 'local_' + Math.random().toString(36).substring(2,8); hubProfile.username = name; hubProfile.faction = faction; finishLoginUI(); return; }
+    let hashedPwd = await window.sha256(pwd);
+
+    if(!db || useLocalBypass) { 
+        useLocalBypass = true; 
+        let localU = localStorage.getItem('localUser_'+name);
+        if (localU) {
+            let p = JSON.parse(localU);
+            if (p.password !== hashedPwd) { window.playSound('error'); return window.showModal("Acesso Negado", "Senha local incorreta para este vulgo."); }
+            hubProfile = p;
+        } else {
+            hubProfile.uid = 'local_' + Math.random().toString(36).substring(2,8); hubProfile.username = name; hubProfile.faction = faction; hubProfile.password = hashedPwd;
+            localStorage.setItem('localUser_'+name, JSON.stringify(hubProfile));
+        }
+        finishLoginUI(); return; 
+    }
+    
     try {
         const qs = await getDocs(query(collection(db, "hub_users"), where("username", "==", name)));
-        if (!qs.empty) { hubProfile = { ...hubProfile, ...qs.docs[0].data() }; hubProfile.uid = qs.docs[0].id; } 
-        else { hubProfile.faction = faction; const res = await addDoc(collection(db, "hub_users"), hubProfile); hubProfile.uid = res.id; hubProfile.username = name; }
+        if (!qs.empty) { 
+            let uData = qs.docs[0].data();
+            if (uData.password && uData.password !== hashedPwd) { window.playSound('error'); return window.showModal("Acesso Negado", "Senha incorreta na Matriz."); }
+            hubProfile = { ...hubProfile, ...uData }; hubProfile.uid = qs.docs[0].id; 
+        } 
+        else { 
+            hubProfile.faction = faction; hubProfile.password = hashedPwd; 
+            const res = await addDoc(collection(db, "hub_users"), hubProfile); hubProfile.uid = res.id; hubProfile.username = name; 
+        }
         finishLoginUI();
-    } catch(err) { useLocalBypass = true; hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name; hubProfile.faction = faction; finishLoginUI(); }
+    } catch(err) { window.playSound('error'); window.showModal("Falha de Conexão", "Usando cache local isolado."); useLocalBypass = true; finishLoginUI(); }
 };
 
 function finishLoginUI() {
     document.getElementById('hub-login').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex';
     if(hubProfile.pveStage === undefined) hubProfile.pveStage = 0;
-    if(!hubProfile.friends) hubProfile.friends = [];
+    if(!hubProfile.friends) hubProfile.friends =[];
+    if(!hubProfile.baseCosmetic) hubProfile.baseCosmetic = 'Padrao';
     saveHubStateLocal(); syncUIWithProfile(); setupHubRealtime(); 
+    window.playSound('success');
+    
+    // Tutorial Loader
+    setTimeout(() => { window.startTutorial(); }, 1000);
 }
 
-function saveHubStateLocal() { sessionStorage.setItem('hubProfile_JSON', JSON.stringify(hubProfile)); try { if(db && hubProfile.uid && !hubProfile.uid.startsWith('local_')) updateDoc(doc(db, "hub_users", hubProfile.uid), hubProfile).catch(()=>{}); } catch(e) {} }
+function saveHubStateLocal() { sessionStorage.setItem('hubProfile_JSON', JSON.stringify(hubProfile)); if(useLocalBypass) localStorage.setItem('localUser_'+hubProfile.username, JSON.stringify(hubProfile)); try { if(db && hubProfile.uid && !hubProfile.uid.startsWith('local_')) updateDoc(doc(db, "hub_users", hubProfile.uid), hubProfile).catch(()=>{}); } catch(e) {} }
 
 function syncUIWithProfile() {
     hubProfile.lvl = 1 + Math.floor(hubProfile.xp / 1000);
@@ -749,6 +830,7 @@ function syncUIWithProfile() {
     if(hubProfile.avatar) document.getElementById('hub-avatar-img').src = hubProfile.avatar;
     document.getElementById('prof-edit-name').value = hubProfile.username; document.getElementById('prof-edit-bio').value = hubProfile.bio;
     document.getElementById('prof-edit-clan').value = hubProfile.clan || "";
+    let baseSelect = document.getElementById('prof-edit-base'); if(baseSelect) baseSelect.value = hubProfile.baseCosmetic || 'Padrao';
 
     let sel = document.getElementById('qr-card-select'); sel.innerHTML = "";
     hubProfile.cardsOwned.forEach(cId => { let opt = document.createElement('option'); opt.value = cId; opt.innerText = CARD_DB[cId].name + ` (Lvl ${hubProfile.cardLevels[cId]})`; sel.appendChild(opt); });
@@ -761,22 +843,28 @@ function syncUIWithProfile() {
 
 window.saveProfileEdits = function() {
     let n = document.getElementById('prof-edit-name').value.trim(); let b = document.getElementById('prof-edit-bio').value.trim(); let c = document.getElementById('prof-edit-clan').value.trim(); let f = document.getElementById('prof-edit-avatar-file');
+    let baseCos = document.getElementById('prof-edit-base').value;
+    if (baseCos === 'Piramide' && hubProfile.lvl < 5) { window.playSound('error'); return window.showModal("Nível Insuficiente", "O Cosmético Pirâmide Ciber exige Nível 5+."); }
+    if (baseCos === 'Cubo' && hubProfile.lvl < 10) { window.playSound('error'); return window.showModal("Nível Insuficiente", "O Cosmético Cubo Tesseract exige Nível 10+."); }
+    hubProfile.baseCosmetic = baseCos;
+
     if(n) hubProfile.username = n; if(b) hubProfile.bio = b; if(c) hubProfile.clan = c;
     if(f.files && f.files[0]) {
         let r = new FileReader(); r.onload = e=>{ let img = new Image(); img.onload = ()=>{ const cv=document.createElement('canvas'); const mx=120; const sc=mx/img.width; cv.width=mx; cv.height=img.height*sc; cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); hubProfile.avatar=cv.toDataURL('image/jpeg',0.8); finishPf(); }; img.src = e.target.result; }; r.readAsDataURL(f.files[0]);
     } else finishPf();
-    function finishPf(){ saveHubStateLocal(); syncUIWithProfile(); window.showModal("Ajustado", "Suas credenciais biométricas mudaram."); }
+    function finishPf(){ saveHubStateLocal(); syncUIWithProfile(); window.playSound('success'); window.showModal("Ajustado", "Suas credenciais e personalizações foram salvas na rede."); }
 }
 
 window.switchTab = function(tabId) { 
     document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); 
     document.getElementById(tabId).classList.add('active'); 
-    event.currentTarget.classList.add('active'); 
+    let btn = document.querySelector(`button[onclick="window.switchTab('${tabId}')"]`); if(btn) btn.classList.add('active');
     if(tabId === 'tab-mundo') { window.setupMap(); } 
     if(tabId === 'tab-social') { window.renderFriendsList(); }
+    window.playSound('click');
 }
 
-// ==== CORREÇÃO VITAL DO MOTOR DE AVISOS ====
+// ==== SISTEMA DE MODAL GERAL ====
 window.showModal = function(title, desc, btnsHTML) { 
     document.getElementById('modal-title').innerHTML = title; 
     document.getElementById('modal-desc').innerHTML = desc; 
@@ -784,7 +872,53 @@ window.showModal = function(title, desc, btnsHTML) {
     document.getElementById('system-modal').style.display = 'flex'; 
 };
 
-if(sessionStorage.getItem('hubProfile_JSON')) { hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) }; if(hubProfile.uid && hubProfile.uid.startsWith('local_')) useLocalBypass = true; finishLoginUI(); }
+// ======================== TUTORIAL ========================
+let tutStep = 0;
+const tutSteps =[
+    { tab: 'tab-feed', title: 'A Rede Global', txt: 'Bem-vindo ao Cyber Fitness. Aqui no Feed, você vê e aprova os treinos relatados pelos outros guerreiros.' },
+    { tab: 'tab-missoes', title: 'Ganhar Recursos', txt: 'Na aba Treinos, você envia fotos das suas atividades físicas reais para ganhar Ouro e XP.' },
+    { tab: 'tab-loja', title: 'Gacha Store', txt: 'Com o Ouro dos seus treinos, hackeie pacotes para extrair novas Cartas Cibernéticas.' },
+    { tab: 'tab-deck', title: 'Montar Esquadrão', txt: 'Equipe suas melhores cartas no seu Deck. Somente 8 entram na batalha de verdade.' },
+    { tab: 'tab-mundo', title: 'Mapa e Nodos (GPS)', txt: 'Use o GPS para dominar territórios correndo fisicamente pela cidade. Nodos dão recompensas quando você chega perto deles!' },
+    { tab: null, title: 'Arena PVE/PVP', txt: 'Use o grande botão ARENA na barra lateral para lutar contra o Sistema PVE ou adversários reais.' }
+];
+
+window.startTutorial = function() {
+    if(localStorage.getItem('tutorialDone')) return;
+    document.getElementById('tutorial-overlay').style.display = 'flex';
+    tutStep = 0; window.renderTutorialStep();
+}
+window.renderTutorialStep = function() {
+    let s = tutSteps[tutStep];
+    if (s.tab) window.switchTab(s.tab);
+    document.getElementById('tut-title').innerText = s.title;
+    document.getElementById('tut-text').innerText = s.txt;
+    window.playSound('scan');
+}
+window.nextTutorial = function() {
+    tutStep++; if (tutStep >= tutSteps.length) { window.skipTutorial(); } else { window.renderTutorialStep(); }
+}
+window.skipTutorial = function() {
+    document.getElementById('tutorial-overlay').style.display = 'none';
+    localStorage.setItem('tutorialDone', 'true');
+    window.switchTab('tab-feed');
+    window.playSound('success');
+}
+
+// ======================== SISTEMA DE DENÚNCIAS ========================
+window.reportPost = async function(id) {
+    window.playSound('error');
+    window.showModal("Denunciar Publicação", "Confirma a denúncia de fraude ou conteúdo inadequado? A inteligência central irá punir fraudadores de treinos.", `<button class="btn-neon red" onclick="window.confirmReport('${id}', 'post')">CONFIRMAR DENÚNCIA</button>`);
+}
+window.reportPlayer = async function(uid) {
+    window.playSound('error');
+    window.showModal("Denunciar Jogador", "Confirma a denúncia deste usuário por conduta imprópria ou perfil falso?", `<button class="btn-neon red" onclick="window.confirmReport('${uid}', 'user')">CONFIRMAR DENÚNCIA</button>`);
+}
+window.confirmReport = async function(id, type) {
+    document.getElementById('system-modal').style.display = 'none';
+    window.playSound('success');
+    window.showModal("Relatório Enviado", "A Inteligência Central bloqueou os dados temporalmente e analisará a ocorrência em breve.");
+}
 
 // ======================== GPS E MAPAS (LEAFLET) ========================
 let trackingGeoId = null; let lastLat = null, lastLng = null; let totalKm = 0;
@@ -797,30 +931,25 @@ window.setupMap = function() {
     setTimeout(() => {
         window.mapInstance = L.map('map-container').setView([0, 0], 2); 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap' }).addTo(window.mapInstance);
-        window.mapInitialized = true;
-        window.mapInstance.invalidateSize();
+        window.mapInitialized = true; window.mapInstance.invalidateSize();
         
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition(pos => {
                 lastLat = pos.coords.latitude; lastLng = pos.coords.longitude;
-                
                 if(!window.userMarker) {
                     window.mapInstance.setView([lastLat, lastLng], 15);
                     window.userMarker = L.circle([lastLat, lastLng], {color: 'var(--neon-blue)', fillColor: '#0ff', fillOpacity: 0.2, radius: 40}).addTo(window.mapInstance).bindPopup("Sua Posição Exata");
                     
-                    window.bossLat = lastLat + (Math.random() > 0.5 ? 0.003 : -0.003); 
-                    window.bossLng = lastLng + (Math.random() > 0.5 ? 0.003 : -0.003);
+                    window.bossLat = lastLat + (Math.random() > 0.5 ? 0.003 : -0.003); window.bossLng = lastLng + (Math.random() > 0.5 ? 0.003 : -0.003);
                     window.bossCircle = L.circle([window.bossLat, window.bossLng], {color: 'var(--neon-red)', fillColor: 'darkred', fillOpacity: 0.3, radius: 250}).addTo(window.mapInstance).bindPopup("ZONA DO LEVIATÃ (RAID BOSS)");
-                } else {
-                    window.userMarker.setLatLng([lastLat, lastLng]);
-                }
-            }, err => { console.warn("Erro GPS", err); }, {enableHighAccuracy: true, maximumAge: 0, timeout: 10000});
+                } else { window.userMarker.setLatLng([lastLat, lastLng]); }
+            }, err => { }, {enableHighAccuracy: true, maximumAge: 0, timeout: 10000});
         }
     }, 400); 
 }
 
 window.scanLocalNodes = function() {
-    if(!lastLat) return window.showModal("Aviso", "GPS Desligado ou Buscando Posição. Aguarde.");
+    if(!lastLat) { window.playSound('error'); return window.showModal("Aviso", "GPS Desligado ou Buscando Posição. Aguarde."); }
     window.playSound('scan');
     for(let i=0; i<3; i++) {
         let nLat = lastLat + (Math.random() - 0.5) * 0.01; let nLng = lastLng + (Math.random() - 0.5) * 0.01;
@@ -830,19 +959,17 @@ window.scanLocalNodes = function() {
     window.showModal("Radar Ativo", "Nodos identificados no mapa. Vá até eles fisicamente para recolher fragmentos!");
 }
 
-window.hackNode = function() { window.showModal("Erro de Proximidade", "Você não está próximo fisicamente o suficiente das coordenadas. Mova seu corpo real para hackear o nodo."); }
+window.hackNode = function() { window.playSound('error'); window.showModal("Erro de Proximidade", "Você não está próximo fisicamente o suficiente das coordenadas. Mova seu corpo real para hackear o nodo."); }
 window.claimTerritory = function() { window.showModal("Guerra de Território", "Tire uma foto de um treino aqui via aba 'Feed Hub' para gerar +10 Pontos de Influência para a " + hubProfile.faction + " nesta quadra."); }
 
 // ======================== MERCADO NEGRO (QR CODE) ========================
 let html5QrcodeScanner = null;
 window.generateTradeQR = function() {
-    let cId = document.getElementById('qr-card-select').value;
-    if(!cId) return;
-    let qrBox = document.getElementById('qr-code-display');
-    qrBox.style.display = 'flex'; qrBox.innerHTML = '';
+    let cId = document.getElementById('qr-card-select').value; if(!cId) return;
+    let qrBox = document.getElementById('qr-code-display'); qrBox.style.display = 'flex'; qrBox.innerHTML = '';
     let tradeStr = `TRADE|${hubProfile.uid}|${cId}|${Date.now()}`;
     new QRCode(qrBox, { text: tradeStr, width: 200, height: 200, colorDark : "#0b0c10", colorLight : "#ffea00", correctLevel : QRCode.CorrectLevel.H });
-    window.showModal("Código Gerado!", "Mostre essa tela para o aliado. O código expira em breve. (Obs: Isso remove a carta da sua mão se concretizado)");
+    window.playSound('success'); window.showModal("Código Gerado!", "Mostre essa tela para o aliado. O código expira em breve.");
 }
 
 window.startQRScanner = function() {
@@ -851,16 +978,14 @@ window.startQRScanner = function() {
         html5QrcodeScanner = new Html5Qrcode("qr-reader");
         html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: {width: 250, height: 250} },
         (decodedText, decodedResult) => {
-            window.playSound('epic');
-            html5QrcodeScanner.stop(); document.getElementById('qr-reader').style.display = 'none';
+            window.playSound('epic'); html5QrcodeScanner.stop(); document.getElementById('qr-reader').style.display = 'none';
             let parts = decodedText.split('|');
             if(parts[0] === 'TRADE') {
                 let rCid = parts[2];
                 if(hubProfile.cardsOwned.includes(rCid)) { hubProfile.cardLevels[rCid] = (hubProfile.cardLevels[rCid]||1) + 1; }
                 else { hubProfile.cardsOwned.push(rCid); hubProfile.cardLevels[rCid] = 1; }
-                saveHubStateLocal(); syncUIWithProfile();
-                window.showModal("Transferência Completa!", `Você hackeou a carta ${CARD_DB[rCid].name} com sucesso presencialmente!`);
-            } else { window.showModal("Erro", "Formato de Código Neo-Tec Invalido."); }
+                saveHubStateLocal(); syncUIWithProfile(); window.showModal("Transferência Completa!", `Você hackeou a carta ${CARD_DB[rCid].name} com sucesso presencialmente!`);
+            } else { window.playSound('error'); window.showModal("Erro", "Formato de Código Neo-Tec Invalido."); }
         }, (errorMessage) => {  });
     }
 }
@@ -868,22 +993,18 @@ window.startQRScanner = function() {
 // ======================== BOSS GLOBAL ========================
 let globalBossHP = 4250000; let globalBossMax = 5000000;
 window.attackGlobalBoss = function() {
-    if(!lastLat || !window.bossLat) {
-        return window.showModal("Sinal GPS Perdido", "Abra a aba 'Mapa & Nodos (GPS)' e aguarde o sinal estabilizar para rastrear onde o Boss está na sua região.");
-    }
+    if(!lastLat || !window.bossLat) { window.playSound('error'); return window.showModal("Sinal GPS Perdido", "Abra a aba 'Mapa & Nodos (GPS)' e aguarde o sinal estabilizar para rastrear onde o Boss está na sua região."); }
     let dist = window.calcDist(lastLat, lastLng, window.bossLat, window.bossLng);
-    if(dist > 0.4) {
-        return window.showModal("Fora de Alcance (Zona Segura)", `O Leviatã está a <b>${(dist).toFixed(2)} km</b> de distância. \n\nVocê precisa estar a menos de 400 metros dele para abrir o portal da arena! Olhe o círculo vermelho no seu Mapa GPS e vá até lá.`);
-    }
+    if(dist > 0.4) { window.playSound('error'); return window.showModal("Fora de Alcance (Zona Segura)", `O Leviatã está a <b>${(dist).toFixed(2)} km</b> de distância. \n\nVocê precisa estar a menos de 400 metros dele para abrir o portal da arena!`); }
 
-    window.startClash(false, {name: "MECHA LEVIATÃ (GLOBAL BOSS)", lvl: 50, buffs: {hp: 2000, dmg: 1.5, spd: 0.5}, deck: ['Mecha', 'TitanRaio', 'MagiaOrbital', 'Barao', 'Toxico', 'Sniper'], cardLevels:{'Mecha':10, 'TitanRaio':10}});
+    window.startClash(false, {name: "MECHA LEVIATÃ (GLOBAL BOSS)", lvl: 50, buffs: {hp: 2000, dmg: 1.5, spd: 0.5}, deck:['Mecha', 'TitanRaio', 'MagiaOrbital', 'Barao', 'Toxico', 'Sniper'], cardLevels:{'Mecha':10, 'TitanRaio':10}});
     window.isGlobalRaid = true; 
 }
 
 window.toggleGPS = function() {
     const btn = document.getElementById('btn-gps-toggle'); const display = document.getElementById('gps-dist');
-    if(trackingGeoId !== null) { navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null; btn.innerText = "📍 INICIAR GRAVAÇÃO DE ROTA"; btn.style.background = "transparent"; btn.style.borderColor = "var(--neon-blue)"; document.getElementById('task-desc').value += `\n[Distância de ${totalKm.toFixed(2)} km medida atestada.]`; return; }
-    if (!navigator.geolocation) return window.showModal("Falha Crítica", "As permissões foram negadas.");
+    if(trackingGeoId !== null) { navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null; btn.innerText = "📍 INICIAR GRAVAÇÃO DE ROTA"; btn.style.background = "transparent"; btn.style.borderColor = "var(--neon-blue)"; document.getElementById('task-desc').value += `\n[Distância de ${totalKm.toFixed(2)} km medida atestada.]`; window.playSound('success'); return; }
+    if (!navigator.geolocation) { window.playSound('error'); return window.showModal("Falha Crítica", "Permissões de GPS negadas."); }
     totalKm = 0; lastLat = null; lastLng = null; display.innerText = "0.00";
     btn.innerText = "⏸ SALVAR CONTAGEM ATUAL NO RELATO"; btn.style.background = "var(--neon-pink)"; btn.style.color = "#000"; btn.style.borderColor="var(--neon-pink)";
     trackingGeoId = navigator.geolocation.watchPosition((pos) => { let lat = pos.coords.latitude; let lng = pos.coords.longitude; if(lastLat !== null) { let d = calcDist(lastLat, lastLng, lat, lng); if(d > 0.005) { totalKm += d; lastLat = lat; lastLng = lng; } } else { lastLat = lat; lastLng = lng; } display.innerText = totalKm.toFixed(2); }, (err) => { }, { enableHighAccuracy: true, maximumAge: 10000 });
@@ -902,11 +1023,11 @@ window.openTaskUploader = function(titulo, categoria) {
     document.getElementById('form-box-title').innerText = `CONCLUIR PROVA: ${titulo.toUpperCase()}`;
     document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed');
 };
-window.createCustomTask = function() { let name = document.getElementById('custom-task-name').value.trim(); let type = document.getElementById('custom-task-type').value; if(!name) return window.showModal("Atenção", "Preencha primeiro o Treino na Categoria Livre."); window.openTaskUploader(`TREINO EXTRA: ${name}`, type); }
+window.createCustomTask = function() { let name = document.getElementById('custom-task-name').value.trim(); let type = document.getElementById('custom-task-type').value; if(!name) { window.playSound('error'); return window.showModal("Atenção", "Preencha primeiro o Treino."); } window.openTaskUploader(`TREINO EXTRA: ${name}`, type); }
 
 window.submitTaskEvidence = async function() {
     if(!curTaskConfig) return; const file = document.getElementById('task-file').files[0];
-    if(!file && curTaskCat !== 'Duelo') return window.showModal("Aviso Opcional","Apenas fotografias concretizam missões seguras! Puxe a lente e ateste a verdade.");
+    if(!file && curTaskCat !== 'Duelo') { window.playSound('error'); return window.showModal("Aviso Opcional","Apenas fotografias concretizam missões seguras! Puxe a lente e ateste a verdade."); }
     const btn = document.getElementById('btn-post-upload'); btn.innerText = "Construindo Base 64 e Enviando..."; btn.disabled = true;
     const desc = document.getElementById('task-desc').value; 
     if(file && file.type.startsWith("video/")) { const vURL = URL.createObjectURL(file); await window.executePostInjection(desc, vURL, "video"); } 
@@ -916,7 +1037,7 @@ window.submitTaskEvidence = async function() {
 window.executePostInjection = async function(desc, midiaURL, midiaType) {
     hubProfile.xp += curTaskConfig.xp||0; hubProfile.gold += curTaskConfig.gold||0;
     if(curTaskConfig.buffHp) hubProfile.buffs.hp += curTaskConfig.buffHp; if(curTaskConfig.buffDmg) hubProfile.buffs.dmg += curTaskConfig.buffDmg; if(curTaskConfig.buffSpd) hubProfile.buffs.spd += curTaskConfig.buffSpd; if(curTaskConfig.buffMagic) { hubProfile.buffs.magic = (hubProfile.buffs.magic || 0) + curTaskConfig.buffMagic; }
-    saveHubStateLocal(); syncUIWithProfile(); 
+    saveHubStateLocal(); syncUIWithProfile(); window.playSound('success');
     let pData = encodeURIComponent(JSON.stringify(hubProfile)).replace(/'/g, "%27");
     let feedObj = { uid: hubProfile.uid, author: hubProfile.username, pData: pData, avatar: hubProfile.avatar, taskName: curTaskConfig.name, category: curTaskCat, desc: desc, midiaURL: midiaURL, midiaType: midiaType||'none', rewardLog: curTaskConfig, upvotes: {}, downvotes: {}, comments:[], active: true, timestamp: Date.now() };
     let btn = document.getElementById('btn-post-upload'); btn.innerText = "COMPARTILHAR E GANHAR STATUS"; btn.disabled = false;
@@ -944,7 +1065,13 @@ function renderFeedItems() {
         let commentsHTML = (d.comments||[]).map(c => `<div class="comment-item"><b>${c.author}:</b> ${c.text}</div>`).join('');
         
         let el = document.createElement('div'); el.className = `feed-post ${!d.active ? 'revoked' : ''}`; el.setAttribute("data-cat", d.category||""); 
-        el.innerHTML = `<div class="post-header" onclick="window.showProfileModal('${d.pData || ''}')"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">${d.taskName} (${d.category||'GERAL'})</span> </div> </div> <div style="color:#ddd; margin-bottom:15px; font-size:0.95rem; line-height: 1.5; font-family:'Rajdhani';">${d.desc}</div> ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' } <div class="post-actions"> <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">Aprovo o Empenho (${upArr.length})</button> <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">Mente / Exijo Morte (${dnArr.length})</button> </div> <div class="post-comments"> <div class="comments-list">${commentsHTML}</div> <div class="comment-input-area"><input type="text" id="cmt-${d.id}" placeholder="Insurja neste perfil, diga seu adendo humano!..." class="input-cyber" style="margin:0; padding:10px; font-size:0.85rem;"><button class="btn-neon green" style="width:auto; padding:10px 15px;" onclick="window.addComment('${d.id}')">RESPONDER</button></div> </div>`;
+        el.innerHTML = `<div class="post-header" onclick="window.showProfileModal('${d.pData || ''}')"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">${d.taskName} (${d.category||'GERAL'})</span> </div> </div> <div style="color:#ddd; margin-bottom:15px; font-size:0.95rem; line-height: 1.5; font-family:'Rajdhani';">${d.desc}</div> ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' } 
+        <div class="post-actions"> 
+            <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">Aprovo (${upArr.length})</button> 
+            <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">Mente (${dnArr.length})</button> 
+            <button class="vote-btn down" style="color:var(--neon-red); border-color:var(--neon-red); max-width: 150px;" onclick="window.reportPost('${d.id}')">DENUNCIAR</button>
+        </div> 
+        <div class="post-comments" style="margin-top:15px;"> <div class="comments-list">${commentsHTML}</div> <div class="comment-input-area" style="display:flex; gap:10px;"><input type="text" id="cmt-${d.id}" placeholder="Insurja neste perfil..." class="input-cyber" style="margin:0; padding:10px; font-size:0.85rem;"><button class="btn-neon green" style="width:auto; padding:10px 15px;" onclick="window.addComment('${d.id}')">RESPONDER</button></div> </div>`;
         c.appendChild(el);
     });
 }
@@ -961,11 +1088,11 @@ function renderDeckBuilder() {
         dC.appendChild(el);
     }
     let cC = document.getElementById('collection-render'); cC.innerHTML=""; let dedup =[...new Set(hubProfile.cardsOwned)];
-    dedup.forEach(cId => { if(hubProfile.deck.includes(cId) || !CARD_DB[cId]) return; let cData = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1; let cv = document.createElement('div'); cv.className=`battle-card rarity-${cData.rarity}`; cv.innerHTML = `<div class="b-card-cost">${cData.cost} N</div><div class="b-card-lvl">L${lvl}</div><div class="b-card-art">${cData.icon}</div><div class="b-card-name">${cData.name}</div>`; cv.onclick = () => { if(hubProfile.deck.length >= 8) return window.showModal("Aviso Estratégico","Capacidade máxima: 8."); hubProfile.deck.push(cId); saveHubStateLocal(); renderDeckBuilder(); }; cC.appendChild(cv); });
+    dedup.forEach(cId => { if(hubProfile.deck.includes(cId) || !CARD_DB[cId]) return; let cData = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1; let cv = document.createElement('div'); cv.className=`battle-card rarity-${cData.rarity}`; cv.innerHTML = `<div class="b-card-cost">${cData.cost} N</div><div class="b-card-lvl">L${lvl}</div><div class="b-card-art">${cData.icon}</div><div class="b-card-name">${cData.name}</div>`; cv.onclick = () => { if(hubProfile.deck.length >= 8) { window.playSound('error'); return window.showModal("Aviso Estratégico","Capacidade máxima do Esquadrão: 8."); } hubProfile.deck.push(cId); saveHubStateLocal(); renderDeckBuilder(); }; cC.appendChild(cv); });
 }
 
 window.rollGacha = function() {
-    if(hubProfile.gold < 1000) return window.showModal("Aviso Opressor", "Sem grana! Vá fazer burpees e registrar na rede pra ganhar dinheiro real.");
+    if(hubProfile.gold < 1000) { window.playSound('error'); return window.showModal("Aviso Opressor", "Sem grana! Vá fazer burpees e registrar na rede pra ganhar dinheiro real."); }
     hubProfile.gold -= 1000;
     let cardIds = Object.keys(CARD_DB); let drops =[];
     const resUI = document.getElementById('gacha-result');
@@ -991,27 +1118,25 @@ window.rollGacha = function() {
             el.innerHTML = `<div style="border:2px solid ${bgC}; padding:15px; background:rgba(0,0,0,0.8); border-radius: 8px; color:${bgC}; font-size:0.9rem; text-align:center; min-width: 80px; font-weight:bold; box-shadow: 0 0 10px ${bgC} inset; animation: fadeIn 0.4s ease-out;">${c.icon} ${c.name}<br><span style="font-size:0.7rem; color:#fff;">(+Nível)</span></div>`;
             resUI.appendChild(el);
         });
-        saveHubStateLocal(); syncUIWithProfile(); renderDeckBuilder();
+        saveHubStateLocal(); syncUIWithProfile(); renderDeckBuilder(); window.playSound('success');
     }, 800);
 }
 
-// ======================== NOVO SISTEMA SOCIAL E ISOLAMENTO DOS BOTÕES DE COMBATE ========================
-
+// ======================== SISTEMA SOCIAL ========================
 window.addFriend = function(fId, fName) {
-    if(!hubProfile.friends) hubProfile.friends = [];
+    if(!hubProfile.friends) hubProfile.friends =[];
     if(!hubProfile.friends.includes(fId)) {
         hubProfile.friends.push(fId);
-        saveHubStateLocal();
+        saveHubStateLocal(); window.playSound('success');
         window.showModal("Aliado Conectado", `Você adicionou o guerreiro ${fName} à sua rede corporativa de fibras.`);
-        window.renderFriendsList();
-        window.searchPlayers(); // Atualiza se a busca estiver aberta
+        window.renderFriendsList(); window.searchPlayers(); 
     }
 }
 
 function createPlayerCardHTML(k, d, isOnline) {
     let safeName = (d.username || "Desconhecido").replace(/['"]/g, '');
     let pData = encodeURIComponent(JSON.stringify(d)).replace(/'/g, "%27");
-    let isFriend = (hubProfile.friends || []).includes(k);
+    let isFriend = (hubProfile.friends ||[]).includes(k);
     
     let friendBtn = !isFriend ? `<button class="btn-neon" style="font-size:0.7rem; padding:8px; border-color:#888; color:#888;" onclick="window.addFriend('${k}', '${safeName}')">ADICIONAR ALIADO</button>` : `<span style="font-size:0.7rem; color:var(--neon-green); text-align:center; font-family:'Orbitron';">✔️ ALIADO CONECTADO</span>`;
     
@@ -1026,7 +1151,7 @@ function createPlayerCardHTML(k, d, isOnline) {
         
         <div style="display:flex; gap:10px; margin-top:15px; flex-direction:column; border-top:1px solid #333; padding-top:15px; position:relative; z-index:2;">
             ${friendBtn}
-            <button class="btn-neon pink" style="font-size:0.7rem; padding:10px;" onclick="window.sendRealDuel('${k}', '${safeName}')">DESAFIO DE TREINO FÍSICO (IRL)</button>
+            <button class="btn-neon pink" style="font-size:0.7rem; padding:10px;" onclick="window.sendRealDuel('${k}', '${safeName}')">DESAFIO FÍSICO (IRL)</button>
             <button class="btn-neon" style="font-size:0.7rem; padding:10px;" onclick="window.sendCyberPvpDuel('${k}', '${safeName}')">ARENA CYBER CLASH</button>
         </div>
     </div>`;
@@ -1044,8 +1169,7 @@ window.searchPlayers = async function() {
         list.innerHTML = "";
         if(qs.empty) { list.innerHTML = "<div style='color:#aaa;'>Nenhum registro encontrado com esse código/vulgo.</div>"; return; }
         qs.forEach(doc => {
-            let d = doc.data();
-            if(doc.id === hubProfile.uid) return;
+            let d = doc.data(); if(doc.id === hubProfile.uid) return;
             list.innerHTML += createPlayerCardHTML(doc.id, d, false);
         });
     } catch(e) { list.innerHTML = "<div style='color:red;'>Erro estrutural na varredura.</div>"; }
@@ -1053,55 +1177,41 @@ window.searchPlayers = async function() {
 
 window.renderFriendsList = async function() {
     let list = document.getElementById('friends-list-container');
-    if(!hubProfile.friends || hubProfile.friends.length === 0) {
-        list.innerHTML = "<div style='color:#aaa; font-size:0.9rem;'>Sua rede está vazia. Adicione os frangos para competir.</div>";
-        return;
-    }
+    if(!hubProfile.friends || hubProfile.friends.length === 0) { list.innerHTML = "<div style='color:#aaa; font-size:0.9rem;'>Sua rede está vazia. Adicione os frangos para competir.</div>"; return; }
     list.innerHTML = "<div style='color:#aaa;'>Carregando rede de aliados...</div>";
     if(useLocalBypass || !db) { list.innerHTML = "<div style='color:red;'>Offline: Aliados armazenados, mas inacessíveis.</div>"; return; }
-    
     try {
         list.innerHTML = "";
         for(let fId of hubProfile.friends) {
-            const docRef = doc(db, "hub_users", fId);
-            const snap = await getDoc(docRef);
-            if(snap.exists()) {
-                list.innerHTML += createPlayerCardHTML(fId, snap.data(), false); 
-            }
+            const docRef = doc(db, "hub_users", fId); const snap = await getDoc(docRef);
+            if(snap.exists()) { list.innerHTML += createPlayerCardHTML(fId, snap.data(), false); }
         }
     } catch(e) { list.innerHTML = "<div style='color:red;'>Erro ao carregar dados dos aliados.</div>"; }
 }
 
 function setupHubRealtime() {
-    if(useLocalBypass) {
-        document.getElementById('online-players-list').innerHTML = createPlayerCardHTML('ai_ghost', { username: 'Holograma Matriz Pura', lvl: 35, faction: 'Sistema Central', bio: "Eu sou um robô de testes." }, true);
-        listenToFeed(); return;
-    }
-    
+    if(useLocalBypass) { document.getElementById('online-players-list').innerHTML = createPlayerCardHTML('ai_ghost', { username: 'Holograma Matriz Pura', lvl: 35, faction: 'Sistema Central', bio: "Eu sou um robô de testes." }, true); listenToFeed(); return; }
     try {
         onDisconnect(ref(rtdb, 'hub_presence/'+hubProfile.uid)).remove(); 
         set(ref(rtdb, 'hub_presence/'+hubProfile.uid), { uid: hubProfile.uid, username: hubProfile.username, pData: encodeURIComponent(JSON.stringify(hubProfile)), lvl: hubProfile.lvl, buffs: hubProfile.buffs, deck: hubProfile.deck, cardLevels: hubProfile.cardLevels });
         
         onValue(ref(rtdb, 'hub_presence'), (snap) => {
-            let list = document.getElementById('online-players-list');
-            list.innerHTML = ""; let d = snap.val()||{}; 
-            let count = 0;
-            Object.keys(d).forEach(k => { 
-                if(k!==hubProfile.uid) { count++; list.innerHTML += createPlayerCardHTML(k, d[k], true); }
-            });
+            let list = document.getElementById('online-players-list'); list.innerHTML = ""; let d = snap.val()||{}; let count = 0;
+            Object.keys(d).forEach(k => { if(k!==hubProfile.uid) { count++; list.innerHTML += createPlayerCardHTML(k, d[k], true); } });
             if(count === 0) list.innerHTML = "<div style='color:#aaa;'>Nenhum atleta online na sua zona no momento.</div>";
         });
         
         onChildAdded(ref(rtdb, 'hub_duels'), (snap) => { 
             let d = snap.val(); 
             if(d.targetId === hubProfile.uid && d.state === 'request') {
+                window.playSound('epic');
                 if(d.type === 'cyber') {
                     window.pendingPvpData = d.challengerData;
-                    window.showModal(`🔥 DESAFIO DE CYBER CLASH!`, `O Atleta ${d.challengerName} quer testar seu Deck de Cartas na arena de neon AGORA. O combate é sincronizado em tempo real. Aceitar o hack?`, 
-                    `<button class="btn-neon green" style="margin:5px;" onclick="window.acceptCyberDuel('${snap.key}')">CONECTAR REDE NEURAL (LUTAR)</button> 
+                    window.showModal(`🔥 DESAFIO DE CYBER CLASH!`, `O Atleta ${d.challengerName} quer testar seu Deck de Cartas na arena de neon AGORA. Aceitar o hack?`, 
+                    `<button class="btn-neon green" style="margin:5px;" onclick="window.acceptCyberDuel('${snap.key}')">CONECTAR REDE NEURAL</button> 
                      <button class="btn-neon pink" style="margin:5px;" onclick="window.declineRealDuel('${snap.key}')">RECUSAR</button>`);
                 } else {
-                    window.showModal(`🔥 COMBATE FÍSICO ESTABELECIDO!`, `O Atleta/Lutador ${d.challengerName} mandou um aviso exigindo um embate físico IRL (Flexões, corrida, etc). Você aceita?`, 
+                    window.showModal(`🔥 COMBATE FÍSICO ESTABELECIDO!`, `O Atleta ${d.challengerName} mandou um aviso exigindo um embate físico IRL (Flexões, corrida, etc). Você aceita?`, 
                     `<button class="btn-neon green" style="margin:5px;" onclick="window.acceptRealDuel('${snap.key}')">APROVAR E IR PRO ASFALTO</button> 
                      <button class="btn-neon pink" style="margin:5px;" onclick="window.declineRealDuel('${snap.key}')">MEDO (RECUSAR)</button>`);
                 }
@@ -1113,14 +1223,14 @@ function setupHubRealtime() {
 
 window.sendCyberPvpDuel = function(tId, tN) {
     if(tId === 'ai_ghost' || useLocalBypass || !rtdb) {
-        window.showModal("Bypass Ativado", "Sinal fraco com a Matriz Central. Uma simulação IA foi injetada em substituição para evitar falha.");
+        window.showModal("Bypass Ativado", "Sinal fraco com a Matriz Central. Uma simulação IA foi injetada em substituição.");
         setTimeout(() => window.startClash(false, {username: tN || 'Holograma Matriz', lvl:35, buffs:{hp:500, spd:0.4, dmg:0.4}, deck:['Kamikaze','Barao','Hacker','Sniper','Striker'], cardLevels:{'Kamikaze':4,'Barao':2}}), 1500);
         return;
     }
     try {
         let keyId = push(ref(rtdb, 'hub_duels')).key; 
         set(ref(rtdb, 'hub_duels/'+keyId), { type: 'cyber', challengerId: hubProfile.uid, challengerName: hubProfile.username, challengerData: hubProfile, targetId: tId, targetName: tN, state: 'request' }); 
-        window.showModal("Aguarde...", `Injetando protocolo de combate no terminal de ${tN}. Aguarde a aceitação para a conexão Real-Time.`);
+        window.showModal("Aguarde...", `Injetando protocolo de combate no terminal de ${tN}. Aguarde a aceitação.`);
         const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
             let v = s.val(); if(!v) return;
             if(v.state === 'declined') { window.showModal("Rejeitado", "O oponente fugiu da conexão neural."); unsub(); }
@@ -1128,10 +1238,10 @@ window.sendCyberPvpDuel = function(tId, tN) {
         });
     } catch(e) { window.showModal("Erro Interno", "Não foi possível pingar a rede."); }
 }
-window.acceptCyberDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; if(!window.pendingPvpData) { window.showModal("Erro Fatal", "Dados corrompidos."); return; } update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile }); window.isPvPHost = false; window.startClash(true, { matchId: keyId, oppData: window.pendingPvpData }); }
+window.acceptCyberDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; if(!window.pendingPvpData) return; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile }); window.isPvPHost = false; window.startClash(true, { matchId: keyId, oppData: window.pendingPvpData }); }
 
 window.sendRealDuel = function(tId, tN) {
-    if(tId === 'ai_ghost' || useLocalBypass || !rtdb) { return window.showModal("Erro Bypass", "O combate físico IRL exige conexão real com humanos pela matriz. Tente o modo Cyber Clash offline."); }
+    if(tId === 'ai_ghost' || useLocalBypass || !rtdb) { return window.showModal("Erro Bypass", "O combate físico exige conexão real."); }
     try {
         let keyId = push(ref(rtdb, 'hub_duels')).key; 
         set(ref(rtdb, 'hub_duels/'+keyId), { type: 'irl', challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); 
@@ -1146,7 +1256,7 @@ window.sendRealDuel = function(tId, tN) {
 window.acceptRealDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'ongoing' }); window.showModal("CONFIANÇA BLINDADA", "Feche o radar e sangre no asfalto.", `<button class="btn-neon pink" onclick="window.monitorOngoingDuel('${keyId}', 'O Inimigo')">IR PARA TELA DE JULGAMENTO</button>`); };
 window.declineRealDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'declined' }); }
 window.monitorOngoingDuel = function(duelId, opName) { document.getElementById('system-modal').style.display='none'; window.currentDuelOpponent = opName || "OPONENTE"; window.showModal("JULGAMENTO DE GUERRA", `Vote com honra contra ${opName}.`, `<button class="btn-neon green" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', '${hubProfile.uid}', '${opName}')">FUI UM MONSTRO (GANHEI)</button> <button class="btn-neon pink" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', 'OPONENTE_WIN', '${opName}')">ELE FOI MELHOR HOJE (PERDI)</button>`); }
-window.submitDuelResult = function(duelId, vpick, opName) { update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: vpick }); document.getElementById('system-modal').style.display = 'none'; window.showModal("Cálculos de Matriz", "Aguardando veredito."); let isTreated = false; onValue(ref(rtdb, 'hub_duels/'+duelId), (snap) => { let d = snap.val(); if(!d.votes || isTreated) return; let vArr = Object.keys(d.votes); if(vArr.length >= 2 && !d.resolved) { update(ref(rtdb, 'hub_duels/'+duelId), { resolved: true }); isTreated = true; let voteA = d.votes[vArr[0]].pick; let voteB = d.votes[vArr[1]].pick; let wonId = null; if(voteA === vArr[0] && voteB === 'OPONENTE_WIN') wonId = vArr[0]; else if(voteB === vArr[1] && voteA === 'OPONENTE_WIN') wonId = vArr[1]; if(wonId) { if(wonId === hubProfile.uid) { hubProfile.gold += 12000; hubProfile.buffs.spd += 0.5; hubProfile.xp += 2000; saveHubStateLocal(); syncUIWithProfile(); window.showModal("VITÓRIA", `Você massacrou.\n+ 12.000 CyberGolds!!`, `<button class="btn-neon green" style="width:100%;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', true)">MOSTRAR FEITOS PRO MUNDO!</button>`); } else { window.showModal("DERROTA LIMPA", `Você honrou sua palavra.`, `<button class="btn-neon pink" style="width:100%; margin-bottom:5px;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', false)">POSTAR DERROTA HONROSA</button><br> <button class="btn-neon" style="background:#222; border-color:#222; width:100%;" onclick="document.getElementById('system-modal').style.display='none'">SILÊNCIO TÁTICO HOJE</button>`); } } else { window.showModal("FRAUDE", "Votos conflitantes. Sistema punindo os dois!"); } } }); }
+window.submitDuelResult = function(duelId, vpick, opName) { update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: vpick }); document.getElementById('system-modal').style.display = 'none'; window.showModal("Cálculos de Matriz", "Aguardando veredito."); let isTreated = false; onValue(ref(rtdb, 'hub_duels/'+duelId), (snap) => { let d = snap.val(); if(!d.votes || isTreated) return; let vArr = Object.keys(d.votes); if(vArr.length >= 2 && !d.resolved) { update(ref(rtdb, 'hub_duels/'+duelId), { resolved: true }); isTreated = true; let voteA = d.votes[vArr[0]].pick; let voteB = d.votes[vArr[1]].pick; let wonId = null; if(voteA === vArr[0] && voteB === 'OPONENTE_WIN') wonId = vArr[0]; else if(voteB === vArr[1] && voteA === 'OPONENTE_WIN') wonId = vArr[1]; if(wonId) { if(wonId === hubProfile.uid) { hubProfile.gold += 12000; hubProfile.buffs.spd += 0.5; hubProfile.xp += 2000; saveHubStateLocal(); syncUIWithProfile(); window.playSound('victory'); window.showModal("VITÓRIA", `Você massacrou.\n+ 12.000 CyberGolds!!`, `<button class="btn-neon green" style="width:100%;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', true)">MOSTRAR FEITOS PRO MUNDO!</button>`); } else { window.showModal("DERROTA LIMPA", `Você honrou sua palavra.`, `<button class="btn-neon pink" style="width:100%; margin-bottom:5px;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', false)">POSTAR DERROTA HONROSA</button><br> <button class="btn-neon" style="background:#222; border-color:#222; width:100%;" onclick="document.getElementById('system-modal').style.display='none'">SILÊNCIO TÁTICO HOJE</button>`); } } else { window.playSound('error'); window.showModal("FRAUDE", "Votos conflitantes. Sistema punindo os dois!"); } } }); }
 window.promptDuelPost = function(opponentName, won) { document.getElementById('system-modal').style.display='none'; curTaskCat = 'Duelo'; curTaskConfig = { name: "Combate Corporal vs " + opponentName, xp: won ? 500 : 200, gold: won ? 500 : 50 }; let resTxt = won ? `Derreti as fibras de @${opponentName} em soberania...` : `Destruído fisicamente de forma honrosa por @${opponentName}...`; document.getElementById('task-desc').value = `${resTxt} \n[Adicione Relatos]`; document.getElementById('form-box-title').innerText = `EXPOR TENSÕES OCORRIDAS`; document.getElementById('task-file').value = ""; document.getElementById('gps-panel').style.display = 'none'; document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed'); }
 
 // ==================================================================================
@@ -1158,12 +1268,12 @@ let entities = []; let projectiles =[]; let effects =[]; let spawnEffects =[]; l
 let pvpMatchListener = null;
 
 window.startPvECampaign = function() {
-    if(hubProfile.pveStage >= PVE_CAMPAIGN.length) { window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck: ['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido', 'TitanRaio'], cardLevels:{}});
+    if(hubProfile.pveStage >= PVE_CAMPAIGN.length) { window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck:['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido', 'TitanRaio'], cardLevels:{}});
     } else { window.startClash(false, PVE_CAMPAIGN[hubProfile.pveStage]); }
 }
 
 window.startClash = function(isPvP = false, matchData = null) {
-    if(hubProfile.deck.length === 0) return window.showModal("Deck Inválido", "Você não possui tropas no Esquadrão Ativo.");
+    if(hubProfile.deck.length === 0) { window.playSound('error'); return window.showModal("Deck Inválido", "Você não possui tropas no Esquadrão Ativo."); }
     document.getElementById('hub-container').style.display = 'none'; let gw = document.getElementById('game-wrapper'); gw.style.display = 'block';
     cvs = document.getElementById('arena-canvas'); ctx = cvs.getContext('2d');
     let winW = window.innerWidth; let winH = window.innerHeight; let ratio = arenaW / arenaH;
@@ -1181,12 +1291,12 @@ window.startClash = function(isPvP = false, matchData = null) {
     opponentAI.cardLevels = opponentAI.cardLevels || {};
 
     isAFK = false; document.getElementById('btn-afk').classList.remove('active'); document.getElementById('btn-afk').innerText = "Piloto IA (OFF)";
-    resetArena(); renderCardsHandUI();
+    resetArena(); renderCardsHandUI(); window.playSound('epic');
     engineState = 'PLAY'; lastTime = performance.now();
     if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); requestAnimationFrame(clashLoop);
 };
 
-window.leaveArena = function() { engineState = 'MENU'; if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); document.getElementById('game-wrapper').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex'; if(pvpMatchListener && window.activeMatchId) { off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions')); pvpMatchListener = null; } window.isGlobalRaid = false; }
+window.leaveArena = function() { engineState = 'MENU'; if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); document.getElementById('game-wrapper').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex'; if(pvpMatchListener && window.activeMatchId) { off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions')); pvpMatchListener = null; } window.isGlobalRaid = false; window.playSound('click'); }
 window.returnToHubAndSave = function() { saveHubStateLocal(); syncUIWithProfile(); window.leaveArena(); }
 
 function setupPvPSyncListeners() { const actionsRef = ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions'); pvpMatchListener = onChildAdded(actionsRef, (snap) => { let action = snap.val(); if(action.uid !== hubProfile.uid) { let mirroredY = arenaH - action.y; let mirroredX = arenaW - action.x; deployCard(action.cardId, 'enemy', mirroredX, mirroredY, action.lvl, opponentAI.buffs); spawnEffects.push({t:'exp', x:mirroredX, y:mirroredY, life:0.5, col:'var(--neon-pink)'}); } }); }
@@ -1194,7 +1304,7 @@ function setupPvPSyncListeners() { const actionsRef = ref(rtdb, 'hub_duels/' + w
 function getPlayerBuffs() { return hubProfile.buffs || {hp:0, dmg:0, spd:0, magic:0}; }
 
 function resetArena() {
-    entities = []; projectiles = []; effects =[]; spawnEffects =[]; energy = 2; 
+    entities =[]; projectiles = []; effects =[]; spawnEffects =[]; energy = 2; 
     let pB = getPlayerBuffs(); let oB = opponentAI.buffs;
     document.getElementById('enemy-name-display').innerText = opponentAI.username.toUpperCase();
     document.getElementById('death-screen').style.display = 'none';
@@ -1216,23 +1326,23 @@ function renderCardsHandUI() {
 
 let activeCardIdx = null;
 function selectCardToPlay(idx) {
-    if(isAFK) return; let cId = hubProfile.deck[idx]; if(!CARD_DB[cId]) return; if(energy < CARD_DB[cId].cost) return;
+    if(isAFK) return; let cId = hubProfile.deck[idx]; if(!CARD_DB[cId]) return; if(energy < CARD_DB[cId].cost) { window.playSound('error'); return; }
     if(activeCardIdx !== null) { let e = document.getElementById(`card-ui-${activeCardIdx}`); if(e) e.classList.remove('active'); } 
-    activeCardIdx = idx; let n = document.getElementById(`card-ui-${idx}`); if(n) n.classList.add('active');
+    activeCardIdx = idx; let n = document.getElementById(`card-ui-${idx}`); if(n) n.classList.add('active'); window.playSound('click');
 }
 
 window.arenaClick = function(e) {
     let rect = cvs.getBoundingClientRect(); let sX = arenaW / rect.width; let sY = arenaH / rect.height; let cx = (e.clientX - rect.left) * sX; let cy = (e.clientY - rect.top) * sY;
     if(activeCardIdx === null || isAFK) { spawnEffects.push({t:'hit', x:cx, y:cy, life:0.2}); return; }
     let cId = hubProfile.deck[activeCardIdx]; let cD = CARD_DB[cId];
-    if(cD.type !== 'spell' && cy < arenaH / 2) { spawnEffects.push({t:'text', txt:'ÁREA RESTRITA (JOGUE DO SEU LADO)', x:cx, y:cy, life:1.2, col:'var(--neon-yellow)'}); window.playSound('hit'); return; }
+    if(cD.type !== 'spell' && cy < arenaH / 2) { spawnEffects.push({t:'text', txt:'ÁREA RESTRITA (JOGUE DO SEU LADO)', x:cx, y:cy, life:1.2, col:'var(--neon-yellow)'}); window.playSound('error'); return; }
     let cLvl = hubProfile.cardLevels[cId]||1;
     if(window.activeMatchId) { push(ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions'), { uid: hubProfile.uid, cardId: cId, x: cx, y: cy, lvl: cLvl, timestamp: serverTimestamp() }); }
     deployCard(cId, 'player', cx, cy, cLvl, getPlayerBuffs()); energy -= cD.cost; document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx = null;
     spawnEffects.push({t:'exp', x:cx, y:cy, life:0.5, col:'var(--neon-blue)'});
 }
 
-window.toggleAFK = function() { isAFK = !isAFK; let b = document.getElementById('btn-afk'); if(isAFK) { b.classList.add('active'); b.innerText = "Piloto IA (Ligado)"; if(activeCardIdx!==null) { let dc = document.getElementById(`card-ui-${activeCardIdx}`); if(dc) dc.classList.remove('active'); activeCardIdx=null; } } else { b.classList.remove('active'); b.innerText = "Piloto IA (Desligado)"; } }
+window.toggleAFK = function() { isAFK = !isAFK; window.playSound('click'); let b = document.getElementById('btn-afk'); if(isAFK) { b.classList.add('active'); b.innerText = "Piloto IA (Ligado)"; if(activeCardIdx!==null) { let dc = document.getElementById(`card-ui-${activeCardIdx}`); if(dc) dc.classList.remove('active'); activeCardIdx=null; } } else { b.classList.remove('active'); b.innerText = "Piloto IA (Desligado)"; } }
 
 class Entity {
     constructor(dbData, team, x, y, ownerBuffs, level = 1) {
@@ -1246,6 +1356,7 @@ class Entity {
         this.cooldown = 0; this.stunTimer = 0; this.stealth = this.mechanics.includes('stealth');
         this.color = team === 'player' ? 'var(--neon-green)' : 'red'; if(dbData.rarity===4) this.color = 'var(--neon-pink)'; if(dbData.rarity===3) this.color = 'var(--neon-yellow)';
         this.icon = dbData.icon;
+        this.hoverOffset = Math.random() * Math.PI * 2;
     }
     update(dt) {
         if(this.stunTimer > 0) { this.stunTimer -= dt; return; }
@@ -1288,10 +1399,93 @@ class Entity {
         }
     }
     render(c) {
-        c.fillStyle = this.color;
-        if(this.type === 'base') { c.shadowColor = this.color; c.shadowBlur = 10; c.fillRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h); c.shadowBlur = 0; c.fillStyle = '#fff'; c.font = '10px Orbitron'; c.textAlign='center'; c.fillText(`${Math.floor(this.hp)} HP`, this.x, this.y + 3); }
-        else { c.beginPath(); c.arc(this.x, this.y, this.w, 0, Math.PI*2); c.fill(); if(this.stealth) { c.globalAlpha=0.4; c.fillStyle="#fff"; c.fill(); c.globalAlpha=1; } c.fillStyle = '#fff'; c.font = '14px sans-serif'; c.textAlign='center'; c.textBaseline='middle'; c.fillText(this.icon || '?', this.x, this.y); }
-        if(this.type !== 'base') { let hPct = Math.max(0, this.hp / this.maxHp); c.fillStyle = '#f00'; c.fillRect(this.x - 12, this.y - this.w - 8, 24, 4); c.fillStyle = '#0f0'; c.fillRect(this.x - 12, this.y - this.w - 8, 24 * hPct, 4); if(this.stunTimer>0) { c.fillStyle='#ffaa00'; c.font='bold 10px Rajdhani'; c.fillText('STUN', this.x, this.y-this.w-12); } }
+        if(this.type === 'base') {
+            let cos = this.team === 'player' ? (hubProfile.baseCosmetic || 'Padrao') : 'Padrao';
+            c.save();
+            c.translate(this.x, this.y);
+            c.shadowColor = this.color; 
+            c.shadowBlur = 20;
+            c.strokeStyle = this.color;
+            c.lineWidth = 3;
+            
+            if (cos === 'Padrao') {
+                c.fillStyle = '#111';
+                c.beginPath(); 
+                c.moveTo(-this.w/2, this.h/2); 
+                c.lineTo(-this.w/2 + 15, -this.h/2); 
+                c.lineTo(this.w/2 - 15, -this.h/2); 
+                c.lineTo(this.w/2, this.h/2); 
+                c.closePath(); 
+                c.fill(); c.stroke();
+                c.fillStyle = this.color;
+                c.beginPath(); c.arc(0, 0, 10, 0, Math.PI*2); c.fill();
+            } else if (cos === 'Piramide') {
+                c.fillStyle = '#151525';
+                c.beginPath(); 
+                c.moveTo(-this.w/2, this.h/2); 
+                c.lineTo(0, -this.h/2 - 10); 
+                c.lineTo(this.w/2, this.h/2); 
+                c.closePath(); 
+                c.fill(); c.stroke();
+                c.fillStyle = '#fff';
+                c.beginPath(); c.arc(0, -10, 8, 0, Math.PI*2); c.fill();
+            } else if (cos === 'Cubo') {
+                c.fillStyle = '#0a0a0a';
+                c.fillRect(-this.w/2 + 10, -this.h/2, this.w - 20, this.h);
+                c.strokeRect(-this.w/2 + 10, -this.h/2, this.w - 20, this.h);
+                c.beginPath(); c.moveTo(-this.w/2 + 10, -this.h/2); c.lineTo(this.w/2 - 10, this.h/2); c.stroke();
+                c.beginPath(); c.moveTo(this.w/2 - 10, -this.h/2); c.lineTo(-this.w/2 + 10, this.h/2); c.stroke();
+            }
+        
+            c.restore();
+            c.fillStyle = '#fff'; c.font = 'bold 12px Orbitron'; c.textAlign='center'; 
+            c.fillText(`${Math.floor(this.hp)} HP`, this.x, this.y + this.h/2 + 15); 
+        }
+        else { 
+            c.save();
+            c.translate(this.x, this.y);
+            let drawY = 0;
+            if (this.isFlying) {
+                this.hoverOffset += 0.1;
+                drawY += Math.sin(this.hoverOffset) * 4;
+            }
+            
+            c.translate(0, drawY);
+            if (this.stealth) c.globalAlpha = 0.4;
+            c.shadowColor = this.color; c.shadowBlur = 10;
+            c.fillStyle = 'rgba(10, 10, 15, 0.9)'; c.strokeStyle = this.color; c.lineWidth = 2;
+        
+            if (this.isTank) {
+                c.beginPath();
+                for (let i = 0; i < 8; i++) {
+                    let a = (Math.PI / 4) * i; let px = (this.w + 4) * Math.cos(a); let py = (this.w + 4) * Math.sin(a);
+                    if(i===0) c.moveTo(px,py); else c.lineTo(px,py);
+                }
+                c.closePath(); c.fill(); c.stroke();
+            } else if (this.isFlying) {
+                c.beginPath(); let dir = this.team === 'player' ? -1 : 1;
+                c.moveTo(0, dir * (this.w + 5)); c.lineTo(-this.w, -dir * this.w); c.lineTo(this.w, -dir * this.w);
+                c.closePath(); c.fill(); c.stroke();
+            } else {
+                c.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    let a = (Math.PI / 3) * i; let px = this.w * Math.cos(a); let py = this.w * Math.sin(a);
+                    if(i===0) c.moveTo(px,py); else c.lineTo(px,py);
+                }
+                c.closePath(); c.fill(); c.stroke();
+            }
+            
+            c.shadowBlur = 0;
+            c.fillStyle = '#fff'; c.font = '14px sans-serif'; c.textAlign='center'; c.textBaseline='middle'; 
+            c.fillText(this.icon || '?', 0, 0); 
+            c.restore();
+        
+            // Barra de HP customizada
+            let hPct = Math.max(0, this.hp / this.maxHp); 
+            c.fillStyle = '#f00'; c.fillRect(this.x - 12, this.y - this.w - 12, 24, 4); 
+            c.fillStyle = '#0f0'; c.fillRect(this.x - 12, this.y - this.w - 12, 24 * hPct, 4); 
+            if(this.stunTimer>0) { c.fillStyle='#ffaa00'; c.font='bold 10px Rajdhani'; c.fillText('STUN', this.x, this.y-this.w-16); } 
+        }
     }
 }
 
