@@ -778,34 +778,36 @@ window.mapInstance = null; window.mapInitialized = false;
 window.userMarker = null; window.bossCircle = null; window.bossLat = null; window.bossLng = null;
 
 window.setupMap = function() {
-    // Atraso intencional para permitir que o fadeIn do CSS termine e o Leaflet pegue as dimensões corretas
     if(window.mapInitialized) { setTimeout(()=> { window.mapInstance.invalidateSize(); }, 400); return; }
     
     setTimeout(() => {
-        // Centro genérico inicialmente em Vitória, ES
-        window.mapInstance = L.map('map-container').setView([-20.3155, -40.3128], 14); 
+        // Inicializa o mapa "longe" e no centro de tudo, para não forçar em Vitoria.
+        window.mapInstance = L.map('map-container').setView([0, 0], 2); 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap' }).addTo(window.mapInstance);
         window.mapInitialized = true;
         window.mapInstance.invalidateSize();
         
         if (navigator.geolocation) {
+            // maximumAge: 0 força o navegador a procurar a sua antena AGORA em vez de usar dado velho
             navigator.geolocation.watchPosition(pos => {
                 lastLat = pos.coords.latitude; lastLng = pos.coords.longitude;
                 
                 if(!window.userMarker) {
+                    // Puxa o zoom lá pra sua rua
                     window.mapInstance.setView([lastLat, lastLng], 15);
-                    window.userMarker = L.circle([lastLat, lastLng], {color: 'var(--neon-blue)', fillColor: '#0ff', fillOpacity: 0.2, radius: 80}).addTo(window.mapInstance).bindPopup("Sua Posição Exata");
+                    window.userMarker = L.circle([lastLat, lastLng], {color: 'var(--neon-blue)', fillColor: '#0ff', fillOpacity: 0.2, radius: 40}).addTo(window.mapInstance).bindPopup("Sua Posição Exata");
                     
-                    // SPAWN DO BOSS RELATIVO A SUA LOCALIZAÇÃO (Distância em torno de 400~600m para obrigar o deslocamento)
+                    // SPAWN DO BOSS RELATIVO A SUA LOCALIZAÇÃO. Deslocamento de ~300m a 400m
+                    // Qualquer jogador em qualquer cidade do país vai ter o Boss na sua própria região.
                     window.bossLat = lastLat + (Math.random() > 0.5 ? 0.003 : -0.003); 
                     window.bossLng = lastLng + (Math.random() > 0.5 ? 0.003 : -0.003);
                     window.bossCircle = L.circle([window.bossLat, window.bossLng], {color: 'var(--neon-red)', fillColor: 'darkred', fillOpacity: 0.3, radius: 250}).addTo(window.mapInstance).bindPopup("ZONA DO LEVIATÃ (RAID BOSS)");
                 } else {
                     window.userMarker.setLatLng([lastLat, lastLng]);
                 }
-            }, err => { console.warn("Erro GPS", err); }, {enableHighAccuracy: true, maximumAge: 10000});
+            }, err => { console.warn("Erro GPS", err); }, {enableHighAccuracy: true, maximumAge: 0, timeout: 10000});
         }
-    }, 400); // 400ms bate com a duração da animação de fadeIn
+    }, 400); 
 }
 
 window.scanLocalNodes = function() {
@@ -850,7 +852,7 @@ window.startQRScanner = function() {
                 saveHubStateLocal(); syncUIWithProfile();
                 window.showModal("Transferência Completa!", `Você hackeou a carta ${CARD_DB[rCid].name} com sucesso presencialmente!`);
             } else { window.showModal("Erro", "Formato de Código Neo-Tec Invalido."); }
-        }, (errorMessage) => { /* ignora erros contínuos de leitura vazia */ });
+        }, (errorMessage) => {  });
     }
 }
 
@@ -858,7 +860,7 @@ window.startQRScanner = function() {
 let globalBossHP = 4250000; let globalBossMax = 5000000;
 window.attackGlobalBoss = function() {
     if(!lastLat || !window.bossLat) {
-        return window.showModal("Sinal GPS Perdido", "Abra a aba 'Mapa & Nodos (GPS)' e aguarde o sinal estabilizar para rastrear onde o Boss está na cidade.");
+        return window.showModal("Sinal GPS Perdido", "Abra a aba 'Mapa & Nodos (GPS)' e aguarde o sinal estabilizar para rastrear onde o Boss está na sua região.");
     }
     
     // GEOFENCING: Restrição de distância (0.4 km = 400 metros)
@@ -993,7 +995,7 @@ function setupHubRealtime() {
             <div class="radar-player" style="border-color:#555;">
                 <span class="radar-name glow-text" style="font-size:1.1rem;">IA INVASORA HOLOGRÁFICA M-22</span>
                 <span style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">Entidade de Treino. Sem perdas.</span>
-                <button class="btn-neon" style="background:#500; border-color:#f00; color:#fff; font-size:0.8rem; padding:12px;" onclick="window.startClash(false, {username:'Holograma Matriz Pura', lvl:35, buffs:{hp:500, spd:0.4, dmg:0.4}, deck:['Kamikaze','Barao','Hacker','Sniper','Striker'], cardLevels:{'Kamikaze':4,'Barao':2}})">LUTAR NA ARENA CYBER</button>
+                <button class="btn-neon" style="background:#500; border-color:#f00; color:#fff; font-size:0.8rem; padding:12px;" onclick="event.stopPropagation(); window.startClash(false, {username:'Holograma Matriz Pura', lvl:35, buffs:{hp:500, spd:0.4, dmg:0.4}, deck:['Kamikaze','Barao','Hacker','Sniper','Striker'], cardLevels:{'Kamikaze':4,'Barao':2}})">LUTAR NA ARENA CYBER</button>
             </div>`; 
         }, 1000);
         listenToFeed(); return;
@@ -1008,10 +1010,15 @@ function setupHubRealtime() {
             Object.keys(d).forEach(k => { 
                 if(k!==hubProfile.uid) {
                     let oppD = { username: d[k].username, lvl: d[k].lvl, buffs: d[k].buffs || {hp:0, dmg:0, spd:0}, deck: d[k].deck || [], cardLevels: d[k].cardLevels || {} };
+                    
+                    // Limpar string pro onclick não bugar as aspas
+                    let safeName = d[k].username.replace(/['"]/g, '');
+                    
+                    // event.stopPropagation() adicionado para o botão não ativar o perfil do jogador junto
                     let htmlBts = `
                     <div style="display:flex; gap:10px; margin-top:10px; flex-direction:column;">
-                        <button class="btn-neon pink" style="font-size:0.7rem; padding:10px;" onclick="window.sendRealDuel('${k}', '${d[k].username}')">TREINO FÍSICO REAL (IRL)</button>
-                        <button class="btn-neon" style="font-size:0.7rem; padding:10px;" onclick='window.sendCyberPvpDuel("${k}", "${d[k].username}")'>ARENA CYBER CLASH</button>
+                        <button class="btn-neon pink" style="font-size:0.7rem; padding:10px;" onclick="event.stopPropagation(); window.sendRealDuel('${k}', '${safeName}')">TREINO FÍSICO REAL (IRL)</button>
+                        <button class="btn-neon" style="font-size:0.7rem; padding:10px;" onclick="event.stopPropagation(); window.sendCyberPvpDuel('${k}', '${safeName}')">ARENA CYBER CLASH</button>
                     </div>`;
                     document.getElementById('radar-list').innerHTML += `<div class="radar-player" onclick="window.showProfileModal('${d[k].pData||''}')"><span class="radar-name glow-text">♦ ALVO: [${d[k].username}] Lvl ${d[k].lvl}</span>${htmlBts}</div>`; 
                 }
