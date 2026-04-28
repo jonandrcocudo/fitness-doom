@@ -3,470 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FITNESS RPG HUB & FISH BALL DOOM</title>
+    <title>FITNESS RPG & CYBER CLASH AUTO-BATTLER</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=Comic+Neue:wght@700&family=Oswald:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap');
         
-        body { margin: 0; overflow: hidden; background: #000; user-select: none; font-family: 'Share Tech Mono', monospace; -webkit-touch-callout: none; color: white;}
+        body { margin: 0; overflow: hidden; background: #000; user-select: none; font-family: 'Share Tech Mono', monospace; -webkit-touch-callout: none; color: white; touch-action: none;}
         
         /* SCROLLBAR CUSTOM */
         ::-webkit-scrollbar { width: 6px; height: 6px;}
         ::-webkit-scrollbar-track { background: #111; }
         ::-webkit-scrollbar-thumb { background: #0f0; border-radius: 4px; }
         
-        #hub-container { display: flex; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000; background: radial-gradient(circle at center, #111, #000); overflow: hidden;}
+        #hub-container { display: flex; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000; background: radial-gradient(circle at center, #151520, #000); overflow: hidden;}
         
-        /* ENGINE WRAPPER - Evita toque arrastar na tela de celular */
-        #game-wrapper { display: none; width: 100vw; height: 100vh; position: fixed; top:0; left:0; z-index: 1; touch-action: none; }
-        #game-wrapper > canvas { image-rendering: pixelated; width: 100% !important; height: 100% !important; position: fixed; top: 0; left: 0; z-index: 1; touch-action: none;}
+        /* ENGINE WRAPPER CYBER CLASH */
+        #game-wrapper { display: none; width: 100vw; height: 100vh; position: fixed; top:0; left:0; z-index: 1; background: #000;}
+        #arena-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: #050510;}
+        
+        /* OVERLAYS ARENA */
+        #arena-ui { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between;}
+        .top-bar-arena { display: flex; justify-content: space-between; padding: 10px 20px; font-family: 'Press Start 2P'; font-size: 0.6rem; color: #fff; text-shadow: 2px 2px #000; pointer-events: auto;}
+        
+        .bottom-ui-arena { width: 100%; padding-bottom: 5px; pointer-events: auto; display: flex; flex-direction: column; align-items: center;}
+        
+        .energy-container { width: 90%; max-width: 500px; height: 15px; border: 2px solid #0ff; background: rgba(0,0,0,0.8); margin-bottom: 5px; position: relative;}
+        .energy-fill { height: 100%; width: 0%; background: #0ff; transition: width 0.1s linear;}
+        .energy-text { position: absolute; width:100%; text-align:center; font-family:'Press Start 2P'; font-size:0.6rem; line-height:15px; color:#fff; text-shadow:1px 1px #000;}
+        
+        .cards-hand { display: flex; justify-content: center; gap: 5px; width: 100%; max-width: 600px; height: 80px;}
+        .battle-card { width: 60px; height: 100%; background: #111; border: 2px solid #444; border-radius: 4px; display:flex; flex-direction:column; justify-content: space-between; align-items:center; cursor:pointer; position:relative; box-sizing: border-box; overflow: hidden; pointer-events: auto;}
+        .battle-card.active { border-color: #0f0; transform: translateY(-10px); box-shadow: 0 0 15px #0f0;}
+        .battle-card.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
+        .b-card-cost { font-family:'Press Start 2P'; font-size:0.5rem; background:#0ff; color:#000; padding:2px; position:absolute; top:0; left:0; width:15px; text-align:center;}
+        .b-card-lvl { font-family:'Press Start 2P'; font-size:0.4rem; color:yellow; position:absolute; top:2px; right:2px;}
+        .b-card-name { font-size:0.55rem; color:#fff; text-align:center; word-break: break-all; line-height: 1; margin-bottom:5px; z-index:2;}
+        .b-card-img { width: 35px; height: 35px; object-fit: contain; margin-top:15px;}
+        
+        .auto-btn { position: absolute; bottom: 90px; right: 10px; border: 2px solid #ff00de; background: rgba(0,0,0,0.8); color: #ff00de; font-family:'Press Start 2P'; font-size: 0.6rem; padding: 10px; pointer-events: auto;}
+        .auto-btn.active { background: #ff00de; color: #fff;}
 
-        /* HUB CSS - BASE E SIDEBAR */
-        .hub-sidebar { width: 280px; background: rgba(10, 10, 10, 0.95); border-right: 2px solid #0f0; box-shadow: 5px 0 25px rgba(0, 255, 0, 0.2); display: flex; flex-direction: column; z-index: 1010; flex-shrink: 0; overflow-y: auto;}
+        /* HUB CSS - SIDEBAR & GERAL */
+        .hub-sidebar { width: 280px; background: rgba(10, 10, 15, 0.95); border-right: 2px solid #0ff; box-shadow: 5px 0 25px rgba(0, 255, 255, 0.2); display: flex; flex-direction: column; z-index: 1010; flex-shrink: 0; overflow-y: auto;}
         .hub-profile-area { padding: 20px; text-align: center; border-bottom: 1px solid #333; position: relative;}
         .hub-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #ff00de; object-fit: cover; background: #222; margin: 0 auto 10px; box-shadow: 0 0 15px #ff00de;}
-        .hub-username { font-family: 'Press Start 2P'; font-size: 0.8rem; color: #fff; margin-bottom: 5px; text-transform: uppercase; word-wrap: break-word;}
-        .hub-lvl { color: #0ff; font-weight: bold; margin-bottom: 5px;}
-        .hub-bio { font-size: 0.7rem; color: #aaa; margin-bottom: 10px; font-style: italic;}
+        .hub-username { font-family: 'Press Start 2P'; font-size: 0.8rem; color: #fff; margin-bottom: 5px; word-wrap: break-word;}
+        .hub-lvl { color: #0f0; font-weight: bold; margin-bottom: 5px;}
         
-        .hub-stats-row { display: flex; justify-content: space-around; font-size: 0.8rem; background: #111; padding: 5px; border-radius: 5px;}
+        .hub-stats-row { display: flex; justify-content: space-around; font-size: 0.8rem; background: #111; padding: 5px; border-radius: 5px; margin-bottom: 10px;}
         .stat-item span { display: block; font-family: 'Press Start 2P'; font-size: 0.7rem; margin-top: 3px; color: yellow; }
         
         .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 10px 0; gap: 5px; }
         .hub-nav-btn { background: transparent; color: #aaa; border: none; font-family: 'Share Tech Mono'; font-size: 1rem; text-align: left; padding: 12px 20px; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent;}
         .hub-nav-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
-        .hub-nav-btn.active { color: #0f0; border-left-color: #0f0; background: rgba(0,255,0,0.1); text-shadow: 0 0 5px #0f0; font-weight: bold;}
+        .hub-nav-btn.active { color: #0ff; border-left-color: #0ff; background: rgba(0,255,255,0.1); text-shadow: 0 0 5px #0ff; font-weight: bold;}
         
-        .hub-start-arena { margin: 15px; padding: 15px; background: linear-gradient(45deg, #f00, #a00); color: white; font-family: 'Press Start 2P'; font-size: 0.8rem; border: 2px solid #f00; cursor: pointer; animation: pulse 1.5s infinite; text-shadow: 2px 2px #000; box-shadow: 0 0 20px rgba(255,0,0,0.4); line-height:1.5;}
-        .hub-start-arena:hover { background: #f00; box-shadow: 0 0 30px #f00;}
-
-        /* CONTEÚDO PRINCIPAL HUB */
-        .hub-main-content { flex: 1; position: relative; padding: 20px; overflow-y: auto; background: repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.02) 0px, rgba(0, 255, 0, 0.02) 1px, transparent 1px, transparent 2px); }
+        .hub-start-arena { margin: 15px; padding: 15px; background: linear-gradient(45deg, #0aa, #0ff); color: #000; font-family: 'Press Start 2P'; font-size: 0.8rem; border: 2px solid #0ff; cursor: pointer; animation: pulse 1.5s infinite; text-shadow: 1px 1px rgba(255,255,255,0.5); box-shadow: 0 0 20px rgba(0,255,255,0.4); line-height:1.5;}
+        
+        .hub-main-content { flex: 1; position: relative; padding: 20px; overflow-y: auto; background: repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.02) 0px, rgba(0, 255, 255, 0.02) 1px, transparent 1px, transparent 2px); }
         .hub-tab { display: none; animation: fadeIn 0.3s; }
         .hub-tab.active { display: block; }
-        .hub-title { font-family: 'Oswald'; font-size: 1.8rem; text-transform: uppercase; border-bottom: 2px solid #333; padding-bottom: 5px; margin-bottom: 15px; color: #fff; text-shadow: 2px 2px 0 #0f0; line-height: 1.2; }
+        .hub-title { font-size: 1.5rem; text-transform: uppercase; border-bottom: 2px solid #333; padding-bottom: 5px; margin-bottom: 15px; color: #fff; text-shadow: 2px 2px 0 #0ff; font-weight:bold; }
 
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .action-card { background: #111; border: 1px solid #333; padding: 15px; border-radius: 8px; position: relative; overflow: hidden; transition: 0.2s; display: flex; flex-direction: column;}
-        .action-card:hover { border-color: #0ff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,255,255,0.2); }
-        .action-card h3 { font-family: 'Press Start 2P'; font-size: 0.6rem; margin: 0 0 10px 0; color: #0ff; line-height: 1.4;}
+        .action-card { background: #111; border: 1px solid #333; padding: 15px; border-radius: 8px; position: relative; display: flex; flex-direction: column;}
+        .action-card h3 { font-family: 'Press Start 2P'; font-size: 0.6rem; margin: 0 0 10px 0; color: #0f0; line-height: 1.4;}
         .action-card p { font-size: 0.8rem; color: #aaa; margin-bottom: 10px; flex-grow: 1;}
-        .card-reward { font-weight: bold; color: yellow; font-size: 0.8rem; margin-bottom: 10px; display: block;}
+        .btn-action { background: #000; color: #0ff; border: 1px solid #0ff; padding: 10px; width: 100%; cursor: pointer; font-family: 'Share Tech Mono'; transition: 0.2s;}
+        .btn-action:hover { background: #0ff; color: #000; }
+
+        /* FORMS E COMPONENTES */
+        .post-form-box { background: rgba(0,255,255,0.05); border: 1px solid #0ff; padding: 15px; margin-bottom: 20px; }
+        .post-form-box input[type="text"], .post-form-box select, .post-form-box input[type="file"] { width: 100%; padding: 10px; background: #000; color: #0ff; border: 1px solid #333; margin-bottom: 10px; font-family: 'Share Tech Mono'; box-sizing: border-box;}
         
-        .btn-action { background: #000; color: #0f0; border: 1px solid #0f0; padding: 10px; width: 100%; cursor: pointer; font-family: 'Share Tech Mono'; transition: 0.2s;}
-        .btn-action:hover { background: #0f0; color: #000; }
-        .btn-permission { background: #ff00de; border-color: #ff00de; color: #fff; margin-bottom: 10px; margin-top:5px;}
-
-        /* FORMS E UPLOAD BOX */
-        .post-form-box { background: rgba(0,255,0,0.05); border: 1px solid #0f0; padding: 15px; margin-bottom: 20px; }
-        .post-form-box input[type="text"], .post-form-box input[type="number"], .post-form-box select { width: 100%; padding: 10px; background: #000; color: #0f0; border: 1px solid #333; margin-bottom: 10px; font-family: 'Share Tech Mono'; box-sizing: border-box; font-size: 0.9rem;}
-        .gps-panel { background: #111; padding: 10px; border: 1px dashed #0ff; margin-bottom: 15px; font-size: 0.8rem; display: none; text-align: center;}
-        .gps-status { color: yellow; font-weight: bold; font-size: 1.1rem; display:block; margin-top:5px;}
-
         /* FEED SOCIAL */
         .feed-filters { display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;}
         .feed-filters::-webkit-scrollbar { display: none;}
-        .filter-btn { background: #222; border: 1px solid #444; color: #fff; padding: 5px 12px; cursor: pointer; font-family: 'Share Tech Mono'; border-radius: 15px; white-space: nowrap; font-size:0.8rem;}
-        .filter-btn.active { background: #0ff; color: #000; border-color: #0ff; font-weight: bold;}
-        
+        .filter-btn { background: #222; border: 1px solid #444; color: #fff; padding: 5px 12px; cursor: pointer; font-family: 'Share Tech Mono'; border-radius: 15px; font-size:0.8rem;}
+        .filter-btn.active { background: #0f0; color: #000; border-color: #0f0; font-weight: bold;}
         .feed-container { display: flex; flex-direction: column; gap: 15px; }
-        .feed-post { background: #151515; border-left: 4px solid #0ff; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; flex-direction: column; position: relative;}
-        .feed-post.revoked { border-left-color: #f00; opacity: 0.6; }
-        .feed-post.revoked::after { content: "FRAUDE NEGADA"; position: absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); color:red; font-family:'Press Start 2P'; font-size: 1.2rem; border: 4px solid red; padding: 10px; opacity:0.8; pointer-events: none; z-index:5;}
-        .feed-post[data-category="Duelo"] { border-left-color: #ff00de; }
-        
+        .feed-post { background: #151515; border-left: 4px solid #0f0; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; flex-direction: column;}
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px;}
-        .post-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #0ff; object-fit: cover;}
-        .post-meta { display: flex; flex-direction: column; }
-        .post-author { font-weight: bold; color: #fff; font-family: 'Press Start 2P'; font-size: 0.6rem; line-height: 1.2;}
-        .post-type { color: #0f0; font-size: 0.7rem; font-weight: bold;}
-        
-        .post-img-container { width: 100%; max-height: 350px; background: #000; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-bottom: 10px; border: 1px solid #333;}
+        .post-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #0f0; object-fit: cover;}
+        .post-author { font-weight: bold; color: #fff; font-family: 'Press Start 2P'; font-size: 0.6rem; }
+        .post-type { color: #ff00de; font-size: 0.7rem; font-weight: bold;}
+        .post-img-container { width: 100%; max-height: 350px; background: #000; display: flex; justify-content: center; overflow: hidden; margin-bottom: 10px; border: 1px solid #333;}
         .post-img { width: 100%; max-height: 100%; object-fit: contain;}
-        .post-vid { width: 100%; max-height: 100%; outline: none; }
-        
-        .post-actions { display: flex; justify-content: space-between; border-top: 1px solid #333; padding-top: 10px; gap: 10px; flex-wrap: wrap;}
-        .vote-btn { background: #222; border: none; color: #fff; padding: 8px 10px; cursor: pointer; font-family: 'Share Tech Mono'; transition: 0.2s; flex: 1; min-width: 100px; font-size:0.8rem;}
-        .vote-btn.up { border-bottom: 2px solid #0f0; } .vote-btn.up:hover { background: #0f0; color: #000;}
-        .vote-btn.down { border-bottom: 2px solid #f00; } .vote-btn.down:hover { background: #f00; color: #000;}
-        .post-reward { color: yellow; font-size: 0.7rem; margin-top:5px; font-weight: bold; letter-spacing: 0.5px;}
 
-        /* SEÇÃO COMENTÁRIOS DO POST */
-        .post-comments { margin-top: 10px; border-top: 1px solid #222; padding-top: 10px; }
-        .comments-list { display: flex; flex-direction: column; gap: 5px; max-height: 120px; overflow-y: auto; margin-bottom: 5px;}
-        .comment-item { font-size: 0.7rem; color: #ccc; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 4px; line-height: 1.3;}
-        .comment-item b { color: #0ff; font-family: 'Press Start 2P'; font-size: 0.5rem; display:inline-block; margin-right:5px;}
-        .comment-input-area { display:flex; gap:5px; margin-top: 5px;}
-        .comment-input-area input { flex:1; padding:5px 8px; background:#000; color:#0f0; border:1px solid #333; font-family:'Share Tech Mono'; font-size:0.8rem;}
-        
-        /* RADAR PVP */
-        .hub-radar { width: 240px; background: rgba(5, 5, 5, 0.95); border-left: 2px solid #0ff; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; flex-shrink: 0;}
-        .radar-title { font-family: 'Press Start 2P'; font-size: 0.7rem; color: #0ff; text-align: center; margin-bottom: 15px; line-height: 1.5;}
-        .radar-list { display: flex; flex-direction: column; gap: 10px; }
-        .radar-player { background: #111; border: 1px solid #333; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+        /* RADAR PVP & GACHA LOJA */
+        .hub-radar { width: 250px; background: rgba(5, 5, 5, 0.95); border-left: 2px solid #ff00de; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; flex-shrink: 0;}
+        .radar-title { font-family: 'Press Start 2P'; font-size: 0.65rem; color: #ff00de; text-align: center; margin-bottom: 15px; line-height: 1.5;}
+        .radar-player { background: #111; border: 1px solid #333; padding: 10px; display: flex; flex-direction: column; gap: 8px; margin-bottom:10px; }
         .radar-name { color: #fff; font-size: 0.7rem; font-weight: bold;}
-        .btn-duel { background: transparent; border: 1px solid #ff00de; color: #ff00de; font-size: 0.65rem; padding: 5px; cursor: pointer; font-family: 'Press Start 2P'; text-align: center; transition: 0.2s;}
-        .btn-duel:hover { background: #ff00de; color: #fff;}
+        .btn-duel { background: transparent; border: 1px solid #f00; color: #f00; font-size: 0.65rem; padding: 5px; cursor: pointer; font-family: 'Press Start 2P';}
         
-        /* MODAIS DO HUB */
+        /* SISTEMA DE DECK (NOVO) */
+        .deck-builder-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px;}
+        .deck-slot { width: 60px; height: 80px; border: 2px dashed #444; display: flex; align-items:center; justify-content:center; cursor:pointer; background:#111; position:relative;}
+        .deck-slot.filled { border-style: solid; border-color: #0ff;}
+        .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; max-height: 200px; overflow-y:auto; border: 1px solid #333; padding:10px; background:#050505;}
+        
+        /* MODAIS E TELAS */
         .hub-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
-        .modal-content { background: #111; border: 2px solid #0f0; padding: 25px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(0,255,0,0.2); max-height: 90vh; overflow-y: auto;}
-        .modal-title { font-family: 'Press Start 2P'; color: #f00; margin-bottom: 15px; font-size: 0.9rem; line-height: 1.4;}
-
-        /* TELA DE LOGIN / START */
+        .modal-content { background: #111; border: 2px solid #0ff; padding: 25px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(0,255,255,0.2); max-height: 90vh; overflow-y: auto;}
+        
         #hub-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 3000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        .login-box { width: 90%; max-width: 350px; background: #111; padding: 30px; border: 2px solid #ff00de; text-align: center; box-shadow: 0 0 50px rgba(255,0,222,0.3);}
-        .login-box h1 { font-family: 'Press Start 2P'; font-size: 1rem; color: #fff; text-shadow: 2px 2px #ff00de; margin-bottom: 15px; line-height: 1.5;}
-        
-        /* ------------------------------------------------------------- */
-        /* RESPONSIVIDADE MOBILE ROBUSTA DO HUB RPG                      */
-        /* ------------------------------------------------------------- */
-        @media (max-width: 900px) {
-            #hub-container { flex-direction: column; }
-            
-            /* Sidebar Vira Topbar */
-            .hub-sidebar { width: 100%; height: auto; order: -1; flex-direction: column; border-right: none; border-bottom: 2px solid #0f0; padding: 0; box-shadow: 0 5px 15px rgba(0,255,0,0.2);}
-            .hub-profile-area { width: 100%; display: flex; align-items: center; text-align: left; padding: 10px; border-bottom: 1px solid #222; box-sizing: border-box;}
-            .hub-avatar { width: 55px; height: 55px; margin: 0 15px 0 0;}
-            .hub-profile-info { flex: 1; min-width: 0;}
-            .hub-bio { display:none; } /* esconde texto grande p poupar res */
-            
-            .hub-stats-row { margin-top: 5px; background: transparent; padding: 0; justify-content: flex-start; gap: 15px;}
-            #attributes-box { display: none; } /* Oculto no topo mobile */
-            
-            /* Navbar vira horizontal em slide */
-            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; white-space: nowrap; gap: 0; padding: 0; border-bottom: 1px solid #333;}
-            .hub-nav-btn { font-size: 0.8rem; padding: 12px 15px; flex: 0 0 auto; border-left: none; border-bottom: 3px solid transparent;}
-            .hub-nav-btn.active { border-left-color: transparent; border-bottom-color: #0f0;}
-            
-            /* Botão de Entrar Centralizado Compacto */
-            .hub-start-arena { width: 90%; margin: 10px auto; padding: 10px; text-align: center; }
-            
-            /* Radar Vira Bottom / Section oculta dependendo do tamanho mas mantida order 3 */
-            .hub-radar { width: 100%; border-left: none; border-top: 2px solid #0ff; height: auto; max-height: 200px; flex-shrink: 0; order: 3; box-sizing: border-box; flex-direction:row; overflow-x: auto; gap:10px; padding:10px;}
-            .radar-title { writing-mode: vertical-rl; transform: rotate(180deg); margin:0; padding-right:10px; border-right:1px solid #333;}
-            .radar-list { flex-direction: row; align-items: center;}
-            .radar-player { min-width: 150px; }
-            
-            /* Tela central e Formatos */
-            .hub-main-content { padding: 15px; overflow-x: hidden; }
-            .hub-title { font-size: 1.5rem; }
-            .post-form-box { padding: 10px; }
-            .grid-cards { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-            .action-card h3 { font-size: 0.55rem; }
-        }
-
-        /* ------------------------------------------------------------- */
-        /* CSS DOOM 3D HIDDEN ENGINE LAYER (RIGOROSAMENTE ORIGINAL)      */
-        /* ------------------------------------------------------------- */
-        #gun-canvas { position: absolute; bottom: 0; right: 15%; width: 40vh !important; height: 40vh !important; z-index: 15; image-rendering: auto; pointer-events: none; }
-        #kill-feed { position: fixed; top: 10px; right: 10px; width: 300px; display: flex; flex-direction: column; align-items: flex-end; pointer-events: none; z-index: 99; }
-        .kill-msg { background: rgba(0, 0, 0, 0.7); color: #fff; font-size: 0.8rem; padding: 5px; margin-bottom: 5px; border-right: 3px solid #ff0000; animation: fadeOut 5s forwards; text-shadow: 1px 1px 0 #000; }
-        @keyframes fadeOut { 0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; display: none; } }
-        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        
-        #minimap-container { position: absolute; top: 20px; left: 20px; width: 120px; height: 120px; border: 2px solid #0f0; border-radius: 50%; background: #000; z-index: 95; overflow: hidden; box-shadow: 0 0 15px #0f0, inset 0 0 30px #000; cursor: pointer; pointer-events: auto; }
-        #minimap { display: block; width: 100%; height: 100%; }
-        #big-map-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 120; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        #big-map-canvas { border: 4px solid #0f0; box-shadow: 0 0 50px rgba(0, 255, 0, 0.2); background: #050505; max-height: 80vh; max-width: 95vw; width: auto; height: auto; }
-        
-        #crt-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999; pointer-events: none; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 3px, 6px 100%; box-shadow: inset 0 0 10rem rgba(0,0,0,0.7); animation: flicker 0.15s infinite; mix-blend-mode: overlay;}
-        @keyframes flicker { 0% { opacity: 0.92; } 5% { opacity: 0.90; } 100% { opacity: 0.95; } }
-        
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
-        #damage-vignette { position: absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle, transparent 60%, rgba(255,0,0,0.0) 100%); z-index: 40; pointer-events: none; transition: background 0.1s; }
-        #rivotril-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 0, 0.2), rgba(0, 0, 255, 0.2)); opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: overlay; }
-        body.rivotril-active #rivotril-overlay { opacity: 1; animation: trip-animation 2s infinite alternate; }
-        @keyframes trip-animation { 0% { transform: scale(1.0); } 100% { transform: scale(1.02); } }
-        #crosshair { position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #fff; transform: translate(-50%, -50%); box-shadow: 0 0 8px #fff, 0 0 15px #0f0; border-radius: 50%; }
-        
-        #hud-bottom { position: absolute; bottom: 20px; left: 20px; color: #0f0; text-shadow: 2px 2px #000; display: flex; gap: 20px; }
-        .stat-box { font-size: 1.2rem; display: flex; flex-direction: column; font-family: 'Press Start 2P'; }
-        #money-display { position: absolute; top: 20px; right: 20px; font-family: 'Press Start 2P'; color: yellow; font-size: 1rem; text-shadow: 2px 2px #000; }
-        #wave-info { position: absolute; top: 50px; right: 20px; font-family: 'Share Tech Mono'; color: #fff; font-size: 0.8rem; text-align: right; }
-        #server-info { position: absolute; top: 5px; left: 50%; transform: translateX(-50%); font-family: 'Share Tech Mono'; color: #00ff00; font-size: 0.6rem; z-index: 100; text-shadow: 1px 1px #000; }
-        
-        #boss-hud { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); width: 80%; display: none; flex-direction: column; align-items: center; }
-        #boss-name { font-family: 'Press Start 2P'; color: #00ff00; font-size: 0.8rem; text-shadow: 2px 2px #000; margin-bottom: 5px; text-align: center; }
-        #boss-bar-container { width: 100%; height: 15px; background: #001100; border: 2px solid #0f0; }
-        #boss-hp-bar { width: 100%; height: 100%; background: #00ff00; transition: width 0.2s; box-shadow: 0 0 10px #0f0; }
-        #location-display { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); color: #ffffff !important; font-size: 0.7rem; font-weight: bold; background: rgba(0, 0, 0, 0.6); padding: 5px; border: 1px solid #ffffff; border-radius: 5px; z-index: 50; }
+        .login-box { width: 90%; max-width: 350px; background: #111; padding: 30px; border: 2px solid #0ff; text-align: center; box-shadow: 0 0 50px rgba(0,255,255,0.3);}
         
         #death-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,5,5,0.98); z-index: 110; display: none; flex-direction: column; align-items: center; justify-content: center; font-family: 'Press Start 2P'; color: #fff; text-align: center; padding: 20px; box-sizing: border-box;}
-        button.btn-base { background: #000; border: 2px solid #0f0; color: #0f0; padding: 15px; font-family: 'Share Tech Mono'; font-size: 0.9rem; margin: 10px 0; cursor: pointer; text-transform: uppercase; transition: 0.2s; word-wrap: break-word; white-space: normal;}
-        button.btn-base:hover { background: #0f0; color: #000; box-shadow: 0 0 20px #0f0; }
+        button.btn-base { background: #000; border: 2px solid #0ff; color: #0ff; padding: 15px; font-family: 'Share Tech Mono'; font-size: 0.9rem; margin: 10px 0; cursor: pointer; text-transform: uppercase; width: 100%;}
         
-        #notif-area { position: absolute; top: 20%; width: 100%; text-align: center; pointer-events: none; z-index: 60; }
-        .pop-text { font-family: 'Press Start 2P'; color: yellow; font-size: 0.7rem; text-shadow: 2px 2px red; animation: popUp 1.5s forwards; }
-        @keyframes popUp { 0%{opacity:0; transform:translateY(20px);} 20%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(-50px);} }
-        .score-pop { position: absolute; font-family: 'Press Start 2P'; font-size: 0.7rem; background: linear-gradient(45deg, #00ff80, #00ffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; pointer-events: none; z-index: 50; animation: floatUp 1s forwards; }
-        @keyframes floatUp { to { transform: translateY(-50px); opacity: 0; } }
-        .player-tag { position: absolute; color: #00ffff; font-family: 'Share Tech Mono'; font-weight: bold; font-size: 0.6rem; transform: translate(-50%, -100%); pointer-events: none; white-space: nowrap; }
+        /* RESPONSIVIDADE (Mobile Layout) */
+        @media (max-width: 900px) {
+            #hub-container { flex-direction: column; }
+            .hub-sidebar { width: 100%; order: -1; flex-direction: column; border-right: none; border-bottom: 2px solid #0ff; padding: 0;}
+            .hub-profile-area { display: flex; align-items: center; text-align: left; padding: 10px;}
+            .hub-avatar { width: 45px; height: 45px; margin: 0 10px 0 0;}
+            .hub-stats-row { margin-top: 5px; padding: 0; justify-content: flex-start; gap: 15px;}
+            #attributes-box { display: none; } /* Oculto mobile */
+            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 0; padding: 0;}
+            .hub-nav-btn { font-size: 0.8rem; padding: 12px; border-left: none; border-bottom: 3px solid transparent; white-space:nowrap;}
+            .hub-nav-btn.active { border-bottom-color: #0ff;}
+            .hub-start-arena { margin: 5px auto; width: 95%; padding:10px;}
+            .hub-radar { width: 100%; border-left: none; border-top: 2px solid #ff00de; flex-direction: row; overflow-x: auto; height:auto; padding:10px;}
+            .radar-title { writing-mode: vertical-rl; transform: rotate(180deg); margin:0; padding-right:10px; border-right:1px solid #333;}
+            .radar-list { flex-direction: row; align-items: center;}
+            .radar-player { min-width: 150px; margin-bottom:0;}
+            .hub-main-content { padding: 10px; overflow-x: hidden; }
+        }
 
-        /* CONTROLES MOBILE DOOM ADAPTADOS (NÃO SERÃO BLOQUEADOS PELA UI) */
-        #mobile-controls { display: none; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 80; pointer-events: none; touch-action: none;}
-        .joystick-zone { position: absolute; bottom: 5vh; left: 5vw; width: 100px; height: 100px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(0, 255, 0, 0.3); border-radius: 50%; pointer-events: auto; }
-        .joystick-knob { position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; background: rgba(0, 255, 0, 0.5); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 10px #0f0; }
-        
-        .action-btn { position: absolute; pointer-events: auto; border-radius: 50%; font-family: 'Press Start 2P'; display: flex; align-items: center; justify-content: center; color: #000; user-select: none; }
-        #btn-fire { bottom: 5vh; right: 5vw; width: 70px; height: 70px; background: rgba(255, 0, 0, 0.5); border: 2px solid red; font-size: 0.55rem; color: #fff; }
-        #btn-fire:active { background: red; }
-        #btn-jump { bottom: 18vh; right: 10vw; width: 50px; height: 50px; background: rgba(0, 255, 0, 0.3); border: 2px solid #0f0; color: #fff; font-size: 0.45rem; }
-        #btn-jump:active { background: #0f0; }
-        
-        #look-zone { position: absolute; top: 0; right: 0; width: 50%; height: 100%; z-index: 10; pointer-events: auto; touch-action: none; }
-
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
 </head>
 <body>
-    <div id="crt-layer"></div>
 
-    <!-- TELA DE LOGIN / BOOT -->
+    <!-- BOOT / LOGIN -->
     <div id="hub-login">
         <div class="login-box">
-            <h1>TRANSFERÊNCIA MENTE-MÚSCULO</h1>
-            <p style="color:#aaa; font-size: 0.75rem; margin-bottom: 20px;">ESTEJA FÍSICA E MENTALMENTE PRONTO PARA O METAVERSO.</p>
-            <input type="text" id="login-username" placeholder="Seu Vulgo" style="width: 100%; padding: 15px; background: #000; border: 2px solid #0f0; color: #0f0; font-family: 'Press Start 2P'; font-size: 0.75rem; text-align: center; margin-bottom: 15px; box-sizing: border-box;">
-            
-            <button class="btn-action btn-permission" onclick="window.requestPermissionsUI()">PERMITIR GPS / CÂMERA</button>
-            <div id="permission-status" style="font-size:0.65rem; color:#aaa; margin-bottom: 15px;">Hardware necessário para Provas de Rua e gravação de Tracker e Imagens.</div>
-            
-            <button class="btn-base" onclick="window.hubLogin()" style="width: 100%;">ACESSAR O TERMINAL HUB</button>
+            <h1 style="font-size:1rem; color:#0ff; text-shadow:none;">SINCRONIZAÇÃO NEURAL</h1>
+            <p style="color:#aaa; font-size: 0.75rem; margin-bottom: 20px;">Preparando interface Hub para o novo motor CYBER CLASH.</p>
+            <input type="text" id="login-username" placeholder="VULGO DIGITAL" style="width: 100%; padding: 15px; background: #000; border: 1px solid #0ff; color: #fff; font-family: 'Share Tech Mono'; text-align: center; margin-bottom: 15px;">
+            <button class="btn-action" style="background:#0ff; color:#000;" onclick="window.hubLogin()">CONECTAR À MATRIZ</button>
         </div>
     </div>
 
-    <!-- HUB RPG PRINCIPAL WEB -->
+    <!-- O HUB -->
     <div id="hub-container" style="display: none;">
         
-        <!-- BARRA RESPONSIVA DE PERFIL E NAV -->
         <div class="hub-sidebar">
             <div class="hub-profile-area">
-                <img id="hub-avatar-img" class="hub-avatar" src="https://i.imgur.com/kKC1zaJ.png" alt="Avatar">
+                <img id="hub-avatar-img" class="hub-avatar" src="https://i.imgur.com/kKC1zaJ.png">
                 <div class="hub-profile-info">
                     <div class="hub-username" id="hub-ui-name">JOGADOR</div>
                     <div class="hub-lvl" id="hub-ui-lvl">NÍVEL 1</div>
-                    <div class="hub-bio" id="hub-ui-bio">"Disciplina supera o algoritmo."</div>
                     <div class="hub-stats-row">
-                        <div class="stat-item">XP <span id="hub-ui-xp">0</span></div>
-                        <div class="stat-item">GOLD <span id="hub-ui-gold">0</span></div>
+                        <div class="stat-item">XP <span id="hub-ui-xp" style="color:#0f0;">0</span></div>
+                        <div class="stat-item">GLD <span id="hub-ui-gold" style="color:yellow;">0</span></div>
                     </div>
                 </div>
                 
-                <div id="attributes-box" style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
-                    <span style="font-size: 0.65rem; color: #ff00de;">ATRIBUTOS INJETADOS (CORPO FÍSICO)</span>
-                    <div style="display:flex; flex-direction:column; gap:5px; font-size: 0.75rem; color:#aaa; margin-top:10px; text-align:left; padding-left: 10px;">
-                        <div>⚡ Agilidade Pessoal (SPD): <span id="hub-ui-spd" style="color:#0f0">1.0</span></div>
-                        <div>💀 Força Muscular (DMG): <span id="hub-ui-dmg" style="color:#f00">1.0</span></div>
-                        <div>❤️ Condicionamento (HP): <span id="hub-ui-hp" style="color:red">+0</span></div>
+                <div id="attributes-box" style="margin-top: 10px; border-top: 1px solid #333; padding-top: 10px;">
+                    <span style="font-size: 0.65rem; color: #ff00de;">DNA EXTRAÍDO (BUFFS REAIS)</span>
+                    <div style="display:flex; flex-direction:column; gap:3px; font-size: 0.75rem; color:#aaa; margin-top:5px; text-align:left;">
+                        <div>🏃 Velocidade/Cardio: <span id="hub-ui-spd" style="color:#0ff">1.0</span></div>
+                        <div>💪 Resistência Base (HP): <span id="hub-ui-hp" style="color:red">+0</span></div>
+                        <div>🥗 Toxicidade (Dano): <span id="hub-ui-dmg" style="color:#0f0">1.0</span></div>
                     </div>
                 </div>
             </div>
 
             <div class="hub-nav">
-                <button class="hub-nav-btn active" onclick="window.switchTab('tab-feed')">📜 FEED & TRIBUNAL</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-missoes')">⚔️ TAREFAS IRL</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-loja')">💰 MERCADO / CLÍNICA</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-perfil')">⚙️ PERFIL FÍSICO</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-config')">🕹️ MOTOR DOOM</button>
+                <button class="hub-nav-btn active" onclick="window.switchTab('tab-feed')">📜 TRIBUNAL WEB</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-missoes')">⚔️ CORPO FÍSICO</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-deck')">🃏 DECK E CARTAS</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-loja')">📦 CÁPSULAS GACHA</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-perfil')">⚙️ CONEXÕES</button>
             </div>
             
-            <button class="hub-start-arena" onclick="window.prepareArena()">DOWNLOAD MENTAL PRA ARENA 3D</button>
+            <button class="hub-start-arena" onclick="window.startClash(false)">🔥 PVE (ONDA DE BOTS)</button>
         </div>
 
-        <!-- AREA CENTRAL -->
         <div class="hub-main-content">
             
-            <!-- FEED CÍVICO E POSTAGENS -->
+            <!-- FEED -->
             <div id="tab-feed" class="hub-tab active">
-                <h2 class="hub-title">TRIBUNAL DA SOCIEDADE</h2>
+                <h2 class="hub-title">DIÁRIO DO SANGUE (FEED)</h2>
                 
                 <div class="feed-filters">
-                    <button class="filter-btn active" onclick="window.filterFeed('todos', this)">Todos</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Força', this)">🔥 Força</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Cardio', this)">👟 Cardio</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Dieta', this)">🥗 Dieta</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Duelo', this)" style="border-color:#ff00de; color:#ff00de;">⚔️ Duelos / Conflitos</button>
+                    <button class="filter-btn active" onclick="window.filterFeed('todos', this)">Rede Geral</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Cardio', this)">Cardio</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Força', this)">Força/Dano</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Duelo', this)" style="color:#ff00de;">Duelos Pvp</button>
                 </div>
 
-                <div class="post-form-box" id="quick-post-box" style="display:none; border-color:#0ff;">
-                    <h3 style="color:#0ff; font-family:'Press Start 2P'; font-size:0.7rem; margin-top:0; line-height: 1.3;" id="form-box-title">ANEXAR PROVA DIGITAL</h3>
-                    <input type="text" id="task-desc" placeholder="Adicione relatos de sua prova para aprovação...">
-                    
-                    <!-- Tracker Integrado pra Corridas (GPS API) -->
-                    <div id="gps-panel" class="gps-panel">
-                        <button class="btn-action" id="btn-gps-toggle" style="background:#444;" onclick="window.toggleGPS()">⏺ Iniciar Gravação GPS/Rota</button>
-                        <div class="gps-status">Distância Aferida: <span id="gps-dist" style="color:white;">0.00 km</span></div>
-                    </div>
-
-                    <p style="font-size:0.7rem; color:#aaa; margin-bottom:5px;">Foto ou Vídeo para Comprovar Mérito (Local/Câmera):</p>
-                    <input type="file" id="task-file" accept="image/*,video/mp4" capture="environment" style="background:#222; padding:5px; margin-bottom:10px;">
+                <div class="post-form-box" id="quick-post-box" style="display:none;">
+                    <h3 style="color:#0f0; margin-top:0; font-family:'Press Start 2P'; font-size:0.65rem;" id="form-box-title">VALIDAR MISSÃO FÍSICA</h3>
+                    <input type="text" id="task-desc" placeholder="Qual o suor derramado?...">
+                    <input type="file" id="task-file" accept="image/*" capture="environment" style="margin-bottom:10px;">
                     <canvas id="task-compress-canvas" style="display:none;"></canvas>
-                    
-                    <button class="btn-action" style="font-size:0.8rem; padding:12px;" onclick="window.submitTaskEvidence()">COMPUTAR PROVAS E GANHAR ESTATUS DA VIDA</button>
-                    <button class="btn-action" style="margin-top:5px; background:transparent; border-color:#555; color:#aaa; font-size:0.7rem;" onclick="document.getElementById('quick-post-box').style.display='none'">CANCELAR PUBLICAÇÃO</button>
-                    <div id="task-upload-status" style="color:yellow; font-size: 0.7rem; margin-top: 10px;"></div>
+                    <button class="btn-action" onclick="window.submitTaskEvidence()">COMPROVAR E LEVAR BÔNUS NA MATRIZ</button>
+                    <button class="btn-action" style="margin-top:5px; background:transparent; border-color:#555; color:#aaa;" onclick="document.getElementById('quick-post-box').style.display='none'">CANCELAR</button>
                 </div>
-
-                <div class="feed-container" id="feed-container-render">
-                    <!-- Cards injetados na runtime -->
-                    <div style="text-align:center; padding: 20px; color:#555;">Carregando histórico do servidor cívico...</div>
-                </div>
+                
+                <div class="feed-container" id="feed-container-render"></div>
             </div>
 
-            <!-- TAB DE MISSÕES -->
+            <!-- MISSÕES -->
             <div id="tab-missoes" class="hub-tab">
-                <h2 class="hub-title">CARTILHA DE ESFORÇO BRUTO</h2>
+                <h2 class="hub-title">FORJA BIOLÓGICA (IRL TAREFAS)</h2>
                 
                 <h3 style="color:#0ff; font-family:'Share Tech Mono';">Táticas de Aceleração Neural (AGILIDADE)</h3>
                 <div class="grid-cards" style="margin-bottom:20px;">
                     <div class="action-card">
-                        <h3>O Chão é Lava / Corrida Tática</h3>
-                        <p>Ligue o GPS ou grave correndo obstáculos. Se for devagar é renegado.</p>
-                        <span class="card-reward">+500 XP | +$1000 | +0.3 Speed Motor</span>
-                        <button class="btn-action" onclick="window.openTaskUploader('parkour', 'Cardio')">SOLICITAR VERIFICAÇÃO</button>
-                    </div>
-                    <div class="action-card">
-                        <h3>Acrobacias Reais (Tricks)</h3>
-                        <p>Mandou o SkateTrick, Mortal de costas, calistenia aérea. Prove isso para Agilidade imensa.</p>
-                        <span class="card-reward">+800 XP | +$2000 | +0.6 Speed Motor</span>
-                        <button class="btn-action" onclick="window.openTaskUploader('acrobacia', 'Cardio')">SOLICITAR VERIFICAÇÃO</button>
+                        <h3 style="color:#0ff">Corrida Livre / Cardio</h3>
+                        <p>Corra ao ar livre. Melhora drasticamente a regeneração de Energia das Cartas (+ Speed).</p>
+                        <span class="card-reward">+500 XP | +$1000 | +0.2 Regen de Energia</span>
+                        <button class="btn-action" style="color:#0ff; border-color:#0ff;" onclick="window.openTaskUploader('cardio', 'Cardio')">SOU UM VENTO</button>
                     </div>
                 </div>
 
-                <h3 style="color:#f55; font-family:'Share Tech Mono';">Destruição da Fibra Muscular (DANO E RESISTÊNCIA)</h3>
+                <h3 style="color:#f55; font-family:'Share Tech Mono';">Força Bruta e Sobrevivência (HP MÁX E TANKS)</h3>
                 <div class="grid-cards" style="margin-bottom:20px;">
                     <div class="action-card" style="border-color:#500;">
-                        <h3 style="color:#f55;">Morte na Calistenia</h3>
-                        <p>Grave barras fixas ou flexões ininterruptas em exaustão e falha total dos braços.</p>
-                        <span class="card-reward">+600 XP | +$1500 | +50 MAX HP</span>
-                        <button class="btn-action" style="border-color:#f55; color:#f55;" onclick="window.openTaskUploader('calistenia', 'Força')">SOLICITAR VERIFICAÇÃO</button>
-                    </div>
-                    <div class="action-card" style="border-color:#0f0;">
-                        <h3 style="color:#0f0;">Levantamento Grosseiro (Iron)</h3>
-                        <p>Bata o ponto na sua cademia e documente pesos ou suor gerado de forma honesta.</p>
-                        <span class="card-reward">+400 XP | +$1200 | +0.4 DANO (Tiro)</span>
-                        <button class="btn-action" style="border-color:#0f0; color:#0f0;" onclick="window.openTaskUploader('academia', 'Força')">SOLICITAR VERIFICAÇÃO</button>
+                        <h3 style="color:#f55;">Calistenia da Morte</h3>
+                        <p>Flexões e barras. Blinda as muralhas da sua Base e aumenta HP das cartas Tank (+ HP).</p>
+                        <span class="card-reward">+600 XP | +$1500 | +100 HP Máximo Base</span>
+                        <button class="btn-action" style="border-color:#f55; color:#f55;" onclick="window.openTaskUploader('forca', 'Força')">DESTRUÍ O MÚSCULO</button>
                     </div>
                 </div>
 
-                <h3 style="color:#ff00de; font-family:'Share Tech Mono';">Missões Livres e Comida Sólida</h3>
+                <h3 style="color:#0f0; font-family:'Share Tech Mono';">Pureza Celular (ALIMENTAÇÃO E DANO)</h3>
                 <div class="grid-cards">
-                    <div class="action-card" style="border-color: #0ff;">
-                        <h3 style="color:#0ff">POSTAR PRATO FUNCIONAL</h3>
-                        <p>Registre Ovos, Carnes, Carboidratos limpos e dieta. Fastfood esconde fraqueza e reduz sua Agilidade.</p>
-                        <span class="card-reward">+200 XP | +0.2 DANO (Tiro)</span>
-                        <button class="btn-action" onclick="window.openTaskUploader('dieta_boa', 'Dieta')">COMPROVAR INGESTÃO</button>
+                    <div class="action-card" style="border-color: #0f0;">
+                        <h3 style="color:#0f0">Fisiologia Grosseira Limpa</h3>
+                        <p>Poste carnes e macros honestos. Escala todo o Dano infligido pelo seu exército (+ Dmg).</p>
+                        <span class="card-reward">+300 XP | +$800 | +0.3 DANO GLOBAL</span>
+                        <button class="btn-action" onclick="window.openTaskUploader('dieta', 'Dieta')">INGESTÃO REALIZADA</button>
                     </div>
-                    
-                    <div class="action-card" style="border-color: #ff00de;">
-                        <h3 style="color:#ff00de">CONTRATO CUSTOMIZADO</h3>
-                        <input type="text" id="custom-task-name" placeholder="Descreva a meta: 'Bike 30km...'" style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:6px; margin-bottom:8px; font-family:'Share Tech Mono'; font-size:0.75rem;">
-                        <select id="custom-task-type" style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:6px; margin-bottom:10px; font-family:'Share Tech Mono'; font-size:0.75rem;">
-                            <option value="Cardio">Via Cardio (+ Speed)</option>
-                            <option value="Força">Via Força (+ Dano)</option>
-                            <option value="Dieta">Via Fisiologia (+ Dano)</option>
-                        </select>
-                        <button class="btn-action" style="border-color:#ff00de; color:#ff00de;" onclick="window.createCustomTask()">ABRIR PROVA</button>
+                    <div class="action-card" style="border-color: red;">
+                        <h3 style="color:red">Lixo Radioativo (Comida podre)</h3>
+                        <p>Confesse Fast-food ou doce. Penalidade no avanço das tropas do campo.</p>
+                        <span class="card-reward" style="color:red">+50 XP | -0.3 LENTIDÃO DE MOVIMENTO</span>
+                        <button class="btn-action" style="background:#500; border-color:red; color:white;" onclick="window.openTaskUploader('dieta_lixo', 'Dieta')">PEQUEI FISICAMENTE</button>
                     </div>
                 </div>
             </div>
-
-            <!-- ABA LOJA / METAVERSO E CLÍNICA -->
-            <div id="tab-loja" class="hub-tab">
-                <h2 class="hub-title">COMÉRCIO CLANDESTINO DO HUB</h2>
+            
+            <!-- DECK DE CARTAS (NOVO) -->
+            <div id="tab-deck" class="hub-tab">
+                <h2 class="hub-title">MANIPULAÇÃO DE MENTES (DECK BUILDER)</h2>
+                <p style="color:#aaa; font-size:0.8rem;">Selecione 8 Consciências Cibernéticas para formar a sua mão de Invocação. Seus buffs do Hub se manifestam nelas.</p>
                 
-                <h3 style="font-family:'Press Start 2P'; font-size:0.7rem; color:#ff00de; margin-top:10px; line-height:1.4;">ARSENAL DEFINITIVO DA ENGINE (PERSISTE QUANDO MORRE)</h3>
-                <div class="grid-cards" id="hub-shop-weapons" style="margin-bottom: 25px;"></div>
+                <h3 style="color:#0f0; font-family:'Share Tech Mono'; margin-bottom:5px;">Sua Esquadra (Tropa Ativa):</h3>
+                <div class="deck-builder-grid" id="deck-active-render">
+                    <!-- Javascript populates 8 slots -->
+                </div>
+                <div style="font-size:0.65rem; color:#ff00de; margin-bottom:15px;" id="deck-info-txt">Clique em uma carta inativa da Coleção para transferir à Esquadra.</div>
+                
+                <h3 style="color:#0ff; font-family:'Share Tech Mono';">Acervo de Códigos Inativos:</h3>
+                <div class="collection-grid" id="collection-render">
+                    <!-- Todos os Owned Cards -->
+                </div>
+            </div>
 
-                <h3 style="font-family:'Press Start 2P'; font-size:0.7rem; color:yellow; line-height:1.4;">PROCEDIMENTOS ARRISCADOS E GACHA</h3>
+            <!-- GACHA E LOJA -->
+            <div id="tab-loja" class="hub-tab">
+                <h2 class="hub-title">CÁPSULAS DE ENGENHARIA NEON</h2>
+                
                 <div class="grid-cards">
-                    <div class="action-card" style="border-color: yellow;">
-                        <h3 style="color:yellow;">Implante do Caos (Lootbox Neural)</h3>
-                        <p style="font-size:0.75rem;">Deixe a IA Injetar DNA sorteado em você. Ganhe absurdos HP Max/Dano ou Perca Agilidade se for azarado. Custa ouro pra bancar a cirurgia.</p>
-                        <span class="card-reward">Preço: $2500 Gold</span>
-                        <button class="btn-action" style="border-color:yellow; color:yellow;" onclick="window.buyLootbox()">SORTEAR OPERAÇÃO ($2500)</button>
-                    </div>
-                    <div class="action-card">
-                        <h3>Plano Médico para o Retorno</h3>
-                        <p style="font-size:0.75rem;">Compre isso para garantir que na próxima entrada no Metaverso sua Vida vá para o Talante máximo estipulado de bônus, curando tudo.</p>
-                        <span class="card-reward">Preço: $500 Gold</span>
-                        <button class="btn-action" onclick="window.hubHealFull()">REGENERAR O AVATAR PARA ENTRADA</button>
+                    <div class="action-card" style="border-color: #ff00de;">
+                        <h3 style="color:#ff00de; font-size:0.9rem;">CÁPSULA GACHA BÁSICA</h3>
+                        <p style="font-size:0.8rem;">Consuma seu Ouro para rodar o algoritmo de mutação e decifrar 3 novos códigos biológicos (Cartas). Cópias sobem de Level, aumentando Status base!</p>
+                        <span class="card-reward">Preço do Risco: $1000 Gold</span>
+                        <button class="btn-action" style="border-color:#ff00de; color:#ff00de; padding:15px; font-size:0.9rem;" onclick="window.rollGacha()">DECIFRAR CÓDIGOS E ABRIR ($1000)</button>
+                        
+                        <div id="gacha-result" style="margin-top:15px; min-height:80px; display:flex; justify-content:center; gap:5px; align-items:center;">
+                            <!-- Animacao de Cards Abrindo -->
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ABA MEU PERFIL (CUSTOMIZAÇÃO E WIPE) -->
+            <!-- MEU PERFIL (Config e Reset) -->
             <div id="tab-perfil" class="hub-tab">
                 <h2 class="hub-title">CONDIÇÕES VITAIS DA MATRIZ</h2>
-                
                 <div class="post-form-box">
-                    <label style="color:#0ff; font-size:0.85rem;">Mudar Nomenclatura Pessoal:</label>
                     <input type="text" id="prof-edit-name" placeholder="Insira o nome público...">
-                    
-                    <label style="color:#0ff; font-size:0.85rem;">Manifesto (Bio Social):</label>
-                    <input type="text" id="prof-edit-bio" placeholder="Filosofia curta para o perfil..." maxlength="45">
-                    
-                    <label style="color:#0ff; font-size:0.85rem;">Alterar Interface Facial (Avatar / Foto):</label>
-                    <p style="font-size:0.7rem; color:#aaa; margin-top:2px; margin-bottom:5px;">Faça upload do seu próprio rosto pelo sistema (Não necessita mais de Link Web!).</p>
-                    <input type="file" id="prof-edit-avatar-file" accept="image/*" style="background:#111; padding:8px; border:1px solid #0ff; width:100%; box-sizing:border-box; color:#fff;">
-                    
-                    <button class="btn-action" style="margin-top: 20px; font-size:0.85rem; padding:15px;" onclick="window.saveProfileEdits()">GRAVAR MUTAÇÕES DO PERFIL</button>
+                    <input type="file" id="prof-edit-avatar-file" accept="image/*" style="background:#111; color:#fff; border:1px dashed #0ff; padding:8px;">
+                    <button class="btn-action" style="margin-top: 10px;" onclick="window.saveProfileEdits()">GRAVAR MUTAÇÕES DO PERFIL</button>
                 </div>
 
                 <div class="post-form-box" style="border-color:red;">
-                    <h3 style="color:red; margin-top:0; font-size:1rem;">PROTOCOLO EXTREMO (ZONA DE MORTE)</h3>
-                    <p style="font-size:0.75rem; color:#aaa;">Pressionar o Wipe varrerá os Logs Segregados e limpa seu bypass local totalmente, resetando ouro e conta se perder login.</p>
-                    <button class="btn-action" style="border-color:red; color:red;" onclick="if(confirm('Isso corromperá seu corpo digital atual de vez. Concorda?')){ sessionStorage.removeItem('hubProfile_JSON'); localStorage.removeItem('localFeed'); location.reload(); }">WIPE (EXTERMINAR CONTA C/ LOCAL STORAGE)</button>
-                </div>
-            </div>
-
-            <!-- ABA MENU ARENA E LIGAÇÃO 3D -->
-            <div id="tab-config" class="hub-tab">
-                <h2 class="hub-title">SISTEMA CEREBRAL DA ENGINE</h2>
-                <p style="color:#f00; font-weight:bold; font-size:0.8rem;">ATENÇÃO: Sem aprovação nas Missões do Mundo Físico seu Bônus não sobe. A Engine 3D do Doom original base está programada para Velocidade Base Lenta. Jogue limpo.</p>
-                
-                <div class="post-form-box" style="border-color:#333;">
-                    <label style="font-size:0.85rem;">Acesso de Rede PVE Motor:</label>
-                    <select id="hub-gamemode">
-                        <option value="survival">SOBREVIVENCIA CARNIFICINA (Siga por aqui)</option>
-                        <option value="freeplay">MODO DE TESTE (Andar livre)</option>
-                    </select>
-
-                    <label style="font-size:0.85rem; margin-top:10px; display:block;">Instância Geográfica do Servidor Multiplayer:</label>
-                    <select id="hub-difficulty">
-                        <option value="normal" selected>NEXUS - SALA NORMAL DE SQUAD (Padrão)</option>
-                        <option value="hard">NEXUS SANGUE - INIMIGOS EVIDENTES E BRUTAIS</option>
-                    </select>
-                    
-                    <div style="display:flex; gap:15px; align-items: center; margin-top:15px; margin-bottom:15px;">
-                        <label style="font-size:0.8rem; width:180px;">Coloração Ameaça (RGB Inimigo Opcional):</label>
-                        <input type="color" id="hub-color-enemy" value="#ff0000" style="padding:0; height:35px; width:50px; border:none; cursor:pointer;">
-                    </div>
-
-                    <label style="font-size:0.8rem;">Letreiro no Tórax da Skin no Jogo Multiplayer:</label>
-                    <input type="text" id="hub-chest-text" placeholder="MATADOR">
-                    
-                    <button class="hub-start-arena" style="width: 100%; margin:20px 0 0 0; border-color:#0f0; background:#040;" onclick="window.prepareArena()">ACESSAR MATANÇA (START METAVERSO DOOM)</button>
-                </div>
-                
-                <div style="padding:15px; border:1px dashed #0ff; color:#0ff; text-align:center; margin-top:20px; font-size:0.75rem;">
-                    AVISO DE PRODUTO INTEGRADO: Em um futuro próximo, o Fitness Hub passará a suportar **Novas Arenas Injetadas** e outros motores Mini-game para expansão de habilidades Reais. O FPS Retro original e sua Lore foram intocáveis. Aproveite com os Brothers.
+                    <h3 style="color:red; margin-top:0;">PROTOCOLO EXTREMO</h3>
+                    <p style="font-size:0.75rem; color:#aaa;">Pressionar Wipe varrerá o cache Offline Storage.</p>
+                    <button class="btn-action" style="border-color:red; color:red;" onclick="if(confirm('Exterminar Memória Offline?')){ sessionStorage.clear(); localStorage.clear(); location.reload(); }">WIPE TOTAL (RESETAR MATRIZ OFFLINE)</button>
                 </div>
             </div>
 
         </div>
 
-        <!-- RADAR PVP OFFCANVAS / RESPONSIVO -->
+        <!-- RADAR PVP OFFCANVAS -->
         <div class="hub-radar">
-            <h3 class="radar-title">📡 SINAL INIMIGO NAS IMEDIAÇÕES</h3>
-            <div id="radar-loading" style="font-size:0.6rem; color:#aaa; text-align:center;">Realizando Ping em Nodes vizinhos para achar Alvos Físicos...</div>
+            <h3 class="radar-title">📡 SATÉLITES INIMIGOS</h3>
+            <div id="radar-loading" style="font-size:0.6rem; color:#aaa; text-align:center;">Vasculhando Conexões...</div>
             <div class="radar-list" id="radar-list"></div>
-            
-            <div style="margin-top:auto; font-size:0.55rem; color:#555; border-top:1px solid #222; padding-top:10px; text-align:center;">
-                Duelo no HUB garante Ouro Colossal em vitória se não for no Sandbox Local. O Perdedor precisa votar e Confirmar! E vice versa! Honra em Jogo.
-            </div>
         </div>
     </div>
 
@@ -474,23 +314,52 @@
     <div class="hub-modal" id="system-modal">
         <div class="modal-content">
             <h2 class="modal-title" id="modal-title">ALERTA SOCIAL</h2>
-            <p id="modal-desc" style="color:#aaa; font-size:0.85rem; margin-bottom:20px; line-height: 1.4;"></p>
+            <p id="modal-desc" style="color:#aaa; font-size:0.85rem; margin-bottom:20px;"></p>
             <div id="modal-actions" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;"></div>
         </div>
     </div>
 
+    <!-- ENGINE AUTO BATTLER (Cyber Clash 2D DOM) -->
+    <div id="game-wrapper">
+        <canvas id="arena-canvas"></canvas>
+        <div id="arena-ui">
+            <div class="top-bar-arena">
+                <div id="enemy-hp-text" style="color:red;">BOSS HP: 0</div>
+                <div id="arena-time">03:00</div>
+                <button onclick="window.leaveArena()" style="background:transparent; border:1px solid #aaa; color:#aaa; font-family:'Press Start 2P'; font-size:0.5rem; cursor:pointer;">DESCONECTAR (FUGA)</button>
+            </div>
+            
+            <div style="flex-grow:1;" id="arena-clickable-zone" onclick="window.arenaClick(event)"></div>
+            
+            <div class="bottom-ui-arena">
+                <div class="energy-container">
+                    <div class="energy-fill" id="mana-fill"></div>
+                    <div class="energy-text"><span id="mana-num">0</span>/10 FLUXOS NEURAIS</div>
+                </div>
+                <div class="cards-hand" id="arena-hand-ui">
+                    <!-- Cards inseridos dinamica via JS -->
+                </div>
+            </div>
+            <button class="auto-btn" id="btn-afk" onclick="window.toggleAFK()">MODO I.A. INATIVO</button>
+        </div>
+        
+        <div id="death-screen">
+            <h1 id="end-title" style="color:yellow; font-size: 1.5rem; text-shadow:2px 2px #000;">VEREDICTO FINAL</h1>
+            <p id="end-flavor" style="color:#aaa; margin-bottom:20px; font-size: 0.8rem;"></p>
+            <button class="btn-base" onclick="window.returnToHubAndSave()">RECEBER LUCROS E FECHAR ARENA</button>
+        </div>
+    </div>
+
+
 <script type="module">
-// =========================================================================
-// 1. IMPORTAÇÕES E FIREBASE DB COM GESTÃO RIGOROSA DE ESTADO / OFFLINE
-// =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where, updateDoc, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-import { getDatabase, ref, set, onDisconnect, onValue, remove, update, push, onChildAdded, onChildChanged, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getDatabase, ref, set, onDisconnect, onValue, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
 const firebaseConfig = { apiKey: "AIzaSyCa3tr1mfYKvZ581A1omSQGFsVrIoQYOwQ", authDomain: "fishballserver.firebaseapp.com", projectId: "fishballserver", storageBucket: "fishballserver.firebasestorage.app", messagingSenderId: "626248800374", appId: "1:626248800374:web:fb912ed85fdfac23dba757" };
 let db, rtdb;
 window.isFirebaseActive = false;
-let useLocalBypass = false; // Controle rígido pra evitar desaparecimentos 
+let useLocalBypass = false; 
 
 try { 
     const app = initializeApp(firebaseConfig); 
@@ -501,83 +370,81 @@ try {
     useLocalBypass = true;
 }
 
-let hubProfile = { 
-    uid: null, username: "Anonimo", bio: "O Aço forja as mentes do motor.", lvl: 1, xp: 0, gold: 0, avatar: "https://i.imgur.com/kKC1zaJ.png",
-    buffs: { hp: 0, dmg: 0.0, spd: 0.0 }, skins: ['default'], equippedSkin: 'default'
-};
-let myPlayerId = 'player_' + Math.floor(Math.random() * 10000000); 
-window.gameLoopInterval = null; 
-window.animationFrameId = null;
+// =========================================================================
+// 1. CARDS DATABASE (OS 20 CÓDIGOS MUTANTES)
+// =========================================================================
+const CARD_DB = {
+    // CATEGORIA 1 - COMUM
+    "Brawler": { id: "Brawler", name: "Brawler", cost: 2, rarity: 1, type: "unit", hp: 350, dmg: 40, range: 40, ms: 60, as: 1.2 },
+    "CorredorNeon": { id: "CorredorNeon", name: "Corredor Neon", cost: 1, rarity: 1, type: "unit", hp: 150, dmg: 20, range: 40, ms: 140, as: 0.8 },
+    "DroneRastreador": { id: "DroneRastreador", name: "Drone Sonda", cost: 2, rarity: 1, type: "unit", hp: 200, dmg: 10, range: 120, ms: 80, as: 1.5, mechanics: ['expose'] },
+    "FalcaoSucata": { id: "FalcaoSucata", name: "Falcão C.E.", cost: 2, rarity: 1, type: "unit", hp: 250, dmg: 35, range: 50, ms: 90, as: 1.0, isFlying: true },
 
+    // CATEGORIA 2 - RARA
+    "Kamikaze": { id: "Kamikaze", name: "Bot Kamikaze", cost: 3, rarity: 2, type: "unit", hp: 200, dmg: 300, range: 60, ms: 110, as: 1.0, mechanics: ['explode'] },
+    "BioTank": { id: "BioTank", name: "Bio-Tank", cost: 5, rarity: 2, type: "unit", hp: 1200, dmg: 60, range: 50, ms: 40, as: 2.0, isTank: true },
+    "Fantasma": { id: "Fantasma", name: "Holo Fantasma", cost: 4, rarity: 2, type: "unit", hp: 300, dmg: 70, range: 50, ms: 75, as: 1.2, mechanics: ['dodge'] },
+    "Assassino": { id: "Assassino", name: "Assassino F.", cost: 4, rarity: 2, type: "unit", hp: 250, dmg: 150, range: 40, ms: 120, as: 1.5, mechanics: ['stealth'] },
+    "Barricada": { id: "Barricada", name: "Barricada", cost: 3, rarity: 2, type: "building", hp: 800, dmg: 0, range: 0, ms: 0, as: 99, isTank: true },
+
+    // CATEGORIA 3 - ÉPICA
+    "Comandante": { id: "Comandante", name: "Cmte. Tático", cost: 6, rarity: 3, type: "unit", hp: 600, dmg: 40, range: 80, ms: 60, as: 1.5, mechanics: ['aura_buff'] },
+    "Striker": { id: "Striker", name: "Striker EMP", cost: 5, rarity: 3, type: "unit", hp: 450, dmg: 65, range: 50, ms: 100, as: 1.0, mechanics: ['death_stun'] },
+    "Medica": { id: "Medica", name: "Médica Nano", cost: 5, rarity: 3, type: "unit", hp: 400, dmg: -30, range: 150, ms: 65, as: 1.5, targetType: 'ally' }, // Negative dmg = Heal
+    "Sniper": { id: "Sniper", name: "Sniper Plasma", cost: 4, rarity: 3, type: "unit", hp: 180, dmg: 180, range: 250, ms: 50, as: 2.5 },
+    "Toxico": { id: "Toxico", name: "Toxic Lançador", cost: 6, rarity: 3, type: "unit", hp: 500, dmg: 20, range: 120, ms: 55, as: 2.0, mechanics: ['acid_pool'] },
+
+    // CATEGORIA 4 - LENDÁRIAS (TITÃS)
+    "Mecha": { id: "Mecha", name: "Mecha-Titã", cost: 8, rarity: 4, type: "unit", hp: 1500, dmg: 40, range: 150, ms: 35, as: 0.5, mechanics:['cleave'], isTank: true },
+    "Barao": { id: "Barao", name: "Barão do Lodo", cost: 9, rarity: 4, type: "unit", hp: 2000, dmg: 50, range: 60, ms: 30, as: 2.0, mechanics: ['slow_trail', 'spawn_drones'], isTank: true },
+    "Hacker": { id: "Hacker", name: "Hacker de Sis.", cost: 7, rarity: 4, type: "unit", hp: 500, dmg: 80, range: 180, ms: 55, as: 1.5, mechanics: ['spawn_emp_base'] },
+    "MestreParkour": { id: "MestreParkour", name: "Mestre Parkour", cost: 8, rarity: 4, type: "unit", hp: 700, dmg: 120, range: 50, ms: 150, as: 1.0, mechanics: ['jump_backline'] },
+
+    // CATEGORIA 5 - FEITIÇOS INSTANTÂNEOS (NÃO SÃO UNIDADES VIVAS)
+    "MagiaCrio": { id: "MagiaCrio", name: "Grd. Criogênica", cost: 3, rarity: 3, type: "spell", range: 100, mechanics:['spell_freeze'] },
+    "MagiaOrbital": { id: "MagiaOrbital", name: "Ataque Orbital", cost: 4, rarity: 4, type: "spell", range: 60, dmg: 500, mechanics: ['spell_dmg'] },
+    "MagiaAcido": { id: "MagiaAcido", name: "Chuva Ácida", cost: 5, rarity: 3, type: "spell", range: 150, mechanics: ['spell_dot'] },
+    "MagiaRewind": { id: "MagiaRewind", name: "Rewind Quântico", cost: 4, rarity: 4, type: "spell", range: 200, mechanics: ['spell_heal_teleport'] },
+    "MagiaOverclock": { id: "MagiaOverclock", name: "Pino Overclock", cost: 2, rarity: 2, type: "spell", range: 60, mechanics: ['spell_haste'] }
+};
+
+
+// HUB PROFILE CENTRAL COM SUPORTE A CARTAS
+let hubProfile = { 
+    uid: null, username: "Anonimo", bio: "", lvl: 1, xp: 0, gold: 0, avatar: "https://i.imgur.com/kKC1zaJ.png",
+    buffs: { hp: 0, dmg: 0.0, spd: 0.0 }, 
+    cardsOwned:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], // Iniciais Mínimas
+    cardLevels: { 'Brawler': 1, 'CorredorNeon': 1, 'DroneRastreador':1, 'Barricada':1 },
+    deck:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'] // Active Hand Array 8 max
+};
+
+// Start System se já possui Bypass Sessão Cache
 if(sessionStorage.getItem('hubProfile_JSON')) {
     hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) };
     if(hubProfile.uid && hubProfile.uid.startsWith('local_')) useLocalBypass = true;
-    
     document.getElementById('hub-login').style.display = 'none';
     document.getElementById('hub-container').style.display = 'flex';
     syncUIWithProfile();
     setupHubRealtime();
 }
 
-
 // =========================================================================
-// PARTE 2: PERMISSÕES, GPS ROTAS E FUNCIONAMENTO DA TELA (MOBILE SAFE)
+// HUB LOGIC, PROFILES, TRIBUNAL
 // =========================================================================
-
-window.requestPermissionsUI = async function() {
-    let status = document.getElementById('permission-status');
-    status.innerText = "Autorizando Dispositivos de GPS e Lente (Câmera)...";
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            () => { status.innerText = "📍 GPS e Sonda liberados com sucesso."; status.style.color = "#0f0"; }, 
-            (e) => { status.innerText = "📍 Sonda rejeitada. Faremos as aferições às Cegas se precisar."; }
-        );
-    }
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        status.innerText += " Câmera Lincada."; status.style.color = "#0f0";
-        stream.getTracks().forEach(track => track.stop()); 
-    } catch(e) {}
-};
-
-let trackingGeoId = null; let lastLat = null, lastLng = null; let totalKm = 0;
-function calcDist(lat1, lon1, lat2, lon2) { const p = 0.017453292519943295; const c = Math.cos; const a = 0.5 - c((lat2 - lat1) * p)/2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p))/2; return 12742 * Math.asin(Math.sqrt(a)); }
-
-window.toggleGPS = function() {
-    const btn = document.getElementById('btn-gps-toggle'); const display = document.getElementById('gps-dist');
-    if(trackingGeoId !== null) {
-        navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null;
-        btn.innerText = "⏺ Iniciar Gravação de Rota Diária"; btn.style.background = "#444";
-        let cText = document.getElementById('task-desc').value;
-        document.getElementById('task-desc').value = cText + `[Sonda Corporal Finalizou: Rota com total medido de ${totalKm.toFixed(2)} km].`;
-        return;
-    }
-    if (!navigator.geolocation) return alert("Hardwares de Sonda não encontrados.");
-    
-    totalKm = 0; lastLat = null; lastLng = null; display.innerText = "0.00 km";
-    btn.innerText = "⏸ Em curso: Desligar Sonda (Stop)"; btn.style.background = "#500";
-    trackingGeoId = navigator.geolocation.watchPosition((pos) => {
-        let lat = pos.coords.latitude; let lng = pos.coords.longitude;
-        if(lastLat !== null) { let d = calcDist(lastLat, lastLng, lat, lng); if(d > 0.005) { totalKm += d; lastLat = lat; lastLng = lng; } } else { lastLat = lat; lastLng = lng; }
-        display.innerText = totalKm.toFixed(2) + " km";
-    }, (err) => { }, { enableHighAccuracy: true, maximumAge: 10000 });
-};
 
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
-    if(!name) { alert("NOME OBRIGATÓRIO (Assuma Identidade Digital)."); return; }
-    name = name.toUpperCase(); document.querySelector('.login-box button.btn-base').innerText = "INICIANDO INJEÇÕES TÉRMICAS...";
+    if(!name) { alert("PRENCHA O VULGO CIBERNÉTICO."); return; }
+    name = name.toUpperCase(); document.querySelector('.login-box button.btn-base').innerText = "CALIBRANDO FIBRAS...";
     
     try {
-        if(!db) throw new Error("Database falhou a integridade inicial de porta");
-        const q = query(collection(db, "hub_users"), where("username", "==", name));
-        const qs = await getDocs(q);
+        if(!db) throw new Error("Db connection loss");
+        const qs = await getDocs(query(collection(db, "hub_users"), where("username", "==", name)));
         if (!qs.empty) { hubProfile = { ...hubProfile, ...qs.docs[0].data() }; hubProfile.uid = qs.docs[0].id; } 
-        else { const res = await addDoc(collection(db, "hub_users"), { username: name, bio: hubProfile.bio, avatar: hubProfile.avatar, lvl: 1, xp: 0, gold: 0, buffs: { hp: 0, dmg: 0, spd: 0 }, skins: ['default'], equippedSkin: 'default' }); hubProfile.uid = res.id; hubProfile.username = name; }
+        else { const res = await addDoc(collection(db, "hub_users"), hubProfile); hubProfile.uid = res.id; hubProfile.username = name; }
     } catch(err) {
-        useLocalBypass = true;
-        hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name;
-        alert("⚠️ ATENÇÃO: Nuvens Google/Firebase rejeitaram conexão de Security Rules (Você está sem admin permissão). Bypass e Offline Protocol aplicados. Apenas dados guardados no PC prevalecerão.");
+        useLocalBypass = true; hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name;
+        alert("⚠️ Cloud Restrita. Modulo Offline Assumido com Sucesso. Tudo que rolar fica na aba viva atual.");
     }
     
     document.getElementById('hub-login').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex';
@@ -591,665 +458,626 @@ function saveHubStateLocal() {
 
 function syncUIWithProfile() {
     hubProfile.lvl = 1 + Math.floor(hubProfile.xp / 1000);
-    document.getElementById('hub-ui-name').innerText = hubProfile.username;
-    document.getElementById('hub-ui-lvl').innerText = "NÍVEL " + hubProfile.lvl;
-    document.getElementById('hub-ui-bio').innerText = `"${hubProfile.bio}"`;
+    document.getElementById('hub-ui-name').innerText = hubProfile.username; document.getElementById('hub-ui-lvl').innerText = "NÍVEL " + hubProfile.lvl;
+    document.getElementById('hub-ui-xp').innerText = Math.floor(hubProfile.xp); document.getElementById('hub-ui-gold').innerText = "$ " + Math.floor(hubProfile.gold);
+    document.getElementById('hub-ui-spd').innerText = (1.0 + hubProfile.buffs.spd).toFixed(1); document.getElementById('hub-ui-dmg').innerText = (1.0 + hubProfile.buffs.dmg).toFixed(1); document.getElementById('hub-ui-hp').innerText = "+" + hubProfile.buffs.hp;
     if(hubProfile.avatar) document.getElementById('hub-avatar-img').src = hubProfile.avatar;
-    
-    document.getElementById('hub-ui-xp').innerText = Math.floor(hubProfile.xp);
-    document.getElementById('hub-ui-gold').innerText = "$ " + Math.floor(hubProfile.gold);
-    document.getElementById('hub-ui-spd').innerText = (1.0 + hubProfile.buffs.spd).toFixed(1);
-    document.getElementById('hub-ui-dmg').innerText = (1.0 + hubProfile.buffs.dmg).toFixed(1);
-    document.getElementById('hub-ui-hp').innerText = "+" + hubProfile.buffs.hp;
-    
     document.getElementById('prof-edit-name').value = hubProfile.username;
-    document.getElementById('prof-edit-bio').value = hubProfile.bio;
-    document.getElementById('hub-chest-text').value = hubProfile.username.substring(0,10);
     
-    renderHubShopWeapons();
+    renderDeckBuilder();
 }
 
 window.saveProfileEdits = function() {
-    let name = document.getElementById('prof-edit-name').value.trim();
-    let bio = document.getElementById('prof-edit-bio').value.trim();
-    let fileInput = document.getElementById('prof-edit-avatar-file');
+    let n = document.getElementById('prof-edit-name').value.trim();
+    let f = document.getElementById('prof-edit-avatar-file');
+    if(n) hubProfile.username = n;
+    if(f.files && f.files[0]) {
+        let r = new FileReader(); r.onload = e=>{
+            let img = new Image(); img.onload = ()=>{ const cv=document.createElement('canvas'); const mx=100; const sc=mx/img.width; cv.width=mx; cv.height=img.height*sc; cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); hubProfile.avatar=cv.toDataURL('image/jpeg',0.8); finishPf(); }; img.src = e.target.result;
+        }; r.readAsDataURL(f.files[0]);
+    } else finishPf();
+    function finishPf(){ saveHubStateLocal(); syncUIWithProfile(); alert("Novo RG emitido."); }
+}
+
+window.switchTab = function(tabId) { document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
+
+// =====================
+// DECK BUILDER & GACHA
+// =====================
+
+function renderDeckBuilder() {
+    // Verifica sanitário se o deck tem cartas invalidas pós wipe dev
+    hubProfile.deck = (hubProfile.deck ||[]).filter(cId => hubProfile.cardsOwned.includes(cId));
     
-    if(name) hubProfile.username = name;
-    if(bio) hubProfile.bio = bio;
-
-    if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                const cvs = document.createElement('canvas'); const maxW = 150; const scale = maxW/img.width; cvs.width = maxW; cvs.height = img.height*scale; const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
-                hubProfile.avatar = cvs.toDataURL('image/jpeg', 0.8);
-                finishProf();
-            }; img.src = e.target.result;
-        }; reader.readAsDataURL(fileInput.files[0]);
-    } else finishProf();
-
-    function finishProf() { saveHubStateLocal(); syncUIWithProfile(); showModal("DADOS TRANSACIONADOS", "Biometria ou Apresentação facial atualizadas da Base Principal."); }
-}
-
-window.switchTab = function(tabId) { document.querySelectorAll('.hub-tab').forEach(el => el.classList.remove('active')); document.querySelectorAll('.hub-nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
-
-// =========================================================================
-// PARTE 3: FEED PERSISTENTE (COM COMENTARIOS, GPS) E UPLOADER B64 APROVADO
-// =========================================================================
-
-function saveLocalFeed(postObj) {
-    let l =[]; try { if(localStorage.getItem('localFeed')) l = JSON.parse(localStorage.getItem('localFeed')); }catch(e){}
-    l.unshift(postObj); if(l.length > 20) l = l.slice(0, 20); localStorage.setItem('localFeed', JSON.stringify(l));
-}
-function getLocalFeed() { try { if(localStorage.getItem('localFeed')) return JSON.parse(localStorage.getItem('localFeed')); }catch(e){} return[]; }
-
-let currentTaskConfig = null; let currentTaskCategory = "Força"; 
-window.openTaskUploader = function(type, cat="Força") {
-    const map = { 'parkour': { name: "O Chão é Lava", xp: 500, gold: 1000, buffSpd: 0.3 }, 'acrobacia': { name: "Acrobacia Real", xp: 800, gold: 2000, buffSpd: 0.6 }, 'calistenia': { name: "Falha Calistênica", xp: 600, gold: 1500, buffHp: 50 }, 'academia': { name: "Ferro e Sangue", xp: 400, gold: 1200, buffDmg: 0.4 }, 'dieta_boa': { name: "Dieta Sóbria", xp: 200, gold: 500, buffDmg: 0.2 }, 'dieta_lixo': { name: "Veneno Fast Food", xp: 50, gold: 0, buffSpd: -0.3 },};
-    currentTaskConfig = map[type]; currentTaskCategory = cat;
-    document.getElementById('form-box-title').innerText = `APRESENTAR EVIDÊNCIAS DE SANGUE (${currentTaskConfig.name.toUpperCase()})`; document.getElementById('task-desc').placeholder = `Dê as testemunhas textuais do fato e meta a lente abaixo...`; document.getElementById('task-file').value = ""; document.getElementById('task-upload-status').innerText = "";
-    if(cat === 'Cardio') document.getElementById('gps-panel').style.display = 'block'; else document.getElementById('gps-panel').style.display = 'none';
-    document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed');
-};
-window.createCustomTask = function() {
-    let n = document.getElementById('custom-task-name').value; let t = document.getElementById('custom-task-type').value; 
-    if(!n) return alert("Preecha um compromisso moral válido primeiro na meta!"); currentTaskConfig = { name: "Mundano e Próprio: " + n, xp: 400, gold: 800 }; currentTaskCategory = t;
-    if(t === 'Cardio') currentTaskConfig.buffSpd = 0.2; if(t === 'Força') currentTaskConfig.buffDmg = 0.3; if(t === 'Dieta') currentTaskConfig.buffDmg = 0.15;
-    document.getElementById('form-box-title').innerText = `PROCESSO CIVIL E META (${n.toUpperCase()})`; document.getElementById('task-desc').placeholder = `Seus fatos de defesa aqui. E anexe a lente a seguir.`;
-    if(t === 'Cardio') document.getElementById('gps-panel').style.display = 'block'; else document.getElementById('gps-panel').style.display = 'none';
-    document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed');
-}
-
-window.submitTaskEvidence = function() {
-    if(!currentTaskConfig) return;
-    const file = document.getElementById('task-file').files[0];
-    if(!file && currentTaskCategory !== 'Duelo') return alert("O Tribunal condena falácias sem anexo. Se você fez, mande upload fotográfico da proeza da missão para comprovação imediata!");
-    
-    const desc = document.getElementById('task-desc').value; document.getElementById('task-upload-status').innerText = "Tratamento termográfico da evidência... Reduzindo KBs!";
-    if(file && file.type.startsWith("video/")) { const vURL = URL.createObjectURL(file); postLogicExecution(desc, vURL, "video"); } 
-    else if(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image(); img.onload = function() {
-                const cvs = document.getElementById('task-compress-canvas'); const maxW = 350; const scale = maxW/img.width; cvs.width = maxW; cvs.height = img.height*scale; const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
-                postLogicExecution(desc, cvs.toDataURL('image/jpeg', 0.6), "image");
-            }; img.src = e.target.result;
-        }; reader.readAsDataURL(file);
-    } else { postLogicExecution(desc, "", "none"); } // Permite Fallback pra Duel Registers Textuais ou Customizados de Emergencia onde tem bypass de file exigido.
-}
-
-function postLogicExecution(desc, midiaURL, midiaType) {
-    hubProfile.xp += currentTaskConfig.xp || 0; hubProfile.gold += currentTaskConfig.gold || 0;
-    if(currentTaskConfig.buffHp) hubProfile.buffs.hp += currentTaskConfig.buffHp; if(currentTaskConfig.buffDmg) hubProfile.buffs.dmg += currentTaskConfig.buffDmg; if(currentTaskConfig.buffSpd) hubProfile.buffs.spd += currentTaskConfig.buffSpd;
-    saveHubStateLocal(); syncUIWithProfile();
-
-    let feedObj = { uid: hubProfile.uid, author: hubProfile.username, avatar: hubProfile.avatar, taskName: currentTaskConfig.name, category: currentTaskCategory, desc: desc, midiaURL: midiaURL, midiaType: midiaType, rewardLog: currentTaskConfig, upvotes: {}, downvotes: {}, comments:[], active: true, timestamp: Date.now() };
-    document.getElementById('quick-post-box').style.display = 'none';
-
-    try {
-        if(useLocalBypass) throw new Error("Offline ByPass Forcado nas Trancas. Faltou API_KEY");
-        feedObj.timestamp = serverTimestamp(); 
-        addDoc(collection(db, "hub_feed"), feedObj).then(() => { showModal("TRAMITAÇÃO", "As malhas digitais computaram os blocos do mérito sem falha. O XP Adentrou em você."); }).catch(()=>{ throw new Error("Caiu o Firebase Interno. Tira p bypass..."); });
-    } catch(e) {
-        feedObj.id = "localpost_" + Math.random().toString(36).substring(2,9); 
-        saveLocalFeed(feedObj); showModal("MODO ABERRAÇÃO OFFLINE DE GAVETA", "Você sobrevive no Modo Local seguro. Salvemos as fotos num diário local sem julgo público online.");
-        lastCloudSnapshot = getLocalFeed(); renderFeedItems(); 
+    let dC = document.getElementById('deck-active-render'); dC.innerHTML="";
+    for(let i=0; i<8; i++) {
+        let sid = hubProfile.deck[i];
+        let el = document.createElement('div'); el.className = 'deck-slot' + (sid ? ' filled' : '');
+        if(sid) {
+            let cData = CARD_DB[sid];
+            let lvl = hubProfile.cardLevels[sid] || 1;
+            el.innerHTML = `<span class="b-card-lvl" style="top:2px;right:2px;position:absolute;font-family:'Press Start 2P';font-size:0.4rem;color:yellow;">L${lvl}</span><span style="font-size:0.5rem; text-align:center;">${cData.name}</span><div style="font-size:0.4rem;position:absolute;bottom:0;width:100%;text-align:center;background:#0ff;color:#000;">${cData.cost} NRG</div>`;
+            el.onclick = () => removeCardFromDeck(i);
+        }
+        dC.appendChild(el);
     }
-}
-
-window.currentFeedFilter = "todos";
-window.filterFeed = function(tipo, btnEl) { window.currentFeedFilter = tipo; document.querySelectorAll('.filter-btn').forEach(e => e.classList.remove('active')); btnEl.classList.add('active'); renderFeedItems(); }
-
-let lastCloudSnapshot =[]; 
-function listenToFeed() {
-    if(useLocalBypass) { lastCloudSnapshot = getLocalFeed(); renderFeedItems(); return; }
-    try {
-        onSnapshot(query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(25)), (snap) => {
-            lastCloudSnapshot =[]; snap.forEach((docSnap) => { let d = docSnap.data(); d.id = docSnap.id; lastCloudSnapshot.push(d); });
-            renderFeedItems();
-        }, (error) => { useLocalBypass = true; lastCloudSnapshot = getLocalFeed(); renderFeedItems(); });
-    } catch(e) { useLocalBypass = true; lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
-}
-
-function renderFeedItems() {
-    const c = document.getElementById('feed-container-render'); c.innerHTML = "";
-    let dataSource = useLocalBypass ? getLocalFeed() : lastCloudSnapshot;
     
-    if(dataSource.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 20px; color:#555;">Morte Fria e poeira neste recinto. Mostre algo, guerreiro.</div>`; return; }
-
-    dataSource.forEach((d) => {
-        if(window.currentFeedFilter !== "todos" && d.category !== window.currentFeedFilter) return;
-        let upArr = Object.keys(d.upvotes || {}); let dnArr = Object.keys(d.downvotes || {});
-        let av = d.avatar ? d.avatar : "https://i.imgur.com/kKC1zaJ.png";
+    let cC = document.getElementById('collection-render'); cC.innerHTML="";
+    let dedup =[...new Set(hubProfile.cardsOwned)];
+    dedup.forEach(cId => {
+        if(hubProfile.deck.includes(cId)) return; // dont show if in active hand
+        let cData = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1;
+        let cCol = cData.rarity == 4 ? '#ff00de' : (cData.rarity == 3 ? '#ffaa00' : (cData.rarity == 2 ? '#00aaff' : '#fff'));
         
-        let midiaTag = "";
-        if(d.midiaType === 'video') midiaTag = `<video class="post-vid" controls src="${d.midiaURL}"></video>`; else if(d.midiaURL && d.midiaURL!=="") midiaTag = `<img class="post-img" src="${d.midiaURL}">`;
-
-        let commentsHTML = (d.comments||[]).map(c => `<div class="comment-item"><b>${c.author} :</b> ${c.text}</div>`).join('');
-        
-        let el = document.createElement('div'); el.className = `feed-post ${!d.active ? 'revoked' : ''}`; el.setAttribute("data-category", d.category); 
-        el.innerHTML = `
-            <div class="post-header"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">[${(d.category||'GERAL').toUpperCase()}] ${d.taskName}</span> </div> </div>
-            <div style="color:#ddd; margin-bottom:10px; font-size:0.8rem; line-height: 1.4;">${d.desc}</div>
-            ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' }
-            <div class="post-reward">Recompensa: XP +${d.rewardLog?.xp||0} | Buff Integrado</div>
-            <div class="post-actions">
-                <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">AUTÊNTICO (${upArr.length})</button> <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">MENTIROSO (${dnArr.length})</button>
-            </div>
-            <div class="post-comments">
-                <div class="comments-list">${commentsHTML}</div>
-                <div class="comment-input-area"><input type="text" id="cmt-${d.id}" placeholder="Refute este indivíduo..."><button class="btn-action" style="width:auto; padding:5px 12px; font-size:0.75rem;" onclick="window.addComment('${d.id}')">LANÇAR</button></div>
-            </div>
-        `;
-        c.appendChild(el);
+        let cv = document.createElement('div'); cv.className="battle-card"; cv.style.borderColor = cCol; cv.style.cursor="pointer";
+        cv.innerHTML = `<div class="b-card-cost">${cData.cost}</div><div class="b-card-lvl">L${lvl}</div><div class="b-card-name" style="margin-top:20px;">${cData.name}</div>`;
+        cv.onclick = () => addCardToDeck(cId);
+        cC.appendChild(cv);
     });
 }
 
-window.castVote = async function(postId, type) {
-    if(useLocalBypass) return alert("Polo desvinculado (Bypass Offline Ativo). Os Censores não chegam em áreas obscuras locais, não precisa auditar a si mesmo.");
-    try {
-        const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef); if(!pSn.exists()) return; let p = pSn.data(); if(!p.active) return alert("REVOGADO DEFINITIVAMENTE.");
-        if(type === 'up') { p.upvotes = p.upvotes || {}; p.upvotes[hubProfile.uid] = true; delete (p.downvotes||{})[hubProfile.uid]; } else { p.downvotes = p.downvotes || {}; p.downvotes[hubProfile.uid] = true; delete (p.upvotes||{})[hubProfile.uid]; }
-        let uCnt = Object.keys(p.upvotes).length; let dCnt = Object.keys(p.downvotes).length; if( (uCnt+dCnt) >= 3 && dCnt > uCnt ) { p.active = false; alert("Comunidade rejeitou e desmonetizou."); }
-        await updateDoc(pRef, p);
-    } catch(e) { console.log(e); }
+function removeCardFromDeck(idx) { hubProfile.deck.splice(idx,1); saveHubStateLocal(); renderDeckBuilder(); }
+function addCardToDeck(cId) { if(hubProfile.deck.length >= 8) return alert("Sua Matriz de Batalha (Mão) já comporta 8 códigos! Remova um primeiro clicando nele ali em cima."); hubProfile.deck.push(cId); saveHubStateLocal(); renderDeckBuilder(); }
+
+window.rollGacha = function() {
+    if(hubProfile.gold < 1000) return alert("Pobreza Criminosa Detectada. Pague $1000.");
+    hubProfile.gold -= 1000;
+    let cardIds = Object.keys(CARD_DB);
+    let drops =[];
+    
+    // Anima UI rápida
+    const resUI = document.getElementById('gacha-result');
+    resUI.innerHTML = `<span style="color:#fff; font-size:0.7rem; animation: flicker 0.2s infinite;">Decompilando pacotes na rede escura...</span>`;
+    
+    setTimeout(()=> {
+        resUI.innerHTML = "";
+        for(let i=0; i<3; i++) {
+            let r = Math.random();
+            let targetRarity = (r < 0.05) ? 4 : (r < 0.20 ? 3 : (r < 0.50 ? 2 : 1));
+            let filtered = cardIds.filter(id => CARD_DB[id].rarity === targetRarity);
+            if(filtered.length === 0) filtered = cardIds;
+            let droppedId = filtered[Math.floor(Math.random() * filtered.length)];
+            
+            drops.push(CARD_DB[droppedId]);
+            
+            if(hubProfile.cardsOwned.includes(droppedId)) {
+                hubProfile.cardLevels[droppedId] = (hubProfile.cardLevels[droppedId] || 1) + 1;
+            } else {
+                hubProfile.cardsOwned.push(droppedId);
+                hubProfile.cardLevels[droppedId] = 1;
+            }
+        }
+        
+        drops.forEach(c => {
+            let el = document.createElement('div');
+            let bgC = c.rarity == 4 ? '#ff00de' : (c.rarity == 3 ? '#ffaa00' : (c.rarity == 2 ? '#00aaff' : '#aaa'));
+            el.innerHTML = `<div style="border:1px solid ${bgC}; padding:5px; background:#111; color:${bgC}; font-size:0.6rem; width:50px; text-align:center;">${c.name}<br>+1</div>`;
+            resUI.appendChild(el);
+        });
+        saveHubStateLocal(); syncUIWithProfile(); renderDeckBuilder();
+    }, 1500);
+}
+
+// =====================
+// MISSÕES E TRIBUNAL FEED
+// =====================
+let curTaskConfig = null; let curTaskCat = "Força"; 
+window.openTaskUploader = function(t, c="Força") {
+    const map = { 'parkour': { name: "O Chão é Lava", xp: 500, gold: 1000, buffSpd: 0.2 }, 'acrobacia': { name: "Acrobacia Trick", xp: 800, gold: 2000, buffSpd: 0.4 }, 'calistenia': { name: "Calistenia da Morte", xp: 600, gold: 1500, buffHp: 100 }, 'academia': { name: "Peso Morto Bruto", xp: 400, gold: 1200, buffDmg: 0.3 }, 'dieta': { name: "Ingestão Honesta", xp: 200, gold: 500, buffDmg: 0.2 }, 'dieta_lixo': { name: "Fraqueza Açucarada", xp: 50, gold: 0, buffSpd: -0.3 }};
+    curTaskConfig = map[t]; curTaskCat = c; document.getElementById('form-box-title').innerText = `PROVA FINAL: ${curTaskConfig.name}`;
+    document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed');
 };
-
-window.addComment = async function(postId) {
-    let txt = document.getElementById('cmt-'+postId).value.trim(); if(!txt) return;
-    let cmt = { uid: hubProfile.uid, author: hubProfile.username, text: txt, timestamp: Date.now() };
-    if(useLocalBypass) {
-        let lf = getLocalFeed(); let idx = lf.findIndex(x => x.id === postId);
-        if(idx > -1) { if(!lf[idx].comments) lf[idx].comments = []; lf[idx].comments.push(cmt); localStorage.setItem('localFeed', JSON.stringify(lf)); lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
-        return;
-    }
-    try {
-        const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef);
-        if(pSn.exists()) { let pData = pSn.data(); if(!pData.comments) pData.comments =[]; pData.comments.push(cmt); await updateDoc(pRef, { comments: pData.comments }); }
-        document.getElementById('cmt-'+postId).value = "";
-    } catch(e){}
+window.submitTaskEvidence = function() {
+    if(!document.getElementById('task-file').files[0]) return alert("FOTOS PROVAM SEU ESFORÇO PRA I.A. Mande Anexo.");
+    hubProfile.xp += curTaskConfig.xp||0; hubProfile.gold += curTaskConfig.gold||0;
+    if(curTaskConfig.buffHp) hubProfile.buffs.hp += curTaskConfig.buffHp; if(curTaskConfig.buffDmg) hubProfile.buffs.dmg += curTaskConfig.buffDmg; if(curTaskConfig.buffSpd) hubProfile.buffs.spd += curTaskConfig.buffSpd;
+    saveHubStateLocal(); syncUIWithProfile(); document.getElementById('quick-post-box').style.display = 'none';
+    showModal("PACOTE BIO LIDO!", "Células alteradas com sucesso no Servidor! Se quiser PvP com alguém a Nuvem está sendo recarregada.");
 }
-
-// =========================================================================
-// PARTE 4: SISTEMA DE LOJA & GACHA
-// =========================================================================
-
-const HUB_SKINS =[ { id:'default', name:'PISTOLA ESQUIVADA', cost:0, tex:'gun_default', buff:'Péssimo manuseio, nenhum traço genético ganho.'}, {id:'gold', name:'MÁQUINA RELÍQUIA OURO', cost:1500, tex:'gun_gold', buff:'Injeta um Danos Colaterais Leve por Balística Ouro.'}, {id:'banana', name:'PROJÉTIL POTÁSSIO TÁTICO', cost:3000, tex:'gun_banana', buff:'Mod de penetração agressiva brutal pela massa de projeteis moles mas fortes.'}, {id:'finger', name:'ARTEFATO DEDADA DE DEUS', cost:8000, tex:'gun_finger', buff:'Velocidade Ilegítima na Cadência e Atributos Imorais acoplados na espinha.'}];
-function renderHubShopWeapons() {
-    const st = document.getElementById('hub-shop-weapons'); if(!st)return;
-    st.innerHTML = HUB_SKINS.map(s => { const ow = (hubProfile.skins||[]).includes(s.id); const eq = hubProfile.equippedSkin === s.id;
-        return `<div class="action-card" style="border-color:${eq?'#0f0':''}"><h3>${s.name}</h3><p style="font-size:0.75rem;">${s.buff}</p><button class="btn-action" style="${eq?'background:#0f0;color:#000':''}" onclick="window.hubBuyOrEquip('${s.id}')">${ow?(eq?"EM OPERAÇÃO":"ANEXAR AO CÓDIGO DA ENGINE"):"$ "+s.cost}</button></div>`;
-    }).join('');
-}
-window.hubBuyOrEquip = function(id) { if((hubProfile.skins||[]).includes(id)) { hubProfile.equippedSkin = id; saveHubStateLocal(); syncUIWithProfile(); } else { const sO = HUB_SKINS.find(x=>x.id===id); if(hubProfile.gold >= sO.cost) { hubProfile.gold -= sO.cost; hubProfile.skins.push(id); hubProfile.equippedSkin=id; saveHubStateLocal(); syncUIWithProfile(); } else alert("SUOR INSUFICIENTE. TREINE NO CORPO, E DESTRUA AS ONDAS E GIGANTES DA SALA ORIGINAL PRA PEGAR."); } };
-window.buyLootbox = function() {
-    if(hubProfile.gold < 2500) return alert("PAGUE OU VAZA!"); hubProfile.gold -= 2500; const r = Math.random();
-    if(r<0.3) { hubProfile.buffs.hp += 150; alert("🎁 MUTAGÊNESE: Você ganhou +150 de Vida Vitalícia no Motor."); } 
-    else if(r<0.6) { hubProfile.buffs.dmg+=0.8; alert("🎁 MOD ESTERÓIDES: +80% Dano de Disparo Ativado permanentemente para transferências."); } 
-    else if(r<0.8) { hubProfile.xp+=3000; alert("🎁 CONHECIMENTO CRU ENVIADO (3.000 XP) ADQUIRIDOS!"); } 
-    else { hubProfile.buffs.spd-=0.5; alert("☠️ FALHA CRÍTICA AO CORTAR OS CABOS! Radiação cerebral decapitou seu cerebelo. Pena: -0.5 Velocidade Base."); }
-    saveHubStateLocal(); syncUIWithProfile();
-}
-window.hubHealFull = function() { if(hubProfile.gold<500)return alert("FAÇA DINHEIRO ANTES!"); hubProfile.gold-=500; saveHubStateLocal(); syncUIWithProfile(); alert("Sua carne virtual nascerá plenamente íntegra."); }
-
-// =========================================================================
-// PARTE 5: DUELOS PVP MÚLTIPLAS CHECAGENS E RADAR LOCAL/FANTASMA OFFLINE
-// =========================================================================
 
 function setupHubRealtime() {
     if(useLocalBypass) {
-        document.getElementById('radar-loading').innerText = "Radares sem satélites. Sem o Firebase, a humanidade perdeu-se do radar online. \n Teste a inteligência offline dos fantasmas e do HUB e sinta a fúria em Duelo Simulado.";
-        setTimeout(()=> { document.getElementById('radar-list').innerHTML = `<div class="radar-player" style="border-color:#555;"><span class="radar-name" style="color:#aaa;">♦ MÁQUINA DE COMBATE AI</span><button class="btn-duel" style="border-color:#aaa; color:#aaa;" onclick="window.localBypassDuelGhost()">LANÇAR A TINTA VERMELHA!</button></div>`; }, 1000);
-        listenToFeed(); return;
+        document.getElementById('radar-loading').innerText = "Radares cegos Offline. Para lutar contra o Metaverso e IA GHost, use PvP Offline na Lupa.";
+        setTimeout(()=> { document.getElementById('radar-list').innerHTML = `<div class="radar-player" style="border-color:#555;"><span class="radar-name" style="color:#aaa;">♦ MÁQUINA DE COMBATE AI</span><button class="btn-duel" style="border-color:#aaa; color:#aaa;" onclick="window.startClash(true, {name:'GHOST-AI', lvl:99, buffs:{hp:300, spd:0.4, dmg:0.5}, deck:['Kamikaze','Barao','Hacker','Sniper']})">SIMULAR INVASÃO HOLOGRÁFICA AGORA</button></div>`; }, 1000);
+        return;
     }
     
     try {
-        onDisconnect(ref(rtdb, 'hub_presence/'+hubProfile.uid)).remove(); set(ref(rtdb, 'hub_presence/'+hubProfile.uid), { uid: hubProfile.uid, name: hubProfile.username, online: true, lvl: hubProfile.lvl });
+        onDisconnect(ref(rtdb, 'hub_presence/'+hubProfile.uid)).remove(); 
+        set(ref(rtdb, 'hub_presence/'+hubProfile.uid), { uid: hubProfile.uid, name: hubProfile.username, lvl: hubProfile.lvl, buffs: hubProfile.buffs, deck: hubProfile.deck, cardLevels: hubProfile.cardLevels });
+        
         onValue(ref(rtdb, 'hub_presence'), (snap) => {
             document.getElementById('radar-loading').style.display = 'none'; document.getElementById('radar-list').innerHTML = ""; let d = snap.val()||{}; 
-            Object.keys(d).forEach(k => { if(k!==hubProfile.uid) document.getElementById('radar-list').innerHTML += `<div class="radar-player"><span class="radar-name">♦ ${d[k].name} Lvl ${d[k].lvl}</span><button class="btn-duel" onclick="window.sendDuelChallenge('${k}', '${d[k].name}')">ESMAGAR AGORA</button></div>`; });
+            Object.keys(d).forEach(k => { 
+                if(k!==hubProfile.uid) {
+                    let btnHTML = `<button class="btn-duel" onclick='window.startClash(true, ${JSON.stringify(d[k])})'>ATACAR PELA REDE</button>`;
+                    document.getElementById('radar-list').innerHTML += `<div class="radar-player"><span class="radar-name">♦ ${d[k].name} Lvl ${d[k].lvl}</span>${btnHTML}</div>`; 
+                }
+            });
         });
-        
-        onChildAdded(ref(rtdb, 'hub_duels'), (snap) => { 
-            let d = snap.val(); 
-            if(d.targetId === hubProfile.uid && d.state === 'request') {
-                if(confirm(`⚔️ O DEUS DO METAVERSO FALA!\n\nO jogador(a) ${d.challengerName} acaba de gritar da rua oposta propondo uma rinha muscular letal, onde as regras de quem forjam calos e flexões ganham ouro pra transferências intercelulares na engine DOOM.\nVocê tem coragem de aceitar?`)) { 
-                    update(ref(rtdb, `hub_duels/${snap.key}`), { state: 'ongoing' }); 
-                    showModal("O GUERREIRO SE ERGUE", "A coragem preencheu o Terminal. Vão lá, gastem ATP biológico, queimem energia. Volte aqui pro desfecho, de mãos limpas e sem rancor para julgar.", `<button class="btn-action" style="margin-top:15px; border-color:#ff00de; color:#ff00de;" onclick="window.monitorOngoingDuel('${snap.key}', '${d.challengerName}')">DESLIGUE ME DO SANGUE DA RUA. EXIBIR FIM!</button>`); 
-                } else { update(ref(rtdb, `hub_duels/${snap.key}`), { state: 'declined' }); }
-            }
-        });
-        listenToFeed();
     } catch(e) {}
 }
 
-window.sendDuelChallenge = function(tId, tN) { 
-    let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); alert(`Um biossinal agressivo bateu no coração de ${tN}.`);
-    onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
-        let v = s.val(); if(!v) return;
-        if(v.state === 'declined') { alert("Um rato voltou à toca... Recusaram."); off(ref(rtdb, 'hub_duels/'+keyId)); }
-        if(v.state === 'ongoing' && !v.resolvedChallengerAlert) { update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); showModal("GUERRA ACEITA NO QUARTEL", "As flexões foram marcadas. Façam ao extremo na terra mundana.", `<button class="btn-action" style="margin-top:15px; border-color:#ff00de; color:#ff00de;" onclick="window.monitorOngoingDuel('${s.key}', '${tN}')">ABRIR FORMULÁRIO DO EMPATE/VITÓRIA DA VERDADE</button>`); }
-    });
+function showModal(t, d) { document.getElementById('modal-title').innerText=t; document.getElementById('modal-desc').innerText=d; document.getElementById('modal-actions').innerHTML = '<button class="btn-action" onclick="document.getElementById(\'system-modal\').style.display=\'none\'">CIENTE E ASSINADO</button>'; document.getElementById('system-modal').style.display='flex'; }
+
+
+// ==================================================================================
+// PARTE 5: CYBER CLASH - 2D AUTO BATTLER ENGINE (O SUCESSOR DO DOOM!)
+// A GRANDE ARQUITETURA CANVAS INTACTA COM TODA INTEGRAÇÃO!
+// ==================================================================================
+
+// Variáveis de Controle da Nova Engine
+let cvs, ctx;
+let engineState = 'MENU'; // MENU, PLAY, DEAD
+let lastTime = 0;
+let energy = 0;
+let MAX_ENERGY = 10;
+let arenaW = 400; // Resolução lógica da engine base y
+let arenaH = 700;
+let opponentAI = null; // Dados do boss ou Pvp Radar Opponent puxado.
+let isAFK = false;
+
+let entities = []; 
+let projectiles = [];
+let effects =[]; // Poças, Auras, etc.
+let spawnEffects =[]; // particulas 
+
+let playerBase, enemyBase;
+
+window.startClash = function(isPvP = false, oppData = null) {
+    if(hubProfile.deck.length === 0) return alert("Você não construiu o seu deck ainda! Compre Gacha e Equipe na Aba Deck.");
+    
+    document.getElementById('hub-container').style.display = 'none'; 
+    let gw = document.getElementById('game-wrapper'); gw.style.display = 'block';
+    
+    cvs = document.getElementById('arena-canvas');
+    ctx = cvs.getContext('2d');
+    
+    // Scale para render crispy no mobile mantendo logic proporcao
+    let winW = window.innerWidth; let winH = window.innerHeight;
+    let ratio = arenaW / arenaH;
+    if(winW / winH > ratio) { cvs.width = winH * ratio; cvs.height = winH; } 
+    else { cvs.width = winW; cvs.height = winW / ratio; }
+    
+    // Normalizar escala de Draw Global (Todo draw assume W:400 H:700 e escala)
+    ctx.scale(cvs.width/arenaW, cvs.height/arenaH);
+
+    opponentAI = oppData || generatePVEWaveAI(); 
+    isAFK = false;
+    document.getElementById('btn-afk').classList.remove('active');
+
+    // Inicializa Lógica de Tabuleiros
+    resetArena();
+    renderCardsHandUI();
+    
+    engineState = 'PLAY';
+    lastTime = performance.now();
+    if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId);
+    requestAnimationFrame(clashLoop);
+    
+    if(window.bgMusic) { window.bgMusic.volume = 0.3; window.bgMusic.play().catch(()=>{}); }
 };
 
-window.monitorOngoingDuel = function(duelId, opponentName) {
-    document.getElementById('system-modal').style.display='none';
-    window.currentDuelOpponent = opponentName || "OPONENTE DA RINHA";
-    showModal("AS MÃOS ESTÃO SUJAS", "E aí? O oxigênio queimou no corpo dos guerreiros?\nSe os dois concordarem sobre quem de fato triunfou no cansaço corporal, o dinheiro e o buff caem instantâneamente sem falhas.\n\nSE FRAUDAREM COM ORGULHO CORTANDO RESPOSTAS, VOCÊS DOIS SE MATAM SEM OURO.", 
-    `<button class="btn-action" style="margin:5px; padding: 15px;" onclick="window.submitDuelResult('${duelId}', '${hubProfile.uid}')">SOU UM DEUS! ELE DOBROU OS JOELHOS PRIMEIRO!</button>
-     <button class="btn-action" style="background:#400; margin:5px; border-color:red; color:red;" onclick="window.submitDuelResult('${duelId}', 'OPONENTE_WIN')">FALHEI CARNALMENTE, DEI O SANGUE MAS ELE SOBREVIVEU</button>`);
-}
-
-window.submitDuelResult = function(duelId, UID_GANHADOR_OU_TAG) {
-    update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: UID_GANHADOR_OU_TAG }); document.getElementById('system-modal').style.display = 'none'; alert("Seu juízo ético se conectou à Rede Global de Mentirosos e Sinceros.");
-    onValue(ref(rtdb, 'hub_duels/'+duelId), (snap) => {
-        let d = snap.val(); if(!d.votes) return; let vArr = Object.keys(d.votes);
-        if(vArr.length >= 2 && !d.resolved) {
-            update(ref(rtdb, 'hub_duels/'+duelId), { resolved: true });
-            let idDoCaraA = vArr[0]; let idDoCaraB = vArr[1]; let voteA = d.votes[idDoCaraA].pick; let voteB = d.votes[idDoCaraB].pick; 
-            
-            let winnerConfirmedUID = null;
-            if(voteA === idDoCaraA && voteB === 'OPONENTE_WIN') winnerConfirmedUID = idDoCaraA; else if(voteB === idDoCaraB && voteA === 'OPONENTE_WIN') winnerConfirmedUID = idDoCaraB; else if(voteA === 'OPONENTE_WIN' && voteB === 'OPONENTE_WIN') winnerConfirmedUID = "TIE"; 
-            
-            if(winnerConfirmedUID && winnerConfirmedUID !== "TIE") { 
-                if(winnerConfirmedUID === hubProfile.uid) { 
-                    hubProfile.gold += 8500; hubProfile.buffs.spd += 0.5; hubProfile.xp += 1500; saveHubStateLocal(); syncUIWithProfile();
-                    showModal("GLÓRIA MAGNÍFICA DO MUNDO FISICO", `A Justiça aprovou e cruzou as linhas: Os algoritmos dizem o que disseram do Duelo... Mas as mãos relataram sangue divino seu!\nReceba Riquezas Massivas Injetadas no Perfil Base!\nVocê anseia exibir uma cena com vídeo e foto que quebrou seu amigo [${window.currentDuelOpponent}] pro tribunal público?`, 
-                    `<button class="btn-action" style="margin:5px;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', true)">GRAVAR CHACINA NO FEED FÍSICO COM ANEXOS</button> <button class="btn-action" style="background:#222;" onclick="document.getElementById('system-modal').style.display='none'">SUBA O SILÊNCIO E OCULTE ESTA LÁSTIMA</button>`);
-                } else { 
-                    showModal("CORAGEM COMPROVADA E FRACASSO FÍSICO", `Derrota íntegra perante os Servidores Globais! Os Espólios subiram para o ego vencedor.\nDeseja subir fotos ensanguentadas e a honra perdida num Diário Post de Reação na aba Feed?`,
-                    `<button class="btn-action" style="margin:5px;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', false)">COMPARTILHAR E LEVAR PEQUENA PARCELA DE HONRA (POST)</button> <button class="btn-action" style="background:#222;" onclick="document.getElementById('system-modal').style.display='none'">CAIR FORA AGILEMENTE</button>`);
-                }
-            } else { alert("DETECÇÃO RASTREÁVEL DE DESONESTIDADE. AMBOS DESEJARAM VITÓRIA... AS CONTAS SOFRERAM O BLOQUEIO MOMENTÂNEO NAS MOEDAS... TENTEM COMBATER DENOVO OU CONCORDEM E DIGAM A VERDADE!"); }
-        }
-    });
-}
-
-window.localBypassDuelGhost = function() {
-    showModal("DUELO HOLO AI / I.A LOCAL", "Nós simulamos que você está num duelo com o algoritmo da própria Matriz Local já que o Bypass foi exigido...\nVá fazer Calistenia e Corra até sangrar os pés agora por 5 Minutos!.", 
-    `<button class="btn-action" onclick="window.promptDuelPost('GHOST MACHINE_42', true)">TUDO ACABOU... VOU MENTIR (OU DIZER VERDADE) PARA O FEED BYPASS DO CÓDIGO DA RINHA E GANHAR DE TUDO NO SISTEMA OFF</button>`);
-}
-
-window.promptDuelPost = function(opponentName, won) {
-    document.getElementById('system-modal').style.display='none';
-    currentTaskCategory = 'Duelo'; currentTaskConfig = { name: "Combate de Rua Descarregado (Duelo)", xp: won ? 500 : 200, gold: won ? 500 : 50 }; 
-    let resTxt = won ? `esmaguei impiedosamente os tecidos do oponente \`${opponentName}\` com brutal disciplina no asfalto/matrizes...` : `acabei subjugado por \`${opponentName}\`. Caído aos pés... A carne humana é falha...`;
-    document.getElementById('task-desc').value = `${resTxt}[Descreva Mais aqui e mostre as MÍDIAS DA HUMILHAÇÃO LOGO EM BAIXO DO CAMPO (ANEXAR PROVA!)]`;
-    document.getElementById('form-box-title').innerText = `EXIBIR BANHO FÍSICO CONTRA OPOSIÇÃO CARNAL`; document.getElementById('task-file').value = ""; document.getElementById('gps-panel').style.display = 'none';
-    document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed');
-}
-
-function showModal(t, d, btns) { 
-    document.getElementById('modal-title').innerText=t; document.getElementById('modal-desc').innerText=d; 
-    if(btns) document.getElementById('modal-actions').innerHTML = btns; else document.getElementById('modal-actions').innerHTML = '<button class="btn-action" onclick="document.getElementById(\'system-modal\').style.display=\'none\'">ACEITO AS DIRETRIZES DA REAÇÃO E VAZAR</button>';
-    document.getElementById('system-modal').style.display='flex'; 
-}
-
-
-// =========================================================================
-// MÁQUINA DE INJEÇÃO, TRANSIÇÃO EXTREMA P/ ARENA 3D ENVELOPADA & RETORNO SEGURO SEM LEAKS DE RAM (SINGLE PAGE APP OTIMIZADO) 
-// =========================================================================
-
-window.prepareArena = function() {
-    document.getElementById('hub-container').style.display = 'none'; document.getElementById('game-wrapper').style.display = 'block';
-    
-    window.inj_Gamemode = document.getElementById('hub-gamemode').value; window.inj_Difficulty = document.getElementById('hub-difficulty').value; 
-    window.inj_EnemyCol = document.getElementById('hub-color-enemy').value; window.inj_ChestTxt = document.getElementById('hub-chest-text').value;
-    
-    if(window.bgMusic) { window.bgMusic.volume = 0.4; window.bgMusic.play().catch(()=>{}); }
-    
-    player.dead = false; gameData.wave = 1; document.getElementById('death-screen').style.display = 'none';
-    window._engineStartFromHub(hubProfile.username);
+window.leaveArena = function() {
+    engineState = 'MENU';
+    if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId);
+    document.getElementById('game-wrapper').style.display = 'none'; 
+    document.getElementById('hub-container').style.display = 'flex';
 }
 
 window.returnToHubAndSave = function() {
-    try { document.exitPointerLock(); } catch(e){}
-    if(window.playerEngineRef) { hubProfile.gold = window.playerEngineRef.money; hubProfile.xp += Math.floor(window.playerEngineRef.score / 50); saveHubStateLocal(); syncUIWithProfile(); }
+    saveHubStateLocal(); syncUIWithProfile();
+    window.leaveArena();
+}
+
+function generatePVEWaveAI() {
+    let difMulti = hubProfile.lvl * 0.1;
+    let autoDeck =[];
+    let keys = Object.keys(CARD_DB);
+    for(let i=0; i<6; i++) autoDeck.push(keys[Math.floor(Math.random()*keys.length)]);
+    return { name: "I.A. DA HIERARQUIA", lvl: hubProfile.lvl, buffs: { hp: 50 * difMulti, spd: 0.1 * difMulti, dmg: 0.1 * difMulti }, deck: autoDeck, cardLevels: {} };
+}
+
+function getPlayerBuffs() { return hubProfile.buffs || {hp:0, dmg:0, spd:0}; }
+
+function resetArena() {
+    entities = []; projectiles = []; effects = []; spawnEffects =[]; energy = 2; // começa c/ 2 de mana
     
-    if(window.gameLoopInterval) clearInterval(window.gameLoopInterval); if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId);
-    if(scene) { while(scene.children.length > 0){ scene.remove(scene.children[0]); } gameData.enemies = []; gameData.projectiles =[]; gameData.particles = []; gameData.activeParticles =[]; }
-
-    document.getElementById('death-screen').style.display = 'none'; document.getElementById('game-wrapper').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex';
-}
-
-// ==================================================================================
-// PARTE 4: A ENGINE DOOM DO ZERO TOTALMENTE OCULTADA PARA CHACINA VIRTUAL ORIGINAL OPRESSORA!! (RÚSTICA POR DETERMINAÇÃO REGRA DA FÍSICA INTACTA)
-// ==================================================================================
-
-const bgMusic = new Audio('https://dn721901.ca.archive.org/0/items/doom-1993-ost-at-dooms-gate/DOOM%201993%20DOS%20-%20At%20Doom%27s%20Gate.mp3'); bgMusic.loop = true; bgMusic.volume = 0.5; window.bgMusic = bgMusic; 
-const SOUND_ISAAC_ATK = new Audio('https://fishballsite.vercel.app/golpe.ogg'); const SOUND_KANADO_ATK = new Audio('https://fishballsite.vercel.app/peido.mp3');
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-let myPlayerIdMulti = 'player_' + Math.floor(Math.random() * 10000000); let roomRefPath; let isHost = false; let globalWaveRef; let enemiesRef; let onlinePlayers = {}; let playerRef;
-
-let CONFIG = { gravity: 60.0, frictionBase: 10.0, frictionAir: 1.0, baseSpeed: 20.0 /* ERA 85 NO ANTIGO! MUDANÇA ASSUSTADORA HARDCORE REQUER TAREFAS FÍSICAS REAIS PRA PULAR OS TIROS!! */, maxActiveEnemies: 45, intermissionTime: 5.0, timeScale: 1.0, mouseSensitivity: 0.002 };
-
-let player = { hp: 100, maxHp: 100, money: 0, score: 0, speedMult: 1.0, dmgMult: 1.0, fireRate: 250, bulletSpeed: 300, multiShot: 1, vampirism: 0, penetration: 0, thorns: 0, luck: 1.0, canJetpack: false, canNoclip: false, dead: false, radius: 3.0, flashlightOn: true, currentSkin: 'default', ownedSkins: ['default'] }; window.playerEngineRef = player;
-
-const BIOMES = { HUB: { name: "VIRGINITY HUB", fogColor: 0x050505, fogDensity: 0.015, x: 0, z: 0, color: '#222' }, GAO: { name: "CUCKOLD CITY (SW)", fogColor: 0x220033, fogDensity: 0.02, x: -280, z: 180, color: '#300050' }, KANADO: { name: "RACIST SEWER (NW)", fogColor: 0x002200, fogDensity: 0.025, x: -220, z: -220, color: '#1a3300' }, JAMES: { name: "ANOREXIC WOODS (SE)", fogColor: 0x444444, fogDensity: 0.02, x: 220, z: 220, color: '#443311' }, MATIAS: { name: "DITADURA MML (W)", fogColor: 0x000000, fogDensity: 0.025, x: -320, z: 0, color: '#111' }, LAKE: { name: "CUM LAKE (N)", fogColor: 0xffffff, fogDensity: 0.02, x: 0, z: -320, color: '#ddddff' }, PUTON: { name: "CAVERNA DO PUTON (E)", fogColor: 0x001100, fogDensity: 0.03, x: 320, z: 0, color: '#002200' }, QUADRA: { name: "QUADRA DOS GAYS (S)", fogColor: 0xffaa00, fogDensity: 0.01, x: 0, z: 320, color: '#aa6600' }, GRAVEYARD: { name: "CEMITERIO (NE)", fogColor: 0x110000, fogDensity: 0.025, x: 220, z: -220, color: '#330000' }, TRANSITION: { name: "WASTELAND", fogColor: 0x111100, fogDensity: 0.015, x: 0, z: 0, color: '#1a1a1a' } };
-let ENEMY_TYPES =[ { id: 'normie', name: 'Gamer', hp: 25, speed: 45, scale: 8, weight: 100, money: 15 }, { id: 'rusher', name: 'Rusher', hp: 12, speed: 100, scale: 5, weight: 30, color: '#ff0', money: 10 }, { id: 'tank', name: 'Bila Tank', hp: 150, speed: 20, scale: 14, weight: 10, color: '#00f', money: 50 }, { id: 'ghost', name: 'Fantasma', hp: 20, speed: 40, scale: 7, opacity: 0.4, weight: 5, money: 25 }, { id: 'boomer', name: 'Boomer', hp: 8, speed: 110, scale: 6, weight: 15, explode: true, money: 20 }, { id: 'titan', name: 'Titan', hp: 500, speed: 15, scale: 22, weight: 2, money: 200 } ];
-const LORE_QUOTES =["O que vc quer? Quero Piru - Gao", "Hitler era 33% são - Isaac", "alguem mate a bianca pra mim comer ela - James", "o ovo chega tá pulsando - Teba", "eu gosto de da a bunda... não - Matias", "penso, logo desisto - Porra Games", "eu nunca vi o pinto do pedro, mostra ai - Teba", "VC É O MOTIVO SIM, MORRA IMEDIATAMENTE - Isaac", "calma ai que eu e o pedro vamo estupra um elefante - Teba", "tomara que eu morra no meio da semana que vem - Gao", "lorenzo, seu pai deu cf, cha de sumisso - Matias", "NÓS SOMOS OS GAYS DA QUADRA - Teba"];
-let gameData = { wave: 0, waveState: 'INTERMISSION', mode: 'survival', enemiesToSpawnThisWave: 0, enemiesSpawnedThisWave: 0, intermissionTimer: 0, enemies: [], projectiles:[], particles:[], activeParticles:[], atmosParticles:[], mapObjects:[], lastShotTime: 0, isShopOpen: false, isBigMapOpen: false, keyHistory: "", currentDiff: 'normal', cameraShake: 0, cheatMode: false, rgbMode: false, susMode: false, matrixMode: false, settings: { enemyColor: '#ff0000', gunColor: '#FFFFFF' }, bossActive: false, boss: null, rivotrilActive: 0, currentBiome: BIOMES.HUB, spawnTimer: 0, forceKanado: false, serverState: null };
-const DEATH_MSGS =["Seu condicionamento real e aeróbico é ínfimo. Suas sinapses pifaram no metaverso. Subjugado miseravelmente pelas feras opressoras e letais."];
-const TEXTURES = { isaac: 'https://i.imgur.com/f301YRO.jpeg', isaac_drug: 'https://i.imgur.com/qZtSkf1.jpeg', isaac_atk: 'https://i.imgur.com/bHc7hHc.jpeg', kanado: 'https://fishballsite.vercel.app/kanado.png', james_forest: 'https://fishballsite.vercel.app/jamesfloresta.png', gun_default: 'https://pixelartmaker-data-78746291193.nyc3.digitaloceanspaces.com/image/22dc3ad864622ab.png', gun_gold: 'https://i.imgur.com/8Q5QY5A.png', gun_banana: 'https://i.imgur.com/wK5qQ5z.png', gun_finger: 'https://i.imgur.com/6Xy1K9m.png', puton_wall: 'https://img.freepik.com/premium-photo/hacker-matrix-code-background-3d-rendering_35658-94.jpg', puton_floor: 'https://t3.ftcdn.net/jpg/05/52/63/06/360_F_552630638_hyW6XhA2G5i35WjLzJ3yC5yH5yH5yH5y.jpg', puton_face: 'https://i.imgur.com/kKC1zaJ.png', puton_screen: 'https://thumbs.dreamstime.com/b/linux-terminal-screen-code-programming-technology-background-200593649.jpg', sand: 'https://i.imgur.com/3qC5xZt.jpeg', volleyball: 'https://img.freepik.com/premium-photo/volleyball-ball-isolated-white-background-3d-rendering_436402-232.jpg', env: { gao_building: 'https://i.imgur.com/sdDGFEy.png', cave_wall: 'https://t3.ftcdn.net/jpg/07/02/95/30/360_F_702953084_9zCnqtqEqXuxTVJvIt2EIJXuKKqDLKyT.jpg', sewer_wall: 'https://t3.ftcdn.net/jpg/08/89/06/08/360_F_889060860_HGOP5SXg0mYjfwJPfGIUVCo31hdu9Uie.jpg', tree_bark: 'https://media.posterstore.com/site_images/6862d669603ad773cc39a2e6_1187745778_PS52204-8.jpg', tree_leaves: 'https://longfellowsgreenhouses.com/wp-content/uploads/2020/03/bigstock-Nature-Of-Green-Leaves-Green-340757713.jpg', bush: 'https://longfellowsgreenhouses.com/wp-content/uploads/2020/03/bigstock-Nature-Of-Green-Leaves-Green-340757713.jpg', wall_generic: 'https://i.imgur.com/jAJfilc.png', floor_generic: 'https://i.imgur.com/71GDlYS.png' }, enemies: { normie: 'https://i.imgur.com/pJgzIXp.png', rusher: 'https://i.imgur.com/vWP8O9T.jpeg', tank: 'https://fishballsite.vercel.app/bila.png', ghost: 'https://i.imgur.com/kKC1zaJ.png', boomer: 'https://i.imgur.com/zCk2KYq.png', titan: 'https://i.imgur.com/NxZdju3.png' }};
-const ASSETS={animations:{}, isaac: {}, kanado: {}, env: {}}; let scene, camera, renderer, simplex; let muzzleLight, currentGunImg = new Image(); let worldMapCanvas = null; let velocity = new THREE.Vector3(); let move = { f: false, b: false, l: false, r: false, jump: false, sprint: false }; let mobileMove = {x:0,y:0};
-const audioCtx = new (window.AudioContext||window.webkitAudioContext)(); function playSound(t) { if(player.dead)return; const o=audioCtx.createOscillator(),g=audioCtx.createGain(),n=audioCtx.currentTime; o.connect(g);g.connect(audioCtx.destination); if(t=='shoot'){o.frequency.setValueAtTime(200,n);o.frequency.exponentialRampToValueAtTime(50,n+0.2);g.gain.setValueAtTime(0.1,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.1);o.type='triangle';}else if(t=='hit'){o.frequency.setValueAtTime(100,n);g.gain.setValueAtTime(0.1,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.1);o.type='square';}else if(t=='buy'){o.frequency.setValueAtTime(400,n);o.frequency.linearRampToValueAtTime(600,n+0.2);g.gain.setValueAtTime(0.1,n);g.gain.linearRampToValueAtTime(0,n+0.2);o.type='triangle';}o.start(n);o.stop(n+0.3); }
-
-window._engineStartFromHub = function(nameFromHub) {
-    player.speedMult = 1.0 + (hubProfile.buffs?.spd || 0); player.dmgMult = 1.0 + (hubProfile.buffs?.dmg || 0);
-    player.hp = 100 + (hubProfile.buffs?.hp || 0); player.maxHp = 100 + (hubProfile.buffs?.hp || 0);
-    player.money = hubProfile.gold; player.currentSkin = hubProfile.equippedSkin || 'default';
-    if(player.currentSkin === 'banana') player.penetration += 5; if(player.currentSkin === 'finger') player.fireRate = 120; if(player.currentSkin === 'gold') player.dmgMult += 0.5;
+    let pBuffs = getPlayerBuffs();
+    let oppBuffs = opponentAI.buffs || {hp:0, dmg:0, spd:0};
     
-    gameData.currentDiff = window.inj_Difficulty || 'normal'; gameData.mode = window.inj_Gamemode || 'survival'; gameData.settings.enemyColor = window.inj_EnemyCol;
-    if(isMobile) { document.getElementById('mobile-controls').style.display = 'block'; document.getElementById('look-zone').style.display = 'block'; initMobileControls(); }
-    initAssets(); 
+    // FORÇA (Hp) multiplica a Vida das Bases. Base Vida normal = 2000.
+    let pHpMulti = 1 + (pBuffs.hp / 200); 
+    let eHpMulti = 1 + (oppBuffs.hp / 200);
+    
+    playerBase = new Entity(CARD_DB["Barricada"], 'player', 200, arenaH - 40, pBuffs, 1);
+    playerBase.type = 'base'; playerBase.name="SUA CARCAÇA"; playerBase.maxHp = 2000 * pHpMulti; playerBase.hp = playerBase.maxHp; playerBase.w = 80; playerBase.h = 40; playerBase.range = 100; playerBase.dmg = 15 * (1 + (pBuffs.dmg||0)); playerBase.atkSpeed = 1.0;
+    
+    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', 200, 40, oppBuffs, opponentAI.lvl || 1);
+    enemyBase.type = 'base'; enemyBase.name = opponentAI.name; enemyBase.maxHp = 2000 * eHpMulti; enemyBase.hp = enemyBase.maxHp; enemyBase.w = 80; enemyBase.h = 40; enemyBase.range = 100; enemyBase.dmg = 15 * (1 + (oppBuffs.dmg||0)); enemyBase.atkSpeed = 1.0;
+    
+    entities.push(playerBase); entities.push(enemyBase);
+    
+    document.getElementById('enemy-hp-text').innerText = `${opponentAI.name} HP: ${Math.floor(enemyBase.hp)}`;
+    document.getElementById('death-screen').style.display = 'none';
 }
 
-function initAssets() {
-    const manager = new THREE.LoadingManager(); manager.onLoad = () => { continueEngineStart(); }; const loader = new THREE.TextureLoader(manager); const optimizeTex = (tex) => { tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; return tex; };
-    const mkFrame=(c)=>{ const cv=document.createElement('canvas');cv.width=64;cv.height=64;const x=cv.getContext('2d'); x.fillStyle=c;x.beginPath();x.arc(32,32,28,0,Math.PI*2);x.fill(); return optimizeTex(new THREE.CanvasTexture(cv)); };
-    ASSETS.isaac.idle = loader.load(TEXTURES.isaac, optimizeTex); ASSETS.kanado.idle = loader.load(TEXTURES.kanado, optimizeTex); ASSETS.james_forest = loader.load(TEXTURES.james_forest, optimizeTex);
-    ASSETS.particle = mkFrame('#fff');
-    for (const [key, url] of Object.entries(TEXTURES.env)) { if(url && url.length > 5) ASSETS.env[key] = loader.load(url, optimizeTex); else ASSETS.env[key] = null; }
-    ASSETS.env.puton_wall = loader.load(TEXTURES.puton_wall, optimizeTex); ASSETS.env.puton_floor = loader.load(TEXTURES.puton_floor, optimizeTex); ASSETS.env.puton_face = loader.load(TEXTURES.puton_face, optimizeTex); ASSETS.env.sand = loader.load(TEXTURES.sand, optimizeTex);
-    HUB_SKINS.forEach(s => { const img = new Image(); img.src = TEXTURES[s.tex]; s.imgObj = img; if(s.id === player.currentSkin) currentGunImg = img; });
-    ENEMY_TYPES.forEach(t => { ASSETS.animations[t.id] =[loader.load(TEXTURES.enemies[t.id]||TEXTURES.enemies.normie, optimizeTex)]; });
+function renderCardsHandUI() {
+    let ui = document.getElementById('arena-hand-ui'); ui.innerHTML = "";
+    hubProfile.deck.forEach((cId, index) => {
+        let dbC = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1;
+        let cCol = dbC.rarity == 4 ? '#ff00de' : (dbC.rarity == 3 ? '#ffaa00' : (dbC.rarity == 2 ? '#00aaff' : '#aaa'));
+        let d = document.createElement('div');
+        d.className = 'battle-card'; d.style.borderColor = cCol; d.id = `card-ui-${index}`;
+        d.innerHTML = `<div class="b-card-cost">${dbC.cost}</div> <div class="b-card-lvl">L${lvl}</div> <div class="b-card-name">${dbC.name}</div>`;
+        d.onclick = (e) => { e.stopPropagation(); selectCardToPlay(index); };
+        ui.appendChild(d);
+    });
 }
 
-function continueEngineStart() { 
-    initThreeJS(); 
-    if(window.gameLoopInterval) clearInterval(window.gameLoopInterval);
-    window.gameLoopInterval = setInterval(updateGameLogic, 1000/30); 
-    animate(); 
-    initMultiplayer(hubProfile.username, gameData.currentDiff); 
+let activeCardIdx = null;
+function selectCardToPlay(idx) {
+    if(isAFK) return; // AFK bloqueia mao humana p nao bugar click zone.
+    let cId = hubProfile.deck[idx]; let cost = CARD_DB[cId].cost;
+    if(energy < cost) { playSound('hit'); return; } // Negado
+    if(activeCardIdx !== null) document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active');
+    activeCardIdx = idx;
+    document.getElementById(`card-ui-${idx}`).classList.add('active');
+    playSound('buy');
 }
 
-function initThreeJS() {
-    let gw = document.getElementById('game-wrapper');
-    const existingCanvas = gw.querySelector('canvas:not(#gun-canvas)'); if(existingCanvas) existingCanvas.remove();
-    scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x000000, 0.003); camera = new THREE.PerspectiveCamera(isMobile?100:80, window.innerWidth/window.innerHeight, 0.1, 1500); camera.rotation.order = "YXZ";
-    renderer = new THREE.WebGLRenderer({antialias:false}); renderer.setSize(window.innerWidth * 0.25, window.innerHeight * 0.25, false); renderer.setPixelRatio(1);
-    gw.insertBefore(renderer.domElement, gw.firstChild);
-    const amb = new THREE.AmbientLight(0x222222); scene.add(amb);
-    if(!isMobile) {
-        document.addEventListener('mousemove', (e) => { if (document.pointerLockElement === document.body && !player.dead && gw.style.display==='block') { camera.rotation.y -= e.movementX * CONFIG.mouseSensitivity; camera.rotation.x = Math.max(-1.5, Math.min(1.5, camera.rotation.x - e.movementY * CONFIG.mouseSensitivity)); } });
-        document.addEventListener('mousedown', ()=>{ if(document.pointerLockElement === document.body && !player.dead && gw.style.display==='block') fireWeapon(); });
+// ZONA DE CLIQUE (Tap to deploy)
+window.arenaClick = function(e) {
+    if(activeCardIdx === null || isAFK) return;
+    
+    // Mapping viewport click to Logic Arena Coords (0 a 400 W, 0 a 700 H)
+    let rect = cvs.getBoundingClientRect();
+    let scaleX = arenaW / rect.width; let scaleY = arenaH / rect.height;
+    
+    // Corrigido Offset p bater perfeito no dedo (getBounding... usa top/left global!)
+    let cx = (e.clientX - rect.left) * scaleX; 
+    let cy = (e.clientY - rect.top) * scaleY;
+
+    // Regra: Jogador so spawna abaixo de 60% do Y (Seu territorio) a menos q seja Magia Orbital e etc.
+    let cId = hubProfile.deck[activeCardIdx];
+    let cData = CARD_DB[cId];
+    if(cData.type !== 'spell' && cy < arenaH * 0.55) { return alert("Inválido! Invoque tropas apenas no SEU quadrante (Metade Inferior). Mágicas são livres no mapa todo."); }
+    
+    deployCard(cId, 'player', cx, cy, hubProfile.cardLevels[cId]||1, getPlayerBuffs());
+    
+    // Consumir
+    energy -= cData.cost;
+    document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active');
+    activeCardIdx = null;
+}
+
+window.toggleAFK = function() {
+    isAFK = !isAFK;
+    let b = document.getElementById('btn-afk');
+    if(isAFK) { b.classList.add('active'); if(activeCardIdx!==null) { document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx=null; } }
+    else b.classList.remove('active');
+}
+
+// ==========================
+// SYSTEM LOGIC DO CYBER CLASH (2D LOOP)
+// ==========================
+
+class Entity {
+    constructor(dbData, team, x, y, ownerBuffs, level = 1) {
+        this.db = dbData;
+        this.team = team;
+        this.x = x; this.y = y;
+        this.w = 12; this.h = 12; // Base visual bounding box
+        this.level = level;
+        this.mechanics = dbData.mechanics ||[];
+        
+        this.type = dbData.type; // unit, building
+        this.isFlying = dbData.isFlying || false;
+        this.isTank = dbData.isTank || false;
+        this.targetType = dbData.targetType || 'enemy'; // ou ally pra médica curandeira
+        
+        let mutSpd = 1.0; if(ownerBuffs.spd < 0) mutSpd = Math.max(0.2, 1.0 - Math.abs(ownerBuffs.spd)); // penalidade Dieta Lixo Move Speed
+        
+        // Multiplicadores Fisiológicos do HUB
+        let finalHpMod = Math.pow(1.1, level - 1) * (this.isTank ? (1 + (ownerBuffs.hp/100)) : 1);
+        this.maxHp = dbData.hp * finalHpMod; 
+        this.hp = this.maxHp;
+        
+        this.dmg = dbData.dmg * Math.pow(1.1, level - 1) * (1 + ownerBuffs.dmg); // Dieta Limpa / Level Mod
+        this.range = dbData.range;
+        this.atkSpeed = dbData.as * (ownerBuffs.spd < 0 ? (1 + Math.abs(ownerBuffs.spd)) : 1.0); // CD menor ataca + rapido. Dieta ruim aumenta o tempo entre atks.
+        this.moveSpeed = dbData.ms * mutSpd;
+        
+        this.cooldown = 0;
+        this.stunTimer = 0;
+        this.stealth = this.mechanics.includes('stealth');
+        
+        // Effects visuais local
+        this.color = team === 'player' ? '#0f0' : '#f00';
+        if(dbData.rarity===4) this.color = '#ff00de'; if(dbData.rarity===3) this.color = '#ffaa00';
     }
-    player.flashlight = new THREE.SpotLight(0xffffff, 3.0, 150, 0.5, 0.5, 1); camera.add(player.flashlight); camera.add(player.flashlight.target);
-    muzzleLight = new THREE.PointLight(gameData.settings.gunColor, 0, 30); muzzleLight.position.set(0,0,-2); camera.add(muzzleLight); scene.add(camera);
-    createMap(); createAtmosphere();
-    document.addEventListener('keydown', onKeyDown); document.addEventListener('keyup', (e)=>{ if(e.code==='KeyW') move.f=false; if(e.code==='KeyS') move.b=false; if(e.code==='KeyA') move.l=false; if(e.code==='KeyD') move.r=false; if(e.code==='ShiftLeft') move.sprint=false; if(e.code==='Space') move.jump=false; });
-}
 
-function onKeyDown(e) { if(e.code==='KeyW') move.f=true; if(e.code==='KeyS') move.b=true; if(e.code==='KeyA') move.l=true; if(e.code==='KeyD') move.r=true; if(e.code==='ShiftLeft') move.sprint=true; if(e.code==='Space') { if(player.canJetpack) velocity.y=25; else if(!move.jump && camera.position.y <= getTerrainHeight(camera.position.x, camera.position.z)+6){velocity.y=22;move.jump=true;} } if(e.code==='KeyM') window.toggleBigMapGame(); }
-function initMobileControls() {
-    let jK = document.getElementById('joy-knob'); let jId = null; let jStartX=0, jStartY=0;
-    document.getElementById('joy-container').addEventListener('touchstart', e=>{ e.preventDefault(); let t=e.changedTouches[0]; jId=t.identifier; jStartX=t.clientX; jStartY=t.clientY; }, {passive: false});
-    document.getElementById('joy-container').addEventListener('touchmove', e=>{ e.preventDefault(); for(let i=0;i<e.changedTouches.length;i++){ if(e.changedTouches[i].identifier===jId){ let dx=e.changedTouches[i].clientX-jStartX; let dy=e.changedTouches[i].clientY-jStartY; let d=Math.sqrt(dx*dx+dy*dy); if(d>40){dx=(dx/d)*40;dy=(dy/d)*40;} jK.style.transform=`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`; mobileMove.x=dx/40; mobileMove.y=dy/40; } } }, {passive: false});
-    const rs = e=>{for(let i=0;i<e.changedTouches.length;i++){if(e.changedTouches[i].identifier===jId){jId=null;jK.style.transform=`translate(-50%, -50%)`;mobileMove.x=0;mobileMove.y=0;}}};
-    document.getElementById('joy-container').addEventListener('touchend', rs); document.getElementById('joy-container').addEventListener('touchcancel', rs);
-    let lx=0, ly=0;
-    document.getElementById('look-zone').addEventListener('touchstart', e=>{ lx=e.changedTouches[0].clientX; ly=e.changedTouches[0].clientY; }, {passive: false});
-    document.getElementById('look-zone').addEventListener('touchmove', e=>{ e.preventDefault(); let t=e.changedTouches[0]; let dx=t.clientX-lx; let dy=t.clientY-ly; let s=CONFIG.mouseSensitivity*2.5; camera.rotation.y-=dx*s; camera.rotation.x=Math.max(-1.5, Math.min(1.5, camera.rotation.x-dy*s)); lx=t.clientX; ly=t.clientY; }, {passive: false});
-    document.getElementById('btn-fire').addEventListener('touchstart', e=>{e.preventDefault();fireWeapon();}, {passive: false}); document.getElementById('btn-jump').addEventListener('touchstart', e=>{e.preventDefault();if(player.canJetpack)velocity.y=25;else if(camera.position.y<=getTerrainHeight(camera.position.x,camera.position.z)+6)velocity.y=22;}, {passive: false});
-}
+    update(dt) {
+        if(this.stunTimer > 0) { this.stunTimer -= dt; return; }
+        if(this.cooldown > 0) this.cooldown -= dt;
+        
+        if(this.type === 'building' || this.type === 'base') return; // Nao andam
+        
+        // Lógica Mecha Lodo Spawners e Barão... 
+        if(this.mechanics.includes('spawn_drones') && Math.random() < 0.01) { deployCard('DroneRastreador', this.team, this.x, this.y, this.level, getPlayerBuffs()); }
+        if(this.mechanics.includes('slow_trail') && Math.random() < 0.05) { effects.push(new EffectArea(this.x, this.y, 25, 'slow', 3, this.team)); }
 
-function updatePhysics(dt) {
-    if(!isMobile && document.pointerLockElement !== document.body && document.getElementById('game-wrapper').style.display==='block') return;
-    if(gameData.rivotrilActive > 0) { gameData.rivotrilActive -= dt; document.body.classList.add('rivotril-active'); camera.rotation.z = Math.sin(performance.now()/200)*0.2; dt*=0.7; if(gameData.rivotrilActive<=0) { camera.rotation.z=0; document.body.classList.remove('rivotril-active'); } }
-    const tH = getTerrainHeight(camera.position.x, camera.position.z); const ground = tH + 5; let speed = CONFIG.baseSpeed * player.speedMult; 
-    if(gameData.currentBiome === BIOMES.LAKE) { speed *= 0.4; }
-    const friction = (camera.position.y <= ground + 0.5) ? CONFIG.frictionBase : CONFIG.frictionAir;
-    velocity.x -= velocity.x * friction * dt; velocity.z -= velocity.z * friction * dt; velocity.y -= CONFIG.gravity * dt;
-    let inputDir = new THREE.Vector3(0, 0, 0);
-    if(isMobile) { inputDir.x = mobileMove.x; inputDir.z = mobileMove.y; } else { if(move.f) inputDir.z -= 1; if(move.b) inputDir.z += 1; if(move.l) inputDir.x -= 1; if(move.r) inputDir.x += 1; }
-    if (inputDir.lengthSq() > 0) { if(!isMobile) inputDir.normalize(); inputDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), camera.rotation.y); let currentSpeed = move.sprint ? speed*1.8 : speed; velocity.add(inputDir.multiplyScalar(currentSpeed * dt)); }
-    const nx = camera.position.x + velocity.x*dt; const nz = camera.position.z + velocity.z*dt;
-    if(!checkSpawnCollision(nx, camera.position.z, player.radius)) camera.position.x = nx; else velocity.x = 0;
-    if(!checkSpawnCollision(camera.position.x, nz, player.radius)) camera.position.z = nz; else velocity.z = 0;
-    camera.position.y += velocity.y*dt; if(camera.position.y < ground) { camera.position.y = ground; velocity.y = 0; }
-    updateEnvironment(dt); updateMultiplayer(dt);
-}
-function updateEnvironment(dt) {
-    const biome = getBiomeData(camera.position.x, camera.position.z);
-    if(gameData.currentBiome !== biome) { gameData.currentBiome = biome; document.getElementById('location-display').innerText = `SETOR: ${biome.name}`; }
-    const curColor = new THREE.Color(scene.fog.color); let targetColor = new THREE.Color(biome.fogColor);
-    curColor.lerp(targetColor, dt * 2.0); scene.fog.color.set(curColor);
-    if(scene.fog.density > 0.0001) scene.fog.density += (biome.fogDensity - scene.fog.density) * dt * 2.0;
-    renderer.setClearColor(scene.fog.color);
-}
-function fireWeapon() {
-    if(performance.now() - gameData.lastShotTime < player.fireRate) return; gameData.lastShotTime = performance.now(); playSound('shoot'); muzzleLight.intensity=5; setTimeout(()=>muzzleLight.intensity=0,50);
-    for(let i=0; i<player.multiShot; i++) {
-        const spread = (Math.random()-0.5)*0.1; const proj = new THREE.Mesh(new THREE.SphereGeometry(0.8, 6, 6), new THREE.MeshBasicMaterial({color:0xffffff})); proj.scale.set(1,1,2);
-        const dir = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion); dir.x += spread; dir.y += spread; dir.normalize();
-        proj.position.copy(camera.position).add(dir.clone().multiplyScalar(2)); proj.lookAt(proj.position.clone().add(dir)); proj.userData = { velocity: dir.multiplyScalar(player.bulletSpeed), life: 1.5, type: 'player', pen: player.penetration, hits:[] }; scene.add(proj); gameData.projectiles.push(proj);
-    }
-}
-function updateProjectiles(dt) {
-    gameData.projectiles.forEach((p, i) => {
-        if(p.userData.homing) { const cDir = p.userData.velocity.clone().normalize(); const tDir = new THREE.Vector3().subVectors(camera.position, p.position).normalize(); cDir.lerp(tDir, dt * 3.5).normalize(); p.userData.velocity.copy(cDir.multiplyScalar(90)); }
-        if(p.userData.type === 'poop') p.userData.velocity.y -= 60 * dt; 
-        p.position.add(p.userData.velocity.clone().multiplyScalar(dt)); p.userData.life -= dt;
-        if(p.userData.type === 'player') {
-            if(gameData.bossActive && gameData.boss && p.position.distanceTo(gameData.boss.mesh.position) < 25) { 
-                 const dmg = 10 * player.dmgMult; gameData.boss.hp -= dmg; 
-                 if(isHost) try { update(ref(rtdb, `${roomRefPath}/boss`), { hp: gameData.boss.hp }); } catch(e){}
-                 gameData.boss.mesh.material.color.setHex(0xff0000); setTimeout(()=> { if(gameData.boss) gameData.boss.mesh.material.color.setHex(0xffffff); }, 50);
-                 playSound('hit'); scene.remove(p); gameData.projectiles.splice(i,1); return;
-            }
-            for(let e of gameData.enemies) {
-                if(p.userData.hits.includes(e)) continue;
-                if(p.position.distanceTo(e.mesh.position) < e.type.scale * 1.1) {
-                    e.hp -= 10*player.dmgMult; e.hitTimer = 0.2; p.userData.hits.push(e); 
-                    if(e.hp <= 0 && enemiesRef && e.id) { try { remove(ref(rtdb, `${roomRefPath}/enemies/${e.id}`)); } catch(ex){} addMoney(e.type.money || 10); player.score += 100; playSound('buy'); } else if (enemiesRef && e.id) { try { update(ref(rtdb, `${roomRefPath}/enemies/${e.id}`), { hp: e.hp }); } catch(ex){} }
-                    scene.remove(p); gameData.projectiles.splice(i,1); return;
+        // Encontrar alvo
+        let target = this.findTarget();
+        if(target) {
+            let dist = Math.hypot(target.x - this.x, target.y - this.y);
+            if(dist <= this.range) {
+                // Atacar
+                if(this.cooldown <= 0) {
+                    this.stealth = false; // quebra invi
+                    this.attack(target);
+                    this.cooldown = this.atkSpeed;
                 }
+            } else {
+                // Andar p Alvo
+                let dx = target.x - this.x; let dy = target.y - this.y;
+                let len = Math.hypot(dx, dy);
+                this.x += (dx/len) * this.moveSpeed * dt;
+                this.y += (dy/len) * this.moveSpeed * dt;
+                
+                // Mestre Parkour mechanic (ignora colisao ate chegar pulando nas cabecas)
             }
         } else {
-             if(p.position.distanceTo(camera.position) < 3) {
-                 player.hp -= p.userData.dmg; if(p.userData.type === 'rivotril') { gameData.rivotrilActive = 5; document.body.classList.add('rivotril-active'); showNotif("RIVOTRILZADO!"); }
-                 scene.remove(p); gameData.projectiles.splice(i,1); updateHUD(); checkDeath(); return;
-             }
+            // Se nao achou (Hacker da tela cega ou Furtivos), anda pro norte/sul generico p empurrar torre.
+            let dirY = this.team === 'player' ? -1 : 1;
+            this.y += dirY * this.moveSpeed * dt;
         }
-        if(p.position.y < getTerrainHeight(p.position.x, p.position.z) || p.userData.life <= 0) { scene.remove(p); gameData.projectiles.splice(i,1); }
-    });
-}
-function updateEnemies(dt) {
-    gameData.enemies.forEach(e => {
-        if(e.hitTimer > 0) { e.hitTimer -= dt; e.mesh.material.color.setHex(0xff0000); } else { e.mesh.material.color.setScalar(1.0); }
-        e.mesh.position.lerp(e.targetPos, dt * 5); 
-        if(isHost) {
-            let target = camera.position; let minD = e.mesh.position.distanceTo(camera.position);
-            for(let k in onlinePlayers) { let d = e.mesh.position.distanceTo(onlinePlayers[k].mesh.position); if (d < minD) { minD = d; target = onlinePlayers[k].mesh.position; } }
-            if (minD > 3) { let dir = new THREE.Vector3().subVectors(target, e.mesh.position).normalize(); e.mesh.position.add(dir.multiplyScalar(e.type.speed * dt)); e.mesh.position.y = getTerrainHeight(e.mesh.position.x, e.mesh.position.z) + e.type.scale/2; if(Math.random() < 0.1) { try{ update(ref(rtdb, `${roomRefPath}/enemies/${e.id}`), { x: e.mesh.position.x, y: e.mesh.position.y, z: e.mesh.position.z });}catch(ex){} } }
+    }
+    
+    findTarget() {
+        let bestDist = Infinity; let bestTarget = null;
+        for(let e of entities) {
+            if(e === this || e.hp <= 0) continue;
+            // Medica alvo
+            if(this.targetType === 'ally') { if(e.team !== this.team || e.type==='base') continue; }
+            else { if(e.team === this.team) continue; if(e.stealth) continue; if(e.type==='building' && this.isFlying) continue;}
+            
+            let dist = Math.hypot(e.x - this.x, e.y - this.y);
+            if(this.mechanics.includes('jump_backline')) {
+                // Parkour foca no mais loge ou base atras de barricada, ignorar fronts! 
+                // Apenas inverte peso de aggro.
+                if(e.type !== 'base' && dist > 100) dist -= 500; // prioridade inversa pra longe
+            }
+            if(dist < bestDist) { bestDist = dist; bestTarget = e; }
         }
-        if (e.mesh.position.distanceTo(camera.position) < 3) { player.hp -= 150 * dt; document.getElementById('damage-vignette').style.background='rgba(255,0,0,0.8)'; setTimeout(()=>document.getElementById('damage-vignette').style.background='transparent',100); updateHUD(); checkDeath(); }
-    });
-}
-function spawnEnemy() {
-    if(!isHost || gameData.mode === 'freeplay' || gameData.wave % 5 === 0 || gameData.enemies.length >= CONFIG.maxActiveEnemies) return;
-    let totalW = ENEMY_TYPES.reduce((a,b)=>a+b.weight,0); let r = Math.random()*totalW; let type = ENEMY_TYPES[0]; for(let t of ENEMY_TYPES){ if(r<t.weight){type=t;break;} r-=t.weight; }
-    let sx, sz, y; let valid = false; const pPos = camera.position; 
-    for(let i=0; i<20; i++) { const ang = Math.random() * Math.PI * 2; const dist = 60 + Math.random() * 90; sx = pPos.x + Math.cos(ang) * dist; sz = pPos.z + Math.sin(ang) * dist; if(!checkSpawnCollision(sx, sz, type.scale + 2)) { y = getTerrainHeight(sx, sz) + type.scale/2; valid = true; break; } }
-    if(!valid) { const ang = Math.random() * Math.PI * 2; sx = pPos.x + Math.cos(ang) * 50; sz = pPos.z + Math.sin(ang) * 50; y = getTerrainHeight(sx, sz) + 30; }
-    if(enemiesRef) { try{ push(enemiesRef, { typeId: type.id, x: sx, y: y, z: sz, hp: type.hp * (0.8 + (gameData.wave * 0.08)), });}catch(e){} }
-}
-function updateBossHost(dt) {
-    if(!gameData.boss) return; const b = gameData.boss;
-    let targetPos = camera.position; let minDist = 99999;
-    if (camera.position.distanceTo(b.mesh.position) < minDist) { minDist = camera.position.distanceTo(b.mesh.position); targetPos = camera.position; }
-    for(const k in onlinePlayers) { const p = onlinePlayers[k].mesh.position; const d = p.distanceTo(b.mesh.position); if(d < minDist) { minDist = d; targetPos = p; } }
-    const groundH = getTerrainHeight(b.mesh.position.x, b.mesh.position.z); const flyH = groundH + 15;
-    const dir = new THREE.Vector3().subVectors(targetPos, b.mesh.position); dir.y = 0; dir.normalize();
-    let speed = 20; if(b.hp < b.maxHp * 0.5) speed *= 1.8; 
-    if (b.type === 'ISAAC') { if (minDist > 30) b.mesh.position.add(dir.multiplyScalar(speed * dt)); } else { speed *= 2.0; if (minDist > 50) b.mesh.position.add(dir.multiplyScalar(speed * dt)); else if (minDist < 30) b.mesh.position.sub(dir.multiplyScalar(speed * dt)); }
-    b.mesh.position.y += (flyH - b.mesh.position.y) * dt * 2.0;
-    b.timer += dt; let cycle = (b.hp < b.maxHp * 0.5) ? 1.5 : 3.0; if (b.type === 'KANADO') cycle = 3.5; 
-    if (b.timer > cycle && b.state === 'IDLE') {
-        b.timer = 0; let nextState = 'IDLE'; const r = Math.random();
-        if (b.type === 'KANADO') { if (r < 0.25) nextState = 'TELEPORT'; else if (r < 0.55) nextState = 'POOP_RAIN'; else if (r < 0.8) nextState = 'THUNDER'; else nextState = 'MINIONS'; } else { if (r < 0.6) nextState = 'RIVOTRIL'; else if (r < 0.8) nextState = 'AIMBOT'; else nextState = 'DDOS'; }
-        if (nextState === 'TELEPORT') { const ang = Math.random() * Math.PI * 2; b.mesh.position.x = targetPos.x + Math.cos(ang) * 40; b.mesh.position.z = targetPos.z + Math.sin(ang) * 40; }
-        try{update(ref(rtdb, `${roomRefPath}/boss`), { x: b.mesh.position.x, y: b.mesh.position.y, z: b.mesh.position.z, state: nextState, targetX: targetPos.x, targetZ: targetPos.z, timestamp: Date.now() });}catch(e){}
-    } else { if (b.timer > 0.1) { try{ update(ref(rtdb, `${roomRefPath}/boss`), { x: b.mesh.position.x, y: b.mesh.position.y, z: b.mesh.position.z, hp: b.hp });}catch(e){}} }
-    if (b.hp <= 0) { try{remove(ref(rtdb, `${roomRefPath}/boss`));}catch(e){} addMoney(b.type === 'KANADO' ? 5000 : 2500); player.score += 50000; showNotif(`${b.type} DERROTADO!`); }
-}
-function executeBossAttack(type, tx, tz) {
-    if(!gameData.boss) return; const b = gameData.boss; b.state = type; const origin = b.mesh.position.clone();
-    if (type === 'TELEPORT') { showNotif("KANADO SE TELEPORTOU!"); return; }
-    if(type === 'THUNDER') b.mesh.material.color.setHex(0xffff00); else if(type === 'POOP_RAIN') b.mesh.material.color.setHex(0x8B4513); else b.mesh.material.color.setHex(0xff0000); 
-    setTimeout(() => {
-        if (!gameData.boss) return; 
-        if (type === 'THUNDER') {
-             showNotif("RAIOS DO KANADO!"); SOUND_KANADO_ATK.play().catch(()=>{}); 
-             for(let i=0; i<5; i++) { setTimeout(() => { const proj = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 8), new THREE.MeshBasicMaterial({color:0xffff00})); proj.rotation.x = Math.PI/2; proj.position.set(tx + (Math.random()-0.5)*40, origin.y + 20, tz + (Math.random()-0.5)*40); proj.userData = { velocity: new THREE.Vector3(0, -100, 0), life: 2, type: 'thunder', dmg: 35 }; scene.add(proj); gameData.projectiles.push(proj); }, i * 150); }
-        } 
-        else if (type === 'POOP_RAIN') {
-             SOUND_KANADO_ATK.play().catch(()=>{}); 
-             for(let i=0; i<15; i++) { const proj = new THREE.Mesh(new THREE.DodecahedronGeometry(1.5), new THREE.MeshLambertMaterial({color:0x5C4033})); proj.position.copy(origin); const dx = tx - origin.x + (Math.random()-0.5)*30; const dz = tz - origin.z + (Math.random()-0.5)*30; const dist = Math.sqrt(dx*dx + dz*dz); const vel = new THREE.Vector3(dx/dist * 60, 40, dz/dist * 60); proj.userData = { velocity: vel, life: 5, type: 'poop', dmg: 15 }; scene.add(proj); gameData.projectiles.push(proj); }
+        return bestTarget;
+    }
+    
+    attack(target) {
+        // Toca animacao base projetil e audio
+        if(this.mechanics.includes('cleave') && this.db.id==='Mecha') {
+            // Mecha Titan Atira laser continuo (Raycast fake visual drawado na linha e varre 40px raio)
+            spawnEffects.push({t:'laser', x1:this.x, y1:this.y, x2:target.x, y2:target.y, life:0.3});
+            for(let e of entities) { if(e.team!==this.team && Math.hypot(e.x-target.x, e.y-target.y) < 40) e.receiveDmg(this.dmg, this); }
+        } else if (this.range > 60) {
+            projectiles.push({ x:this.x, y:this.y, tx:target.x, ty:target.y, speed: 300, dmg:this.dmg, shooter:this, tObj:target });
+        } else {
+            // Melee instahit
+            spawnEffects.push({t:'hit', x:target.x, y:target.y, life:0.2});
+            target.receiveDmg(this.dmg, this);
         }
-        else if (type === 'RIVOTRIL' || type === 'AIMBOT') {
-             SOUND_ISAAC_ATK.play().catch(()=>{}); const proj = new THREE.Mesh(new THREE.SphereGeometry(4), new THREE.MeshBasicMaterial({color:0xff00ff})); proj.position.copy(origin); const dir = new THREE.Vector3(tx - origin.x, 0, tz - origin.z).normalize(); proj.userData = { velocity: dir.multiplyScalar(90), life: 8, type: 'rivotril', dmg: 30, homing: true }; scene.add(proj); gameData.projectiles.push(proj);
+        playSound('shoot');
+    }
+    
+    receiveDmg(amt, sourceEntity) {
+        if(this.mechanics.includes('dodge') && Math.random() < 0.5) { spawnEffects.push({t:'text', txt:'DODGE', x:this.x, y:this.y-10, life:0.6}); return; }
+        if(this.exposed) amt *= 1.2; // drone rastreador expose rule
+        this.hp -= amt;
+        if(this.hp <= 0 && this.type !== 'base') {
+            if(this.mechanics.includes('explode')) { effects.push(new EffectArea(this.x, this.y, 80, 'damage', 0.2, this.team, 300)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.4});}
+            if(this.mechanics.includes('death_stun')) { effects.push(new EffectArea(this.x, this.y, 100, 'stun', 0.5, this.team, 2)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.4, col:'#ff0'});}
+            if(this.mechanics.includes('acid_pool')) { effects.push(new EffectArea(this.x, this.y, 60, 'acid_dot', 4, this.team, 20)); }
         }
-        setTimeout(() => { if(gameData.boss) { b.state = 'IDLE'; b.mesh.material.color.setHex(0xffffff); } }, 1000);
-    }, 500);
-}
-function spawnBossVisual(type, hp, maxHp) {
-    const tex = (type === 'KANADO') ? ASSETS.kanado.idle : ASSETS.isaac.idle; const mesh = new THREE.Sprite(new THREE.SpriteMaterial({map: tex, color: 0xffffff})); mesh.scale.set(35, 35, 1); scene.add(mesh);
-    gameData.boss = { mesh: mesh, type: type, maxHp: maxHp, hp: hp, state: 'IDLE', timer: 0, targetPos: new THREE.Vector3(0, 0, 0), lastServerState: 'IDLE' };
-    document.getElementById('boss-hud').style.display='flex'; document.getElementById('boss-name').innerText = (type === 'KANADO') ? "KANADO, O CAGADOR" : "ISAAC, O DESTRUIDOR"; document.getElementById('boss-name').style.color = (type === 'KANADO') ? "#8B4513" : "#00ff00"; 
-    showNotif(`${type} APARECEU!`);
+    }
+    
+    render(c) {
+        c.fillStyle = this.color;
+        if(this.type === 'base') { c.fillRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h); }
+        else {
+            c.beginPath(); c.arc(this.x, this.y, this.w, 0, Math.PI*2); c.fill();
+            if(this.stealth) { c.globalAlpha=0.4; c.fillStyle="#fff"; c.fill(); c.globalAlpha=1; }
+        }
+        // HP Bar pequena
+        let hPct = Math.max(0, this.hp / this.maxHp);
+        c.fillStyle = '#f00'; c.fillRect(this.x - 10, this.y - this.h - 5, 20, 3);
+        c.fillStyle = '#0f0'; c.fillRect(this.x - 10, this.y - this.h - 5, 20 * hPct, 3);
+        if(this.stunTimer>0) { c.fillStyle='#ff0'; c.font='8px Arial'; c.fillText('STUN', this.x-10, this.y-this.h-8); }
+    }
 }
 
-function updateGameLogic() {
-    const dt = 0.033; 
-    if(!player.dead && document.getElementById('game-wrapper').style.display === 'block') {
-        updatePhysics(dt); updateProjectiles(dt); 
-        if(gameData.mode !== 'freeplay') {
-            if(gameData.bossActive && isHost) updateBossHost(dt); 
-            if(gameData.bossActive && !isHost && gameData.boss) { if(gameData.boss.mesh.position.distanceTo(gameData.boss.targetPos) > 50) { gameData.boss.mesh.position.copy(gameData.boss.targetPos); } else { gameData.boss.mesh.position.lerp(gameData.boss.targetPos, dt * 2.0); } }
-            if(!gameData.bossActive) updateEnemies(dt);
-            
-            if (isHost && gameData.serverState) {
-                const s = gameData.serverState;
-                if (s.state === 'COOLDOWN') {
-                    s.timer -= dt;
-                    if (s.timer <= 0) {
-                        const newWave = s.wave + 1;
-                        if (newWave % 5 === 0) { update(globalWaveRef, { state: 'BOSS_SPAWN', wave: newWave, enemiesToSpawn: 0, bossType: (newWave % 10 === 0) ? 'KANADO' : 'ISAAC' }); } else { update(globalWaveRef, { state: 'SPAWNING', wave: newWave, enemiesToSpawn: 20 + (newWave * 5), timer: 0 }); }
-                    }
-                } 
-                else if (s.state === 'SPAWNING') {
-                    gameData.spawnTimer -= dt;
-                    if (gameData.spawnTimer <= 0 && s.enemiesToSpawn > 0) { spawnEnemy(); gameData.spawnTimer = 0.5; update(globalWaveRef, { enemiesToSpawn: s.enemiesToSpawn - 1 }); }
-                    if (s.enemiesToSpawn <= 0) { update(globalWaveRef, { state: 'FIGHTING' }); }
-                } 
-                else if (s.state === 'BOSS_SPAWN') {
-                    const hp = 5000 * (s.wave/5); update(ref(rtdb, `${roomRefPath}/boss`), { type: s.bossType || 'ISAAC', hp: hp, maxHp: hp, state: 'IDLE', x:0, y:20, z:0 }); update(globalWaveRef, { state: 'FIGHTING' });
-                }
-                else if (s.state === 'FIGHTING') {
-                    const isBossWave = (s.wave % 5 === 0);
-                    if (isBossWave) { get(ref(rtdb, `${roomRefPath}/boss`)).then(snap => { if(!snap.exists()) { update(globalWaveRef, { state: 'COOLDOWN', timer: CONFIG.intermissionTime }); } }); } 
-                    else { if (gameData.enemies.length === 0 && s.enemiesToSpawn <= 0) { update(globalWaveRef, { state: 'COOLDOWN', timer: CONFIG.intermissionTime }); } }
-                }
+class EffectArea {
+    constructor(x, y, radius, type, lifetime, team, power=0) {
+        this.x=x; this.y=y; this.r=radius; this.type=type; this.life=lifetime; this.maxLife=lifetime; this.team=team; this.pow=power;
+    }
+    update(dt) {
+        this.life -= dt;
+        for(let e of entities) {
+            if(e.team === this.team) continue;
+            let d = Math.hypot(e.x-this.x, e.y-this.y);
+            if(d < this.r) {
+                if(this.type === 'slow' && e.moveSpeed > 10) e.moveSpeed *= 0.8;
+                if(this.type === 'damage') { e.receiveDmg(this.pow, null); this.life = 0; } // insta proc
+                if(this.type === 'stun') { e.stunTimer = this.pow; this.life = 0; }
+                if(this.type === 'acid_dot') e.receiveDmg(this.pow*dt, null); // dot ticka com delta
+                if(this.type === 'freeze_spell') { e.stunTimer = this.pow; } // magia q segura area
             }
         }
-        for(let i=gameData.activeParticles.length-1; i>=0; i--) { const p = gameData.activeParticles[i]; p.userData.life -= dt; p.position.add(p.userData.vel.clone().multiplyScalar(dt)); p.userData.vel.y -= 20 * dt; p.scale.setScalar((p.userData.life / p.userData.maxLife) * 0.8); if(p.position.y < getTerrainHeight(p.position.x, p.position.z) || p.userData.life <= 0) { scene.remove(p); gameData.activeParticles.splice(i, 1); } }
+    }
+    render(c) {
+        c.globalAlpha = Math.max(0, this.life/this.maxLife) * 0.4;
+        c.beginPath(); c.arc(this.x, this.y, this.r, 0, Math.PI*2);
+        if(this.type === 'slow') c.fillStyle = '#8B4513';
+        if(this.type === 'acid_dot') c.fillStyle = '#0f0';
+        if(this.type === 'freeze_spell') c.fillStyle = '#00ffff';
+        c.fill(); c.globalAlpha = 1.0;
     }
 }
 
-function animate() { 
-    window.animationFrameId = requestAnimationFrame(animate); 
-    if(gameData.isBigMapOpen || document.getElementById('game-wrapper').style.display !== 'block') return; 
-    const ctx=document.getElementById('gun-canvas').getContext('2d'); ctx.clearRect(0,0,500,500); 
-    const bob = (move.f||move.b||move.l||move.r || isMobile && (mobileMove.x!==0 || mobileMove.y!==0)) ? Math.sin(performance.now()/80)*20 : 0; 
-    if(currentGunImg.complete) ctx.drawImage(currentGunImg, 250-225, 500-300+bob, 450, 300); 
-    renderer.render(scene, camera); 
-}
-
-function checkDeath() { 
-    if(player.hp<=0 && !player.dead) { 
-        player.dead=true; 
-        try{document.exitPointerLock();}catch(e){}
-        document.getElementById('death-screen').style.display='flex'; 
-        document.getElementById('death-flavor').innerText = DEATH_MSGS[Math.floor(Math.random()*DEATH_MSGS.length)]; 
-        document.getElementById('final-score').innerText = `$ ${player.money}`; 
-        document.getElementById('final-wave').innerText = gameData.wave; 
-        if(playerRef) { try{ remove(playerRef); }catch(e){} } 
-    } 
-}
-
-function updateHUD() { document.getElementById('hp-val').innerText=Math.floor(player.hp); document.getElementById('wave-val').innerText=gameData.wave; document.getElementById('money-display').innerText=`$${player.money}`; const p = (gameData.serverState && gameData.serverState.enemiesToSpawn) ? gameData.serverState.enemiesToSpawn : 0; document.getElementById('enemies-left').innerText = gameData.enemies.length + p;}
-function addMoney(amount) { player.money += amount; updateHUD(); }
-function showNotif(t){const n=document.createElement('div');n.className='pop-text';n.innerText=t;document.getElementById('notif-area').appendChild(n);setTimeout(()=>n.remove(),1500);}
-
-function initMultiplayer(nick, difficulty) {
-    try {
-        if(!rtdb || !window.isFirebaseActive || hubProfile.uid.startsWith('local_')) throw new Error("Offline");
-        roomRefPath = `rooms/${difficulty}`;
-        const roomPlayersRef = ref(rtdb, `${roomRefPath}/players`);
-        get(roomPlayersRef).then(snap => { const pc = snap.exists() ? Object.keys(snap.val()).length : 0; if (pc === 0) { set(ref(rtdb, `${roomRefPath}`), { players: {}, gameState: { wave: 1, state: 'COOLDOWN', timer: 5, enemiesToSpawn: 20, kills: 0 }, enemies: {}, boss: null }).then(() => { joinServer(nick); }); } else { joinServer(nick); } });
-    } catch(err) {
-        console.warn("Multiplayer Offline no Ingame Bypass"); gameData.wave = 1; updateHUD();
-        setInterval(() => { if(gameData.enemies.length < 15 && !player.dead && document.getElementById('game-wrapper').style.display==='block') { const t = ENEMY_TYPES[0]; const an = Math.random()*Math.PI*2; const d = 30; const ex = camera.position.x + Math.cos(an)*d; const ez = camera.position.z + Math.sin(an)*d; let mesh = new THREE.Sprite(new THREE.SpriteMaterial({map:ASSETS.animations[t.id][0], color:0xffffff})); mesh.scale.set(t.scale, t.scale, 1); mesh.position.set(ex, getTerrainHeight(ex,ez)+t.scale/2, ez); scene.add(mesh); gameData.enemies.push({id: Math.random().toString(), mesh:mesh, hp:t.hp, type:t, hitTimer:0, targetPos: new THREE.Vector3(ex, mesh.position.y, ez)}); } }, 2000);
+function deployCard(cId, team, tx, ty, lvl, buffsRef) {
+    let dbC = CARD_DB[cId];
+    if(dbC.type === 'spell') {
+        playSound('buy');
+        if(cId === 'MagiaCrio') effects.push(new EffectArea(tx, ty, dbC.range, 'freeze_spell', 3, team, 3));
+        if(cId === 'MagiaOrbital') { spawnEffects.push({t:'laser', x1:tx, y1:0, x2:tx, y2:ty, life:0.5, col:'#f0f', w:20}); for(let e of entities) { if(e.team!==team && Math.hypot(e.x-tx, e.y-ty)<dbC.range) e.receiveDmg(dbC.dmg, null); } }
+        if(cId === 'MagiaAcido') effects.push(new EffectArea(tx, ty, dbC.range, 'acid_dot', 6, team, 25));
+        if(cId === 'MagiaRewind') { let bestE=null; let lowest=999; for(let e of entities) { if(e.team===team && e.type==='unit' && e.hp<lowest) { lowest=e.hp; bestE=e;} } if(bestE){ bestE.x = team==='player'?200:200; bestE.y = team==='player'? arenaH-100: 100; bestE.hp += bestE.maxHp*0.3; } }
+        if(cId === 'MagiaOverclock') { for(let e of entities) { if(e.team===team && Math.hypot(e.x-tx,e.y-ty)<dbC.range){ e.cooldown=0; e.atkSpeed/=2;} } }
+    } else {
+        let unit = new Entity(dbC, team, tx, ty, buffsRef, lvl);
+        if(unit.mechanics.includes('spawn_emp_base')) { let tgB = team==='player'?enemyBase:playerBase; tgB.stunTimer=3; spawnEffects.push({t:'text', txt:'HACKED!', x:tgB.x, y:tgB.y, life:1.5}); }
+        entities.push(unit);
     }
 }
-function joinServer(nick) {
-    playerRef = ref(rtdb, `${roomRefPath}/players/${myPlayerIdMulti}`); onDisconnect(playerRef).remove();
-    update(playerRef, { x: 0, z: 0, rot: 0, nick: nick, skin: player.currentSkin, chestText: window.inj_ChestTxt||"", hp: 100, lastSeen: Date.now() });
-    const roomPlayersRef = ref(rtdb, `${roomRefPath}/players`);
-    onValue(roomPlayersRef, (snap) => { const players = snap.val() || {}; const pKeys = Object.keys(players).sort(); if(pKeys.length > 0 && pKeys[0] === myPlayerIdMulti) { if(!isHost) showNotif("VOCÊ É O HOST AGORA"); isHost = true; } else { isHost = false; } });
-    onChildAdded(roomPlayersRef, (snapshot) => { if(snapshot.key === myPlayerIdMulti) return; createOtherPlayer(snapshot.key, snapshot.val()); });
-    onChildChanged(roomPlayersRef, (snapshot) => { if(snapshot.key === myPlayerIdMulti) return; if(onlinePlayers[snapshot.key]) onlinePlayers[snapshot.key].targetData = snapshot.val(); });
-    onChildRemoved(roomPlayersRef, (snapshot) => { removeOtherPlayer(snapshot.key); });
-    enemiesRef = ref(rtdb, `${roomRefPath}/enemies`);
-    onChildAdded(enemiesRef, (snapshot) => { let data = snapshot.val(); let type = ENEMY_TYPES.find(t => t.id === data.typeId) || ENEMY_TYPES[0]; let mesh = new THREE.Sprite(new THREE.SpriteMaterial({map:ASSETS.animations[type.id]?ASSETS.animations[type.id][0]:ASSETS.particle, color:0xffffff})); mesh.scale.set(type.scale, type.scale, 1); mesh.position.set(data.x, data.y, data.z); scene.add(mesh); gameData.enemies.push({ id: snapshot.key, mesh: mesh, hp: data.hp, type: type, hitTimer: 0, targetPos: new THREE.Vector3(data.x, data.y, data.z) }); });
-    onChildChanged(enemiesRef, (snapshot) => { const enemy = gameData.enemies.find(e => e.id === snapshot.key); if(enemy) { enemy.hp = snapshot.val().hp; enemy.targetPos.set(snapshot.val().x, snapshot.val().y, snapshot.val().z); } });
-    onChildRemoved(enemiesRef, (snapshot) => { const idx = gameData.enemies.findIndex(e => e.id === snapshot.key); if(idx !== -1) { scene.remove(gameData.enemies[idx].mesh); gameData.enemies.splice(idx, 1); } });
-    const bossRef = ref(rtdb, `${roomRefPath}/boss`);
-    onValue(bossRef, (snapshot) => {
-        const bData = snapshot.val();
-        if(bData) {
-            if(!gameData.boss) spawnBossVisual(bData.type, bData.hp, bData.maxHp);
-            if(gameData.boss) { gameData.bossActive = true; gameData.boss.hp = bData.hp; gameData.boss.maxHp = bData.maxHp || gameData.boss.maxHp; const pct = Math.max(0, (gameData.boss.hp/gameData.boss.maxHp)*100); document.getElementById('boss-hp-bar').style.width = pct + '%'; if(!isHost && bData.x !== undefined) { gameData.boss.targetPos.set(bData.x, bData.y, bData.z); } if(bData.state && bData.state !== gameData.boss.lastServerState) { gameData.boss.lastServerState = bData.state; if(bData.state !== 'IDLE') { executeBossAttack(bData.state, bData.targetX, bData.targetZ); setTimeout(() => { if(gameData.boss) gameData.boss.state = 'IDLE'; }, 1500); } } }
-        } else { if(gameData.bossActive) { gameData.bossActive = false; if(gameData.boss) { scene.remove(gameData.boss.mesh); gameData.boss=null; } document.getElementById('boss-hud').style.display='none'; } }
+
+// AI ENGINE PARA BOT/DUELO
+let aiTimer = 0; let aiMana = 2; 
+function updateAI(dt) {
+    let oBuffs = opponentAI.buffs || {hp:0, dmg:0, spd:0};
+    aiMana += (1.0 + oBuffs.spd) * dt; 
+    aiTimer -= dt;
+    if(aiTimer <= 0) {
+        aiTimer = 1.0 + Math.random()*2; // Tenta fazer acao todo segundo aleatorio
+        if(opponentAI.deck && opponentAI.deck.length > 0) {
+            let rndCard = opponentAI.deck[Math.floor(Math.random()*opponentAI.deck.length)];
+            let dbC = CARD_DB[rndCard];
+            if(aiMana >= dbC.cost) {
+                aiMana -= dbC.cost;
+                // Deployar topo do mapa (Enemy Zone) Random X. Feiticos targetam bases direto p simplificar agressão AI
+                let tX = 50 + Math.random()*300; let tY = dbC.type==='spell' ? arenaH - 80 : 50 + Math.random()*150;
+                let cLvl = opponentAI.cardLevels[rndCard] || 1;
+                deployCard(rndCard, 'enemy', tX, tY, cLvl, oBuffs);
+            }
+        }
+    }
+}
+
+function clashLoop() {
+    if(engineState !== 'PLAY') return;
+    
+    let now = performance.now(); let dt = (now - lastTime) / 1000; lastTime = now;
+    if(dt > 0.1) dt = 0.033; // Travar glitchs the lag.
+
+    // 1. Manas (Aplicando o Buff Real Físico!)
+    let myBuffs = getPlayerBuffs();
+    if(energy < MAX_ENERGY) energy += (1.0 + (myBuffs.spd||0)*0.5) * dt; // Regeneração ditada pela Corrida/Cardio real.
+    updateUIRealtime();
+
+    // Player AFK Mode Auto-Deploy
+    if(isAFK && hubProfile.deck.length > 0) {
+        let rndCard = hubProfile.deck[Math.floor(Math.random()*hubProfile.deck.length)];
+        let dbC = CARD_DB[rndCard];
+        if(energy >= dbC.cost) {
+            energy -= dbC.cost;
+            let tX = 50 + Math.random()*300; let tY = dbC.type==='spell' ? 80 : arenaH - 50 - Math.random()*100;
+            deployCard(rndCard, 'player', tX, tY, hubProfile.cardLevels[rndCard]||1, myBuffs);
+        }
+    }
+
+    updateAI(dt);
+
+    // 2. Logic Entities
+    for(let i=entities.length-1; i>=0; i--) {
+        let e = entities[i];
+        if(e.hp <= 0) { entities.splice(i, 1); continue; }
+        e.update(dt);
+    }
+    
+    // Win Condition Core
+    if(enemyBase.hp <= 0) { endGame("VITÓRIA ESMAGADORA!", "O Código opressor do oponente cedeu às suas fibras físicas. Receba o Gold extraído do sistema e glória."); return; }
+    if(playerBase.hp <= 0) { endGame("SUA CARCAÇA FALHOU", "O Condicionamento não foi suficiente para deter os monstros do Servidor Inimigo. Retorne e treine no Hub Fisicamente para sobreviver amanhã."); return; }
+
+    // Projs e Effects
+    for(let i=projectiles.length-1; i>=0; i--) {
+        let p = projectiles[i];
+        let d = Math.hypot(p.tx-p.x, p.ty-p.y);
+        if(d < 5) {
+            p.tObj.receiveDmg(p.dmg, p.shooter);
+            if(p.shooter.mechanics.includes('expose')) p.tObj.exposed = true;
+            spawnEffects.push({t:'hit', x:p.tx, y:p.ty, life:0.2});
+            projectiles.splice(i,1);
+        } else {
+            p.x += (p.tx-p.x)/d * p.speed * dt; p.y += (p.ty-p.y)/d * p.speed * dt;
+        }
+    }
+    for(let i=effects.length-1; i>=0; i--) { effects[i].update(dt); if(effects[i].life<=0) effects.splice(i,1); }
+    for(let i=spawnEffects.length-1; i>=0; i--) { spawnEffects[i].life -= dt; if(spawnEffects[i].life<=0) spawnEffects.splice(i,1); }
+
+    drawArena();
+    window.animationFrameId = requestAnimationFrame(clashLoop);
+}
+
+function drawArena() {
+    ctx.clearRect(0,0,arenaW,arenaH);
+    
+    // Malha Grade Cyberpunk
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.05)"; ctx.lineWidth=1;
+    for(let x=0; x<arenaW; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,arenaH); ctx.stroke(); }
+    for(let y=0; y<arenaH; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(arenaW,y); ctx.stroke(); }
+    
+    // Divisoria Rio de Fluxo Neon
+    ctx.fillStyle = "rgba(255,0,222,0.1)"; ctx.fillRect(0, arenaH/2 - 5, arenaW, 10);
+
+    effects.forEach(e => e.render(ctx));
+    entities.forEach(e => e.render(ctx));
+    
+    // Projectiles
+    ctx.fillStyle = '#fff';
+    projectiles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, 6.28); ctx.fill(); });
+    
+    // Transient FX
+    spawnEffects.forEach(s => {
+        if(s.t==='hit') { ctx.fillStyle='#ff0'; ctx.beginPath(); ctx.arc(s.x, s.y, 6*(1-s.life), 0, 6.28); ctx.fill(); }
+        if(s.t==='exp') { ctx.fillStyle=s.col||'#f00'; ctx.globalAlpha=s.life; ctx.beginPath(); ctx.arc(s.x, s.y, 30, 0, 6.28); ctx.fill(); ctx.globalAlpha=1; }
+        if(s.t==='text') { ctx.fillStyle='#0ff'; ctx.font='12px Arial'; ctx.fillText(s.txt, s.x, s.y - (1-s.life)*20); }
+        if(s.t==='laser') { ctx.strokeStyle=s.col||'#0ff'; ctx.lineWidth=s.w||5; ctx.globalAlpha=s.life; ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke(); ctx.globalAlpha=1;}
     });
-    globalWaveRef = ref(rtdb, `${roomRefPath}/gameState`);
-    onValue(globalWaveRef, (snapshot) => { const state = snapshot.val(); if(!state) return; if(state.wave !== gameData.wave) { gameData.wave = state.wave; gameData.spawnTimer = 0; if(gameData.wave % 5 === 0) { showNotif(`BOSS WAVE ${gameData.wave}!`); } else { showNotif(`WAVE ${gameData.wave}`); playSound('buy'); } } gameData.waveState = state.state; if(gameData.wave % 5 === 0) document.getElementById('wave-info').style.display = 'none'; else document.getElementById('wave-info').style.display = 'block'; gameData.serverState = state; updateHUD(); });
-}
-function updateMultiplayer(dt) { 
-    try { if(!rtdb || !playerRef) return; if(Math.random()<0.1) update(playerRef, { x: camera.position.x, z: camera.position.z, rot: camera.rotation.y, skin: player.currentSkin }); 
-    Object.keys(onlinePlayers).forEach(key => { const op = onlinePlayers[key]; const target = op.targetData; if(!target) return; const currentPos = op.mesh.position; currentPos.x += (target.x - currentPos.x) * dt * 10; currentPos.z += (target.z - currentPos.z) * dt * 10; op.mesh.rotation.y += (target.rot - op.mesh.rotation.y) * dt * 10; currentPos.y = getTerrainHeight(currentPos.x, currentPos.z) + 3.5; if (!Array.isArray(op.mesh.material)) { if(target.skin === 'gold') op.mesh.material.color.setHex(0xffaa00); else if(target.skin === 'banana') op.mesh.material.color.setHex(0xffff00); else if(target.skin === 'finger') op.mesh.material.color.setHex(0xff00de); else op.mesh.material.color.setHex(0x00ffff); } const tempV = new THREE.Vector3(currentPos.x, currentPos.y + 6, currentPos.z); tempV.project(camera); const x = (tempV.x * .5 + .5) * window.innerWidth; const y = (tempV.y * -.5 + .5) * window.innerHeight; if(tempV.z > 1) { op.tag.style.display = 'none'; } else { op.tag.style.display = 'block'; op.tag.style.left = x + 'px'; op.tag.style.top = y + 'px'; } }); } catch(e){} 
-}
-function createOtherPlayer(key, pData) { if(onlinePlayers[key]) return; const geometry = new THREE.BoxGeometry(3, 7, 3); let bodyMat = new THREE.MeshLambertMaterial({color: 0x00ffff}); const mesh = new THREE.Mesh(geometry, bodyMat); const div = document.createElement('div'); div.className = 'player-tag'; div.innerText = pData.nick; document.body.appendChild(div); scene.add(mesh); onlinePlayers[key] = { mesh: mesh, tag: div, data: pData, targetData: pData }; }
-function removeOtherPlayer(key) { if(onlinePlayers[key]) { scene.remove(onlinePlayers[key].mesh); onlinePlayers[key].tag.remove(); delete onlinePlayers[key]; } }
-
-
-function getBiomeData(x, z) { const d = Math.sqrt(x*x + z*z); if (d < 80) return BIOMES.HUB; if (z < -180 && Math.abs(x) < 150) return BIOMES.LAKE; if (z > 180 && Math.abs(x) < 150) return BIOMES.QUADRA; if (x > 180 && Math.abs(z) < 150) return BIOMES.PUTON; if (x < -180 && Math.abs(z) < 150) return BIOMES.MATIAS; if (x < -150 && z < -150) return BIOMES.KANADO; if (x > 150 && z < -150) return BIOMES.GRAVEYARD; if (x < -150 && z > 150) return BIOMES.GAO; if (x > 150 && z > 150) return BIOMES.JAMES; return BIOMES.TRANSITION; }
-function getTerrainHeight(x, z) { if(!simplex) return 0; let base = 0; const biome = getBiomeData(x, z); if(biome === BIOMES.KANADO) base = -8 + (simplex.noise2D(x*0.1, z*0.1) * 2); else if(biome === BIOMES.LAKE) { const d = Math.sqrt(Math.pow(x-0,2) + Math.pow(z+320,2)); base = d < 80 ? -12 : 0; } else if (biome === BIOMES.MATIAS) base = 0.2; else if (biome === BIOMES.GAO) base = 1; else if (biome === BIOMES.PUTON) base = 0.5; else if (biome === BIOMES.QUADRA) base = 0.5; else if (biome === BIOMES.HUB) base = 0; else base = simplex.noise2D(x*0.015, z*0.015) * 3; return base; }
-function checkSpawnCollision(x, z, r) { for(let w of gameData.mapObjects) { if (Math.sqrt((x - w.x)**2 + (z - w.z)**2) < (r + (w.w + w.d)/4)) return true; } return false; }
-function createProp(geo, mat, x, z, yOff=0, rot=0, collides=true) { if(checkSpawnCollision(x, z, 5)) return null; const mesh = new THREE.Mesh(geo, mat); mesh.position.set(x, getTerrainHeight(x, z) + yOff, z); mesh.rotation.y = rot; scene.add(mesh); if(collides) { mesh.geometry.computeBoundingBox(); const size = new THREE.Vector3(); mesh.geometry.boundingBox.getSize(size); gameData.mapObjects.push({x:x, z:z, w:size.x * mesh.scale.x, d:size.z * mesh.scale.z}); } return mesh; }
-function mkTex(color, label) { const cv = document.createElement('canvas'); cv.width=256; cv.height=128; const x = cv.getContext('2d'); x.fillStyle = color; x.fillRect(0,0,256,128); if(label) { x.fillStyle='#fff'; x.font='bold 30px monospace'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(label, 128, 64); } const t = new THREE.CanvasTexture(cv); t.magFilter = THREE.NearestFilter; return t; }
-function createSign(x, z, text, color, bgColor) { const mesh = createProp(new THREE.BoxGeometry(8, 4, 0.2), new THREE.MeshBasicMaterial({map: mkTex(bgColor, text)}), x, z, 7, 0, false); if(mesh) { mesh.lookAt(0, mesh.position.y, 0); createProp(new THREE.CylinderGeometry(0.3, 0.3, 7), new THREE.MeshLambertMaterial({color:0x333}), x, z, 3.5, 0, true); } }
-function buildGaoCity() { const mat = ASSETS.env.gao_building ? new THREE.MeshLambertMaterial({map: ASSETS.env.gao_building}) : new THREE.MeshLambertMaterial({map: mkTex('#200040', null)}); for(let r=0; r<3; r++) { for(let c=0; c<3; c++) { if(Math.random() > 0.8) continue; const w = 25 + Math.random() * 15; const d = 25 + Math.random() * 15; const h = 50 + Math.random() * 80; createProp(new THREE.BoxGeometry(w, h, d), mat, -280 + (c * 50) + (Math.random() * 10), 180 + (r * 50) + (Math.random() * 10), h/2); } } createSign(-200, 160, "CUCKOLD CITY", "#f0f", "#000"); }
-function buildKanadoSewer() { const pipeMat = ASSETS.env.sewer_wall ? new THREE.MeshLambertMaterial({map: ASSETS.env.sewer_wall}) : new THREE.MeshLambertMaterial({color: 0x445500}); for(let i=0; i<30; i++) { const pipe = createProp(new THREE.CylinderGeometry(5,5,25,16), pipeMat, -220 + (Math.random()-0.5)*100, -220 + (Math.random()-0.5)*100, 5, Math.random()*3, true); if(pipe) pipe.rotation.z = Math.PI/2; } createSign(-220, -220, "RACIST SEWER", "#0f0", "#000"); }
-function buildJamesAsylum() { const treeMat = ASSETS.env.tree_bark ? new THREE.MeshLambertMaterial({map: ASSETS.env.tree_bark}) : new THREE.MeshLambertMaterial({color: 0x221100}); for(let i=0; i<80; i++) { createProp(new THREE.CylinderGeometry(1, 2, 25, 6), treeMat, 220 + (Math.random()-0.5)*140, 220 + (Math.random()-0.5)*140, 12.5, 0, true); } const jamesSprite = new THREE.Sprite(new THREE.SpriteMaterial({map: ASSETS.james_forest, color: 0xffffff})); jamesSprite.scale.set(10, 10, 1); jamesSprite.position.set(220, getTerrainHeight(220, 220) + 5, 220); scene.add(jamesSprite); createSign(220, 260, "ANOREXIC WOODS", "#fff", "#333"); }
-function buildPutonRoom() { const wallMat = ASSETS.env.puton_wall ? new THREE.MeshLambertMaterial({map: ASSETS.env.puton_wall}) : new THREE.MeshLambertMaterial({color: 0x00ff00, wireframe: true}); createProp(new THREE.BoxGeometry(2, 40, 60), wallMat, 290, 0, 20); createProp(new THREE.BoxGeometry(2, 40, 60), wallMat, 350, 0, 20); createProp(new THREE.BoxGeometry(60, 40, 2), wallMat, 320, -30, 20); const puton = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 16), ASSETS.env.puton_face ? new THREE.MeshLambertMaterial({map: ASSETS.env.puton_face}) : new THREE.MeshLambertMaterial({color: 0xffaa00})); puton.position.set(320, getTerrainHeight(320, 0) + 15, 0); scene.add(puton); createSign(320, 35, "CAVERNA DO PUTON", "#00ff00", "#111"); }
-function buildVolleyballCourt() { const sand = new THREE.Mesh(new THREE.PlaneGeometry(80, 50), ASSETS.env.sand ? new THREE.MeshLambertMaterial({map: ASSETS.env.sand}) : new THREE.MeshLambertMaterial({color: 0xffcc00})); sand.rotation.x = -Math.PI/2; sand.position.set(0, getTerrainHeight(0, 320) + 0.2, 320); scene.add(sand); const net = new THREE.Mesh(new THREE.BoxGeometry(50, 4, 0.1), new THREE.MeshBasicMaterial({color:0xffffff, wireframe:true})); net.position.set(0, getTerrainHeight(0, 320) + 8, 320); scene.add(net); createSign(0, 290, "QUADRA DOS GAYS", "#ff00de", "#fff"); }
-function buildVegetation() { const leavesMat = ASSETS.env.tree_leaves ? new THREE.MeshLambertMaterial({map: ASSETS.env.tree_leaves}) : new THREE.MeshLambertMaterial({color: 0x228800}); for(let i=0; i<800; i++) { const r = 445 * Math.sqrt(Math.random()); const theta = Math.random() * 2 * Math.PI; const x = r * Math.cos(theta); const z = r * Math.sin(theta); if(Math.abs(x) < 60 && Math.abs(z) < 60) continue; const biome = getBiomeData(x, z); if(biome === BIOMES.MATIAS || biome === BIOMES.LAKE) continue; if(Math.random() > 0.7) { createProp(new THREE.ConeGeometry(3, 8, 5), leavesMat, x, z, 7, 0, false); } } }
-function createAtmosphere() { const geom = new THREE.BufferGeometry(); const pos =[]; for(let i=0; i<500; i++) pos.push((Math.random()-0.5)*200, (Math.random()-0.5)*50 + 10, (Math.random()-0.5)*200); geom.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); scene.add(new THREE.Points(geom, new THREE.PointsMaterial({color: 0xaaaaaa, size: 0.5, transparent: true, opacity: 0.6}))); }
-function createMap() {
-    simplex = new SimplexNoise(); const geo = new THREE.PlaneGeometry(890, 890, 180, 180); const pos = geo.attributes.position;
-    for (let i = 0; i < pos.count; i++) { const x = pos.getX(i); const z = -pos.getY(i); pos.setZ(i, getTerrainHeight(x, z)); }
-    geo.computeVertexNormals(); const terrain = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: 0x333333 }));
-    terrain.rotation.x = -Math.PI / 2; scene.add(terrain); const lake = new THREE.Mesh(new THREE.CircleGeometry(80, 32), new THREE.MeshBasicMaterial({color:0xffffff, opacity:0.8, transparent:true})); lake.rotation.x = -Math.PI/2; lake.position.set(0, getTerrainHeight(0, -320) + 2, -320); scene.add(lake);
-    for(let i=0; i<90; i++) { const ang = (i/90) * Math.PI * 2; createProp(new THREE.ConeGeometry(80, 150, 5), new THREE.MeshLambertMaterial({color: 0x1a1a1a}), Math.cos(ang)*445, Math.sin(ang)*445, 75, Math.random(), true); }
-    buildGaoCity(); buildKanadoSewer(); buildJamesAsylum(); buildPutonRoom(); buildVolleyballCourt(); buildVegetation();
-    for(let i=0; i<40; i++) { const quote = LORE_QUOTES[Math.floor(Math.random() * LORE_QUOTES.length)]; const ang = Math.random() * Math.PI * 2; const dist = 60 + Math.random() * 350; const x = Math.cos(ang) * dist; const z = Math.sin(ang) * dist; const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128; const ctx = cv.getContext('2d'); ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0,0,512,128); ctx.fillStyle = '#00ff00'; ctx.font = '24px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(quote, 256, 64); const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map: new THREE.CanvasTexture(cv)})); sprite.scale.set(30, 7.5, 1); sprite.position.set(x, getTerrainHeight(x,z)+5+Math.random()*5, z); scene.add(sprite); }
 }
 
-window.toggleBigMapGame = function() { gameData.isBigMapOpen = !gameData.isBigMapOpen; document.getElementById('big-map-screen').style.display = gameData.isBigMapOpen ? 'flex' : 'none'; if(gameData.isBigMapOpen) try{document.exitPointerLock();}catch(e){} else document.body.requestPointerLock(); }
+function updateUIRealtime() {
+    let p = Math.min(100, (energy/MAX_ENERGY)*100);
+    document.getElementById('mana-fill').style.width = p + '%';
+    document.getElementById('mana-num').innerText = Math.floor(energy);
+    document.getElementById('enemy-hp-text').innerText = `${opponentAI.name} HP: ${Math.floor(enemyBase.hp)}`;
+    
+    // Disable cards logic based on cost real time
+    for(let i=0; i<8; i++) {
+        let cardDOM = document.getElementById(`card-ui-${i}`);
+        if(cardDOM && hubProfile.deck[i]) {
+            let cost = CARD_DB[hubProfile.deck[i]].cost;
+            if(energy < cost) cardDOM.classList.add('disabled'); else cardDOM.classList.remove('disabled');
+        }
+    }
+}
+
+function endGame(tit, flv) {
+    engineState = 'DEAD';
+    // Ouro baseado em quanto de dano deu ou victoria, mas faremos logica padrao rápida PVE recompensa do Prompt
+    let recompensa = 0;
+    if(enemyBase.hp <= 0) recompensa = 1500 + Math.floor(Math.random()*1000); 
+    else recompensa = 250; // ganhou algo apanhando
+
+    document.getElementById('end-title').innerText = tit;
+    document.getElementById('end-flavor').innerText = flv;
+    document.getElementById('final-score').innerText = recompensa;
+    document.getElementById('final-wave').innerText = "CLASH: COMPLETO"; 
+
+    // Aloca a export do novo money do motor (emulando comportament antigo pro exit code funcionar limpo)
+    window.playerEngineRef.money = (hubProfile.gold || 0) + recompensa;
+    window.playerEngineRef.score = 5000; // um bonus de exp pro player no convertion code the return
+    
+    document.getElementById('death-screen').style.display='flex';
+}
+
 </script>
 </body>
 </html>
