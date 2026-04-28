@@ -32,9 +32,10 @@
         .glow-green { text-shadow: 0 0 10px rgba(0, 255, 102, 0.6); color: var(--neon-green); }
 
         #hub-container { display: flex; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000; background: radial-gradient(circle at 50% 0%, #1a1a2e, var(--dark-bg)); overflow: hidden;}
+        #hub-bg-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index: -1; pointer-events: none; opacity: 0.4;}
         
         /* SIDEBAR (NAV & PERFIL) */
-        .hub-sidebar { width: 280px; background: rgba(15, 16, 25, 0.95); border-right: 1px solid var(--panel-border); display: flex; flex-direction: column; z-index: 1010; flex-shrink: 0; backdrop-filter: blur(10px); box-shadow: 5px 0 30px rgba(0,0,0,0.5);}
+        .hub-sidebar { width: 280px; background: rgba(15, 16, 25, 0.85); border-right: 1px solid var(--panel-border); display: flex; flex-direction: column; z-index: 1010; flex-shrink: 0; backdrop-filter: blur(15px); box-shadow: 5px 0 30px rgba(0,0,0,0.5);}
         .hub-profile-area { padding: 25px 20px; text-align: center; border-bottom: 1px solid var(--panel-border); position: relative;}
         .hub-avatar-container { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; }
         .hub-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #222; border: 2px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);}
@@ -60,7 +61,7 @@
 
         /* CARDS DE AÇÃO E FORMS */
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;}
-        .action-card { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; transition: 0.3s; position: relative; overflow: hidden;}
+        .action-card { background: rgba(21, 22, 30, 0.9); border: 1px solid var(--panel-border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; transition: 0.3s; position: relative; overflow: hidden; backdrop-filter: blur(5px);}
         .action-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background: var(--neon-blue); transition: width 0.3s;}
         .action-card:hover::before { width: 100%; opacity: 0.05; }
         .action-card:hover { border-color: rgba(0,243,255,0.4); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
@@ -78,8 +79,8 @@
         .btn-neon.green { border-color: var(--neon-green); color: var(--neon-green); } .btn-neon.green:hover { background: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); color: #000;}
         .btn-neon.yellow { border-color: var(--neon-yellow); color: var(--neon-yellow); } .btn-neon.yellow:hover { background: var(--neon-yellow); box-shadow: 0 0 15px var(--neon-yellow); color: #000;}
 
-        .post-form-box { background: rgba(20,20,30,0.6); border: 1px solid var(--neon-blue); border-radius: 12px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(5px);}
-        .input-cyber { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--panel-border); border-radius: 6px; margin-bottom: 15px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; box-sizing: border-box; transition: 0.3s;}
+        .post-form-box { background: rgba(20,20,30,0.8); border: 1px solid var(--neon-blue); border-radius: 12px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(8px);}
+        .input-cyber { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--panel-border); border-radius: 6px; margin-bottom: 15px; font-family: 'Rajdhani', sans-serif; font-size: 16px; box-sizing: border-box; transition: 0.3s;}
         .input-cyber:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.2) inset;}
 
         /* GPS PANEL */
@@ -89,11 +90,11 @@
 
         /* FEED SOCIAL */
         .feed-filters { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;}
-        .filter-btn { background: var(--panel-bg); border: 1px solid var(--panel-border); color: #888; padding: 10px 20px; border-radius: 20px; font-size: 0.95rem; white-space: nowrap;}
+        .filter-btn { background: rgba(21, 22, 30, 0.9); border: 1px solid var(--panel-border); color: #888; padding: 10px 20px; border-radius: 20px; font-size: 0.95rem; white-space: nowrap;}
         .filter-btn.active { background: var(--neon-blue); color: #000; font-weight: bold; border-color: var(--neon-blue);}
         
         .feed-container { display: flex; flex-direction: column; gap: 25px; padding-bottom: 30px;}
-        .feed-post { background: var(--panel-bg); border-radius: 12px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); position: relative; border-top: 3px solid #333;}
+        .feed-post { background: rgba(21, 22, 30, 0.85); border-radius: 12px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); position: relative; border-top: 3px solid #333; backdrop-filter: blur(5px);}
         .feed-post[data-cat="Força"] { border-top-color: var(--neon-pink); }
         .feed-post[data-cat="Cardio"] { border-top-color: var(--neon-blue); }
         .feed-post[data-cat="Dieta"] { border-top-color: var(--neon-green); }
@@ -113,17 +114,16 @@
         .vote-btn.up:hover { background: rgba(0, 255, 102, 0.2); color: var(--neon-green); }
         .vote-btn.down:hover { background: rgba(255, 0, 0, 0.2); color: #ff5555; }
         
-        .post-comments { margin-top: 15px; background: #0b0c10; border-radius: 8px; padding: 15px; border: 1px solid var(--panel-border);}
+        .post-comments { margin-top: 15px; background: rgba(11, 12, 16, 0.8); border-radius: 8px; padding: 15px; border: 1px solid var(--panel-border);}
         .comments-list { display: flex; flex-direction: column; gap: 10px; max-height: 150px; overflow-y: auto; margin-bottom: 10px;}
         .comment-item { font-size: 0.9rem; color: #ddd; line-height: 1.4; border-left: 2px solid var(--neon-blue); padding-left: 10px;}
         .comment-item b { color: var(--neon-blue); font-size: 0.85rem; margin-right: 5px;}
         .comment-input-area { display:flex; gap:10px;}
-        .comment-input-area input { flex:1; padding:10px; background:transparent; color:#fff; border:1px solid #333; border-radius: 6px; font-family:'Rajdhani';}
         
         /* RADAR PVP */
-        .hub-radar { width: 300px; background: rgba(15, 16, 25, 0.95); border-left: 1px solid var(--panel-border); display: flex; flex-direction: column; padding: 25px 20px; overflow-y: auto; flex-shrink: 0;}
+        .hub-radar { width: 300px; background: rgba(15, 16, 25, 0.85); border-left: 1px solid var(--panel-border); display: flex; flex-direction: column; padding: 25px 20px; overflow-y: auto; flex-shrink: 0; backdrop-filter: blur(15px);}
         .radar-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--neon-pink); text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--panel-border);}
-        .radar-player { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; transition: 0.3s;}
+        .radar-player { background: rgba(0,0,0,0.6); border: 1px solid #333; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; transition: 0.3s;}
         .radar-player:hover { border-color: var(--neon-pink); transform: translateX(-5px);}
         .radar-player span { font-weight: bold; color: #fff;}
         .btn-duel { background: rgba(255, 0, 234, 0.1); border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 10px; font-size: 0.8rem;}
@@ -144,7 +144,7 @@
         
         .cards-hand { display: flex; justify-content: center; gap: 10px; width: 100%; max-width: 800px; height: 120px;}
         
-        /* NOVO DESIGN DAS CARTAS CYBERPUNK */
+        /* DESIGN DAS CARTAS CYBERPUNK */
         .battle-card { 
             width: 85px; height: 100%; 
             background: linear-gradient(180deg, rgba(20,20,30,0.9) 0%, rgba(10,10,15,0.95) 100%);
@@ -197,37 +197,60 @@
 
         #death-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.95); z-index: 110; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(8px);}
         
-        /* RESPONSIVIDADE MOBILE ABSOLUTA FIXA */
+        /* ================= RESPONSIVIDADE MOBILE DEFINITIVA ================= */
         @media (max-width: 900px) {
+            html { font-size: 14px; }
             #hub-container { flex-direction: column; }
-            .hub-sidebar { width: 100%; order: -1; padding: 0; border-right: none; border-bottom: 1px solid #333; flex-direction: column;}
-            .hub-profile-area { display: flex; align-items: center; text-align: left; padding: 15px;}
-            .hub-avatar-container { width: 60px; height: 60px; margin: 0 15px 0 0; }
-            .hub-stats-row { margin: 0; padding: 0; justify-content: flex-start; gap: 20px; background: transparent; border:none;}
+            .hub-title { font-size: 1.4rem; margin-bottom: 15px; }
             
-            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 5px; padding: 10px; background: #0b0c10; scrollbar-width: none;}
+            /* Sidebar Topo */
+            .hub-sidebar { width: 100%; order: -1; padding: 0; border-right: none; border-bottom: 1px solid #333; flex-direction: column; z-index: 100;}
+            .hub-profile-area { display: flex; align-items: center; text-align: left; padding: 10px;}
+            .hub-avatar-container { width: 50px; height: 50px; margin: 0 15px 0 0; }
+            .hub-username { font-size: 1.1rem; margin-bottom: 2px;}
+            .hub-stats-row { flex-direction: row; gap: 15px; margin: 0; padding: 5px; background: transparent; border:none;}
+            .stat-item { font-size: 0.65rem; } .stat-item span { font-size: 0.85rem; }
+            
+            /* Navbar Scroll Horizontal */
+            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 5px; padding: 5px 10px; background: #0b0c10; scrollbar-width: none;}
             .hub-nav::-webkit-scrollbar { display: none;}
-            .hub-nav-btn { font-size: 0.9rem; padding: 10px 15px; white-space:nowrap; border:none; background:#15161e;}
+            .hub-nav-btn { font-size: 0.85rem; padding: 8px 12px; white-space:nowrap; border:none; background:#15161e;}
             .hub-nav-btn.active { border-bottom: 2px solid var(--neon-blue); background:rgba(0,243,255,0.1); border-radius: 4px 4px 0 0;}
             
-            /* Radar Consertado no Mobile */
-            .hub-radar { width: 100%; border-left: none; border-top: 1px solid #333; flex-direction: column; overflow-y: visible; height:auto; padding:15px;}
-            .radar-title { display: none;}
-            .radar-list { flex-direction: column; gap: 15px;}
-            .radar-player { min-width: 100%; width: 100%; margin:0;}
+            /* Radar Inferior */
+            .hub-radar { width: 100%; border-left: none; border-top: 1px solid #333; padding: 15px; height: auto;}
+            .radar-title { font-size: 1rem; margin-bottom: 15px; padding-bottom: 10px;}
             
             .hub-main-content { padding: 15px; }
             
-            /* Deck Consertado no Mobile */
-            .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); padding: 10px; gap: 10px; }
-            .deck-slot { height: 110px; }
-            .battle-card { width: 100%; height: 110px;}
-            .b-card-art { height: 30px; font-size: 1.2rem; margin-top: 18px; }
-            .b-card-name { font-size: 0.5rem;}
+            /* Grid Cards Compactos */
+            .grid-cards { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;}
+            .action-card { padding: 15px; border-radius: 8px;}
+            .action-card h3 { font-size: 1rem; margin-bottom: 5px;}
+            .action-card p { font-size: 0.85rem; margin-bottom: 10px;}
+            .btn-neon { padding: 10px; font-size: 0.85rem; }
             
-            /* Arena HUD Mobile */
-            .cards-hand { gap: 5px; height: 100px; }
-            .cards-hand .battle-card { width: 65px; height: 100%; }
+            /* Deck Consertado no Mobile (Micro Cartas) */
+            .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); padding: 10px; gap: 8px; }
+            .deck-slot { height: 90px; border-radius: 6px; }
+            
+            /* Arena HUD Mobile Extremo */
+            .top-bar-arena { padding: 5px 10px; }
+            .hp-hud { font-size: 0.8rem; padding: 5px; }
+            .btn-leave { font-size: 0.6rem; padding: 5px; }
+            .auto-btn { top: 45px; right: 10px; font-size: 0.65rem; padding: 5px 8px; }
+            
+            .bottom-ui-arena { padding-bottom: 10px; }
+            .energy-container { height: 14px; margin-bottom: 8px; max-width: 95%;}
+            .energy-text { line-height: 14px; font-size: 0.65rem; }
+            .cards-hand { gap: 4px; height: 85px; }
+            
+            /* Modificador Global de Carta para Mobile */
+            .battle-card { width: 60px; height: 85px; border-width: 1px; border-radius: 6px;}
+            .b-card-art { height: 25px; font-size: 1.2rem; margin: 12px auto 2px; }
+            .b-card-name { font-size: 0.45rem; padding: 0 2px; line-height: 1; }
+            .b-card-cost { font-size: 0.6rem; padding: 2px 4px; }
+            .b-card-lvl { font-size: 0.5rem; top: 2px; right: 2px; }
         }
 
         @keyframes pulseBtn { 0% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(0,243,255,0.7); } 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } }
@@ -235,6 +258,48 @@
     </style>
 </head>
 <body>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window.playSound = function(type) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if(type === 'click') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if(type === 'deploy') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+                gainNode.gain.setValueAtTime(0.15, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if(type === 'hit') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+                gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if(type === 'shoot') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if(type === 'explosion') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(20, now + 0.4);
+                gainNode.gain.setValueAtTime(0.2, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if(type === 'victory') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(600, now + 0.2); osc.frequency.linearRampToValueAtTime(800, now + 0.4);
+                gainNode.gain.setValueAtTime(0.2, now); gainNode.gain.linearRampToValueAtTime(0.01, now + 0.8);
+                osc.start(now); osc.stop(now + 0.8);
+            }
+        };
+
+        // Escuta global para sons de botões
+        document.addEventListener('click', (e) => {
+            if(e.target.tagName === 'BUTTON' || e.target.closest('.battle-card') || e.target.closest('.action-card')) { window.playSound('click'); }
+        });
+    </script>
 
     <div id="hub-login">
         <div class="login-box">
@@ -246,8 +311,7 @@
     </div>
 
     <div id="hub-container" style="display: none;">
-        
-        <div class="hub-sidebar">
+        <canvas id="hub-bg-canvas"></canvas> <div class="hub-sidebar">
             <div class="hub-profile-area">
                 <div class="hub-avatar-container">
                     <img id="hub-avatar-img" class="hub-avatar" src="https://i.imgur.com/kKC1zaJ.png">
@@ -276,7 +340,6 @@
         </div>
 
         <div class="hub-main-content">
-            
             <div id="tab-feed" class="hub-tab active">
                 <h2 class="hub-title">Rede Global de Atletas</h2>
                 
@@ -396,14 +459,11 @@
 
             <div id="tab-loja" class="hub-tab">
                 <h2 class="hub-title">Loja e Aquisição Neo-Tec</h2>
-                
                 <div class="grid-cards">
                     <div class="action-card" style="border-color: var(--neon-pink); align-items:center; text-align:center; grid-column: 1 / -1; max-width: 600px; margin: 0 auto;">
                         <h3 style="font-size: 1.5rem;" class="glow-pink">Pacote de Extração Gacha</h3>
                         <p style="font-size:1.1rem; margin: 20px 0; color:#ddd;">Extraia fragmentos de tropas investindo o ouro que você consegue nas tarefas físicas. Abrem-se 3 Códigos genéticos.<br><br><span style="color:var(--neon-green)">Cartas extraídas repetidas evoluem de Level!</span></p>
-                        
                         <button class="btn-neon pink" style="font-size: 1.3rem; padding: 20px; box-shadow: 0 0 20px rgba(255,0,234,0.4);" onclick="window.rollGacha()">HACKEAR UM PACOTE AGORA ($1000)</button>
-                        
                         <div id="gacha-result" style="margin-top:25px; display:flex; justify-content:center; gap:15px; flex-wrap: wrap; min-height: 100px; width: 100%;"></div>
                     </div>
                 </div>
@@ -460,7 +520,7 @@
                     <span style="font-size:0.6rem; color:#aaa; margin-bottom:5px; text-transform:uppercase;" id="enemy-name-display">Alvo Inimigo</span>
                     <div class="hp-hud" id="enemy-hp-text">CORE HP: 2000</div>
                 </div>
-                <button class="btn-leave" onclick="window.leaveArena()" style="background: rgba(255,0,0,0.2); border:1px solid red; color:red; padding: 10px;">DESLIGAR CONEXÃO</button>
+                <button class="btn-leave" onclick="window.leaveArena()" style="background: rgba(255,0,0,0.2); border:1px solid red; color:red; padding: 10px;">DESLIGAR</button>
             </div>
             
             <button class="auto-btn" id="btn-afk" onclick="window.toggleAFK()">COMANDO AFK IA (OFF)</button>
@@ -492,11 +552,10 @@
 
 <script type="module">
 // =========================================================================
-// 1. FIREBASE CONFIG, IMPORTS & FALLBACK LOCAL SEGURO
+// 1. FIREBASE CONFIG & FALLBACK LOCAL SEGURO
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where, updateDoc, doc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-// FIX: A função "get" agora foi importada do Firebase Database, essencial para o PvP!
 import { getDatabase, ref, set, onDisconnect, onValue, update, push, off, onChildAdded, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
 const firebaseConfig = { apiKey: "AIzaSyCa3tr1mfYKvZ581A1omSQGFsVrIoQYOwQ", authDomain: "fishballserver.firebaseapp.com", projectId: "fishballserver", storageBucket: "fishballserver.firebasestorage.app", messagingSenderId: "626248800374", appId: "1:626248800374:web:fb912ed85fdfac23dba757" };
@@ -511,8 +570,22 @@ try {
     useLocalBypass = true;
 }
 
+// HUB PARTICLES BACKGROUND ANIMATION
+const hCv = document.getElementById('hub-bg-canvas'); const hCx = hCv.getContext('2d');
+let hPts = [];
+function resizeHubCanvas() { hCv.width = window.innerWidth; hCv.height = window.innerHeight; }
+window.addEventListener('resize', resizeHubCanvas); resizeHubCanvas();
+for(let i=0; i<40; i++) hPts.push({x: Math.random()*hCv.width, y: Math.random()*hCv.height, s: Math.random()*2+1, v: Math.random()*0.5+0.1});
+function animHubBg() {
+    hCx.clearRect(0,0,hCv.width,hCv.height);
+    hCx.fillStyle = 'rgba(0, 243, 255, 0.5)';
+    hPts.forEach(p => { p.y -= p.v; if(p.y < 0) { p.y = hCv.height; p.x = Math.random()*hCv.width; } hCx.beginPath(); hCx.arc(p.x, p.y, p.s, 0, 6.28); hCx.fill(); });
+    requestAnimationFrame(animHubBg);
+}
+animHubBg();
+
 // =========================================================================
-// 2. BANCO DE CARTAS COM ESTÉTICA ATUALIZADA (ÍCONES E TIPOS)
+// 2. BANCO DE CARTAS E CAMPANHA PVE
 // =========================================================================
 const CARD_DB = {
     // 1 - COMUM
@@ -549,7 +622,6 @@ const CARD_DB = {
     "MagiaOverclock": { id: "MagiaOverclock", name: "Velocidade Soro", icon: "💊", cost: 2, rarity: 2, type: "spell", range: 60, mechanics: ['spell_haste'] }
 };
 
-// FIX: Adicionada a propriedade `cardLevels: {}` no PvE, isso quebrava a inicialização dos bots.
 const PVE_CAMPAIGN = [
     { name: "Setor 1: Gangue dos Brawlers", lvl: 1, buffs: {hp: 0, dmg: 0, spd: 0}, deck: ['Brawler', 'CorredorNeon'], cardLevels: {} },
     { name: "Setor 2: Patrulha de Drones", lvl: 3, buffs: {hp: 50, dmg: 0.1, spd: 0.1}, deck: ['DroneRastreador', 'Sniper', 'Barricada'], cardLevels: {} },
@@ -570,21 +642,18 @@ let hubProfile = {
 window.gameLoopInterval = null; window.animationFrameId = null;
 
 // =========================================================================
-// 3. UI GLOBAL E PERMISSÕES (INICIALIZACAO)
+// 3. UI GLOBAL E PERMISSÕES
 // =========================================================================
 
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
     if(!name) { window.showModal("Aviso","O Login na matriz exige nome digital limpo."); return; }
-    
     name = name.toUpperCase(); 
-    
     if(!db || useLocalBypass) {
         useLocalBypass = true;
         hubProfile.uid = 'local_' + Math.random().toString(36).substring(2,8); hubProfile.username = name;
         finishLoginUI(); return;
     }
-    
     try {
         const qs = await getDocs(query(collection(db, "hub_users"), where("username", "==", name)));
         if (!qs.empty) { hubProfile = { ...hubProfile, ...qs.docs[0].data() }; hubProfile.uid = qs.docs[0].id; } 
@@ -645,7 +714,7 @@ if(sessionStorage.getItem('hubProfile_JSON')) {
 // =========================================================================
 // 4. GPS TRACKER E MISSÕES DO MUNDO FÍSICO
 // =========================================================================
-
+// (Mesma Lógica de antes)
 let trackingGeoId = null; let lastLat = null, lastLng = null; let totalKm = 0;
 
 window.toggleGPS = function() {
@@ -668,7 +737,6 @@ window.toggleGPS = function() {
     }, (err) => { }, { enableHighAccuracy: true, maximumAge: 10000 });
 };
 
-// STORAGE DO FEED OFFLINE EM CATCH ERRO
 function saveLocalFeed(postObj) { let l =[]; try { if(localStorage.getItem('localFeed')) l = JSON.parse(localStorage.getItem('localFeed')); }catch(e){} l.unshift(postObj); if(l.length > 20) l = l.slice(0, 20); localStorage.setItem('localFeed', JSON.stringify(l)); }
 function getLocalFeed() { try { if(localStorage.getItem('localFeed')) return JSON.parse(localStorage.getItem('localFeed')); }catch(e){} return[]; }
 
@@ -692,7 +760,6 @@ window.createCustomTask = function() {
     window.openTaskUploader(`TREINO EXTRA: ${name}`, type);
 }
 
-// THE MAJOR BUG FIX IN POST EXECUTION AND CANVAS
 window.submitTaskEvidence = async function() {
     if(!curTaskConfig) return;
     const file = document.getElementById('task-file').files[0];
@@ -847,7 +914,7 @@ function renderDeckBuilder() {
                 </div>
             `;
             el.onclick = () => { hubProfile.deck.splice(i,1); saveHubStateLocal(); renderDeckBuilder(); };
-        } else { el.innerHTML = `<span style="color:#555; font-size:0.6rem; font-family:'Orbitron'; text-align:center;">VAGA ABERTA</span>`; }
+        } else { el.innerHTML = `<span style="color:#555; font-size:0.5rem; font-family:'Orbitron'; text-align:center;">VAGA ABERTA</span>`; }
         dC.appendChild(el);
     }
     
@@ -935,6 +1002,8 @@ function setupHubRealtime() {
             let d = snap.val(); 
             if(d.targetId === hubProfile.uid && d.state === 'request') {
                 if(d.type === 'cyber') {
+                    // CACHE OBRIGATÓRIO DO DESAFIANTE PARA NÃO DEPENDER DE GET() FUTURO!
+                    window.pendingPvpData = d.challengerData;
                     window.showModal(`🔥 DESAFIO DE CYBER CLASH!`, `O Atleta ${d.challengerName} quer testar seu Deck de Cartas na arena de neon AGORA. O combate é sincronizado em tempo real. Aceitar o hack?`, 
                     `<button class="btn-neon green" style="margin:5px;" onclick="window.acceptCyberDuel('${snap.key}')">CONECTAR REDE NEURAL (LUTAR)</button> 
                      <button class="btn-neon pink" style="margin:5px;" onclick="window.declineRealDuel('${snap.key}')">RECUSAR</button>`);
@@ -950,7 +1019,9 @@ function setupHubRealtime() {
     } catch(e) {}
 }
 
-// NOVO: SISTEMA DE DESAFIO CYBER (PVP SYNC) FIXED
+// =========================================================
+// SISTEMA DE DESAFIO CYBER (PVP SYNC) - FIXED FATAL BUG
+// =========================================================
 window.sendCyberPvpDuel = function(tId, tN) {
     let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'cyber', challengerId: hubProfile.uid, challengerName: hubProfile.username, challengerData: hubProfile, targetId: tId, targetName: tN, state: 'request' }); 
     window.showModal("Aguarde...", `Injetando protocolo de combate no terminal de ${tN}. Aguarde a aceitação para a conexão Real-Time.`);
@@ -959,7 +1030,7 @@ window.sendCyberPvpDuel = function(tId, tN) {
         let v = s.val(); if(!v) return;
         if(v.state === 'declined') { window.showModal("Rejeitado", "O oponente fugiu da conexão neural."); unsub(); }
         if(v.state === 'playing' && v.targetData) { 
-            unsub(); // Desliga o listener para não chamar duas vezes
+            unsub(); 
             document.getElementById('system-modal').style.display = 'none';
             window.isPvPHost = true;
             window.startClash(true, { matchId: keyId, oppData: v.targetData });
@@ -967,23 +1038,18 @@ window.sendCyberPvpDuel = function(tId, tN) {
     });
 }
 
-// FIX: Usando async/await e importando `get` para garantir que lemos oponente antes de entrar na arena
-window.acceptCyberDuel = async function(keyId) {
+// Puxa os dados CACHEADOS no recebimento e não depende de promessa asíncrona falha
+window.acceptCyberDuel = function(keyId) {
     document.getElementById('system-modal').style.display='none'; 
-    try {
-        const snap = await get(ref(rtdb, `hub_duels/${keyId}`));
-        let d = snap.val();
-        if(d) {
-            await update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile });
-            window.isPvPHost = false;
-            window.startClash(true, { matchId: keyId, oppData: d.challengerData });
-        }
-    } catch(e) {
-        window.showModal("Erro Fatal de Matriz", "Não foi possível puxar os dados do desafiante.");
-    }
+    if(!window.pendingPvpData) { window.showModal("Erro Fatal", "Dados do desafiante corrompidos no cache."); return; }
+    update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile });
+    window.isPvPHost = false;
+    window.startClash(true, { matchId: keyId, oppData: window.pendingPvpData });
 }
 
+// =========================================================
 // Funcoes Originais Duelo IRL
+// =========================================================
 window.sendRealDuel = function(tId, tN) { 
     let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'irl', challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); window.showModal("Aguarde...", `Nós estamos hackeando a retina dele com sua Imagem do desafio. O terminal do Alvo[${tN}] foi chamado com uma sirene agressiva digital para provar um duelo Real Físico agora mesmo.`);
     
@@ -1075,7 +1141,6 @@ window.startClash = function(isPvP = false, matchData = null) {
     
     if(isPvP && matchData && matchData.matchId) {
         window.activeMatchId = matchData.matchId;
-        // Garantir que oppData tenha os mínimos aceitáveis para evitar falhas no PvP
         opponentAI = matchData.oppData;
         if(!opponentAI.buffs) opponentAI.buffs = {hp:0, dmg:0, spd:0, magic:0};
         setupPvPSyncListeners();
@@ -1095,7 +1160,7 @@ window.leaveArena = function() {
     if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); 
     document.getElementById('game-wrapper').style.display = 'none'; 
     document.getElementById('hub-container').style.display = 'flex'; 
-    if(pvpMatchListener) { pvpMatchListener(); pvpMatchListener = null; }
+    if(pvpMatchListener && window.activeMatchId) off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions'));
 }
 window.returnToHubAndSave = function() { saveHubStateLocal(); syncUIWithProfile(); window.leaveArena(); }
 
@@ -1218,8 +1283,8 @@ class Entity {
     }
     
     attack(target) {
-        if(this.mechanics.includes('cleave') && this.db.id==='Mecha') { spawnEffects.push({t:'laser', x1:this.x, y1:this.y, x2:target.x, y2:target.y, life:0.3, col: this.color}); for(let e of entities) { if(e.team!==this.team && Math.hypot(e.x-target.x, e.y-target.y) < 40) e.receiveDmg(this.dmg, this); } } 
-        else if (this.range > 60) { projectiles.push({ x:this.x, y:this.y, tx:target.x, ty:target.y, speed: 450, dmg:this.dmg, shooter:this, tObj:target, col:this.color }); } 
+        if(this.mechanics.includes('cleave') && this.db.id==='Mecha') { window.playSound('shoot'); spawnEffects.push({t:'laser', x1:this.x, y1:this.y, x2:target.x, y2:target.y, life:0.3, col: this.color}); for(let e of entities) { if(e.team!==this.team && Math.hypot(e.x-target.x, e.y-target.y) < 40) e.receiveDmg(this.dmg, this); } } 
+        else if (this.range > 60) { window.playSound('shoot'); projectiles.push({ x:this.x, y:this.y, tx:target.x, ty:target.y, speed: 450, dmg:this.dmg, shooter:this, tObj:target, col:this.color }); } 
         else { spawnEffects.push({t:'hit', x:target.x, y:target.y, life:0.2}); target.receiveDmg(this.dmg, this); }
     }
     
@@ -1227,13 +1292,19 @@ class Entity {
         if(this.mechanics.includes('dodge') && Math.random() < 0.5) { spawnEffects.push({t:'text', txt:'ESQUIVOU', x:this.x, y:this.y-10, life:0.6}); return; }
         if(this.exposed) amt *= 1.2; 
         this.hp -= amt;
+        window.playSound('hit');
         spawnEffects.push({t:'text', txt:`-${Math.floor(amt)}`, x:this.x + (Math.random()*15), y:this.y-(Math.random()*15), life:0.4, col: '#f55'});
         
+        // NOVO: Partículas Detritos
+        for(let j=0; j<3; j++) spawnEffects.push({t:'debris', x: this.x, y: this.y, vx: (Math.random()-0.5)*150, vy: (Math.random()-0.5)*150, life: 0.4, col: this.color});
+
         if(this.hp <= 0 && this.type !== 'base') {
+            window.playSound('explosion');
             if(this.mechanics.includes('explode')) { effects.push(new EffectArea(this.x, this.y, 90, 'damage', 0.2, this.team, 300)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.5});}
             if(this.mechanics.includes('death_stun')) { effects.push(new EffectArea(this.x, this.y, 110, 'stun', 0.5, this.team, 2.5)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.5, col:'#ff0'});}
             if(this.mechanics.includes('acid_pool')) { effects.push(new EffectArea(this.x, this.y, 75, 'acid_dot', 5, this.team, 25)); }
             spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.3, col: this.color});
+            for(let j=0; j<6; j++) spawnEffects.push({t:'debris', x: this.x, y: this.y, vx: (Math.random()-0.5)*300, vy: (Math.random()-0.5)*300, life: 0.6, col: this.color});
         }
     }
     
@@ -1268,6 +1339,7 @@ class EffectArea {
 function deployCard(cId, team, tx, ty, lvl, buffsRef) {
     let dbC = CARD_DB[cId];
     if(!dbC) return;
+    window.playSound('deploy');
     if(dbC.type === 'spell') {
         let magicDmgBonus = buffsRef.magic ? (1 + buffsRef.magic) : 1;
         if(cId === 'MagiaCrio') effects.push(new EffectArea(tx, ty, dbC.range, 'freeze_spell', 3, team, 3));
@@ -1292,7 +1364,6 @@ function updateAI(dt) {
         if(opponentAI.deck && opponentAI.deck.length > 0) {
             let rndCard = opponentAI.deck[Math.floor(Math.random()*opponentAI.deck.length)]; let dbC = CARD_DB[rndCard];
             if(aiMana >= dbC.cost && dbC) { aiMana -= dbC.cost; let tX = 50 + Math.random()*(arenaW-100); let tY = dbC.type==='spell' ? arenaH - 100 : 80 + Math.random()*150; 
-                // Proteção contra fallback nulo de CardLevels
                 let cLvl = (opponentAI.cardLevels && opponentAI.cardLevels[rndCard]) ? opponentAI.cardLevels[rndCard] : 1;
                 deployCard(rndCard, 'enemy', tX, tY, cLvl, oBuffs); spawnEffects.push({t:'exp', x:tX, y:tY, life:0.4, col:'rgba(255,0,0,0.5)'});
             }
@@ -1327,9 +1398,9 @@ function clashLoop() {
     
     if(enemyBase.hp <= 0) { 
         if(!window.activeMatchId) { hubProfile.pveStage++; saveHubStateLocal(); }
-        endGame("SUCESSO ABSOLUTO!", "As muralhas do inimigo colapsaram frente aos seus Esquadrões Biológicos."); return; 
+        endGame("SUCESSO ABSOLUTO!", "As muralhas do inimigo colapsaram frente aos seus Esquadrões Biológicos.", true); return; 
     }
-    if(playerBase.hp <= 0) { endGame("SISTEMAS EXTERMINADOS", "Seu condicionamento falhou ou sua Estratégia de Deck não se comprovou forte aqui..."); return; }
+    if(playerBase.hp <= 0) { endGame("SISTEMAS EXTERMINADOS", "Seu condicionamento falhou ou sua Estratégia de Deck não se comprovou forte aqui...", false); return; }
 
     for(let i=projectiles.length-1; i>=0; i--) {
         let p = projectiles[i]; let d = Math.hypot(p.tx-p.x, p.ty-p.y);
@@ -1337,7 +1408,13 @@ function clashLoop() {
         else { p.x += (p.tx-p.x)/d * p.speed * dt; p.y += (p.ty-p.y)/d * p.speed * dt; }
     }
     for(let i=effects.length-1; i>=0; i--) { effects[i].update(dt); if(effects[i].life<=0) effects.splice(i,1); }
-    for(let i=spawnEffects.length-1; i>=0; i--) { spawnEffects[i].life -= dt; if(spawnEffects[i].life<=0) spawnEffects.splice(i,1); }
+    
+    // Process Particles & Effects
+    for(let i=spawnEffects.length-1; i>=0; i--) { 
+        let s = spawnEffects[i]; s.life -= dt; 
+        if(s.t === 'debris') { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 200 * dt; } // Gravidade nas partículas
+        if(s.life<=0) spawnEffects.splice(i,1); 
+    }
 
     drawArena();
     window.animationFrameId = requestAnimationFrame(clashLoop);
@@ -1349,12 +1426,10 @@ function drawArena() {
     for(let x=0; x<arenaW; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,arenaH); ctx.stroke(); }
     for(let y=0; y<arenaH; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(arenaW,y); ctx.stroke(); }
     
-    // Divisoria do Campo de Batalha 
     ctx.fillStyle = "rgba(255,0,234,0.15)"; ctx.fillRect(0, arenaH/2 - 2, arenaW, 4);
 
     effects.forEach(e => e.render(ctx)); entities.forEach(e => e.render(ctx));
     
-    // Tiros brilhosos
     projectiles.forEach(p => { ctx.fillStyle=p.col; ctx.shadowColor=p.col; ctx.shadowBlur=15; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, 6.28); ctx.fill(); ctx.shadowBlur=0;});
     
     spawnEffects.forEach(s => {
@@ -1362,6 +1437,7 @@ function drawArena() {
         if(s.t==='exp') { ctx.fillStyle=s.col||'#f00'; ctx.globalAlpha=s.life; ctx.beginPath(); ctx.arc(s.x, s.y, 55, 0, 6.28); ctx.fill(); ctx.globalAlpha=1; }
         if(s.t==='text') { ctx.fillStyle=s.col||'#0ff'; ctx.font='bold 14px Orbitron'; ctx.shadowBlur=5; ctx.shadowColor='#000'; ctx.textAlign='center'; ctx.fillText(s.txt, s.x, s.y - (1-s.life)*30); ctx.shadowBlur=0;}
         if(s.t==='laser') { ctx.strokeStyle=s.col||'var(--neon-blue)'; ctx.lineWidth=s.w||6; ctx.globalAlpha=s.life; ctx.shadowBlur=20; ctx.shadowColor=s.col||'#0ff'; ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke(); ctx.globalAlpha=1; ctx.shadowBlur=0;}
+        if(s.t==='debris') { ctx.fillStyle=s.col; ctx.globalAlpha=s.life; ctx.fillRect(s.x, s.y, 4, 4); ctx.globalAlpha=1; }
     });
 }
 
@@ -1378,8 +1454,9 @@ function updateUIRealtime() {
     }
 }
 
-function endGame(tit, flv) {
+function endGame(tit, flv, win) {
     engineState = 'DEAD';
+    if(win) window.playSound('victory'); else window.playSound('explosion');
     let recompensa = (enemyBase.hp <= 0) ? (2000 + Math.floor(Math.random()*1500)) : 300; 
     document.getElementById('end-title').innerText = tit; document.getElementById('end-flavor').innerText = flv; document.getElementById('final-score').innerText = `$ ${recompensa}`; 
     hubProfile.gold += recompensa; hubProfile.xp += (enemyBase.hp<=0) ? 300 : 50;
