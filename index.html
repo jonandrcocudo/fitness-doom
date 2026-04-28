@@ -7,6 +7,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
         
+        * { box-sizing: border-box; } /* FIX: Evita que o padding estoure as divs no mobile */
+        
         body { margin: 0; overflow: hidden; background: #050510; user-select: none; font-family: 'Rajdhani', sans-serif; -webkit-touch-callout: none; color: white;}
         ::-webkit-scrollbar { width: 6px; height: 6px;}
         ::-webkit-scrollbar-track { background: #111; }
@@ -48,12 +50,12 @@
         .action-card p { font-size: 0.95rem; color: #bbb; margin-bottom: 15px; flex-grow: 1;}
         .card-reward { font-weight: bold; color: #ffeb3b; font-size: 0.9rem; margin-bottom: 15px; display: block; font-family: 'Share Tech Mono';}
         
-        .btn-action { background: #112; color: #0ff; border: 1px solid #0ff; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-family: 'Rajdhani'; font-weight: bold; font-size: 1.1rem; transition: 0.2s; text-transform: uppercase;}
+        .btn-action { background: #112; color: #0ff; border: 1px solid #0ff; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-family: 'Rajdhani'; font-weight: bold; font-size: 1.1rem; transition: 0.2s; text-transform: uppercase; margin-bottom: 5px;}
         .btn-action:hover { background: #0ff; color: #000; box-shadow: 0 0 15px #0ff;}
 
         /* FORMS E INPUTS */
         .post-form-box { background: rgba(0,255,255,0.05); border: 1px solid #0ff; padding: 20px; margin-bottom: 20px; border-radius: 8px;}
-        .post-form-box input[type="text"], .post-form-box select { width: 100%; padding: 12px; background: #050510; color: #0ff; border: 1px solid #334; margin-bottom: 15px; font-family: 'Rajdhani'; font-size: 1.1rem; box-sizing: border-box; border-radius: 6px;}
+        .post-form-box input[type="text"], .post-form-box select { width: 100%; padding: 12px; background: #050510; color: #0ff; border: 1px solid #334; margin-bottom: 15px; font-family: 'Rajdhani'; font-size: 1.1rem; border-radius: 6px;}
         .gps-panel { background: #111; padding: 15px; border: 1px dashed #0ff; margin-bottom: 15px; font-size: 0.9rem; display: none; border-radius: 6px;}
         .gps-status { color: #ffeb3b; font-weight: bold; font-family: 'Share Tech Mono'; font-size: 1.1rem;}
 
@@ -62,7 +64,6 @@
         .feed-post { background: rgba(20,25,35,0.9); border-left: 4px solid #0ff; padding: 15px; border-radius: 0 8px 8px 0; display: flex; flex-direction: column; position: relative;}
         .feed-post.revoked { border-left-color: #f00; opacity: 0.6; }
         .feed-post.revoked::after { content: "FRAUDE NEGADA"; position: absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); color:red; font-size: 1.5rem; font-weight: bold; border: 4px solid red; padding: 10px; opacity:0.8; pointer-events: none;}
-        .feed-post[data-category="duelo"] { border-left-color: #ff00de; }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px;}
         .post-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #0ff; object-fit: cover;}
         .post-author { font-weight: bold; color: #fff; font-size: 1.1rem;}
@@ -70,11 +71,11 @@
         .post-img-container { width: 100%; max-height: 400px; border-radius: 8px; overflow: hidden; margin-bottom: 10px; background: #000; display: flex; justify-content: center; align-items: center;}
         .post-img { width: 100%; height: 100%; object-fit: contain;}
         .post-vid { width: 100%; max-height: 100%; outline: none; }
-        .post-actions { display: flex; justify-content: space-between; border-top: 1px solid #334; padding-top: 10px; gap: 10px; flex-wrap: wrap;}
-        .vote-btn { background: #223; border: none; color: #fff; padding: 8px 15px; cursor: pointer; font-family: 'Rajdhani'; font-weight: bold; transition: 0.2s; flex: 1; border-radius: 5px;}
+        .post-actions { display: flex; justify-content: space-between; border-top: 1px solid #334; padding-top: 10px; gap: 10px;}
+        .vote-btn { background: #223; border: none; color: #fff; padding: 10px 15px; cursor: pointer; font-family: 'Rajdhani'; font-weight: bold; transition: 0.2s; flex: 1; border-radius: 5px;}
         .vote-btn.up { border-bottom: 2px solid #0ff; } .vote-btn.up:hover { background: #0ff; color: #000;}
         .vote-btn.down { border-bottom: 2px solid #f00; } .vote-btn.down:hover { background: #f00; color: #000;}
-        .post-reward { color: #ffeb3b; font-size: 0.9rem; margin-top:5px; font-weight: bold; font-family: 'Share Tech Mono';}
+        .post-reward { color: #ffeb3b; font-size: 0.9rem; margin-top:5px; font-weight: bold; font-family: 'Share Tech Mono'; margin-bottom: 10px;}
         
         /* GACHA E DECK */
         .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px;}
@@ -92,14 +93,14 @@
         /* RADAR PVP */
         .hub-radar { width: 280px; background: rgba(10, 15, 25, 0.95); border-left: 2px solid #ff00de; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; flex-shrink: 0;}
         .radar-player { background: rgba(255,0,222,0.05); border: 1px solid rgba(255,0,222,0.3); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .btn-duel { background: transparent; border: 1px solid #ff00de; color: #ff00de; font-size: 0.8rem; font-weight: bold; padding: 8px; border-radius: 5px; cursor: pointer; transition: 0.2s; font-family: 'Share Tech Mono';}
+        .btn-duel { background: transparent; border: 1px solid #ff00de; color: #ff00de; font-size: 0.8rem; font-weight: bold; padding: 10px; border-radius: 5px; cursor: pointer; transition: 0.2s; font-family: 'Share Tech Mono';}
         .btn-duel:hover { background: #ff00de; color: #fff; box-shadow: 0 0 10px #ff00de;}
 
         /* MODAIS GERAIS & LOGIN */
         .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
         .modal-box { background: #111a22; border: 2px solid #0ff; padding: 30px; width: 90%; max-width: 450px; text-align: center; border-radius: 12px; box-shadow: 0 0 30px rgba(0,255,255,0.2); max-height: 90vh; overflow-y: auto;}
         
-        #login-username { width: 100%; padding: 15px; background: rgba(0,0,0,0.5); color: #0ff; border: 2px solid #0ff; border-radius: 6px; margin-bottom: 20px; font-family: 'Rajdhani'; font-size: 1.2rem; box-sizing: border-box; text-align: center;}
+        #login-username { width: 100%; padding: 15px; background: rgba(0,0,0,0.5); color: #0ff; border: 2px solid #0ff; border-radius: 6px; margin-bottom: 20px; font-family: 'Rajdhani'; font-size: 1.2rem; text-align: center;}
 
         /* GAME ARENA 2D */
         #game-wrapper { display: none; width: 100vw; height: 100vh; position: fixed; top:0; left:0; z-index: 2000; background: #050510; touch-action: none; }
@@ -112,31 +113,31 @@
         .enemy-hp .base-hp-fill { background: #f00; }
         .hp-text { position: absolute; width: 150px; text-align: center; color: white; font-size: 0.8rem; font-family: 'Share Tech Mono'; line-height: 15px; text-shadow: 1px 1px 0 #000;}
         
-        #bottom-hud { pointer-events: auto; background: rgba(0,0,0,0.8); padding: 10px; border-top: 2px solid #0ff; border-radius: 15px 15px 0 0; display: flex; flex-direction: column; gap: 10px; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box;}
+        #bottom-hud { pointer-events: auto; background: rgba(0,0,0,0.8); padding: 15px 10px; border-top: 2px solid #0ff; border-radius: 15px 15px 0 0; display: flex; flex-direction: column; gap: 8px; max-width: 600px; margin: 0 auto; width: 100%;}
         #energy-container { display: flex; align-items: center; gap: 10px;}
         #energy-bar-bg { flex: 1; height: 15px; background: #222; border-radius: 10px; overflow: hidden; position: relative;}
         #energy-bar-fill { height: 100%; width: 0%; background: #ff00de; box-shadow: 0 0 10px #ff00de; transition: width 0.1s linear;}
         #energy-text { color: #fff; font-family: 'Share Tech Mono'; font-weight: bold; width: 40px; text-align: right;}
         
         #hand-container { display: flex; justify-content: center; width: 100%; gap: 5px;}
-        .hand-card { width: 22%; max-width: 80px; aspect-ratio: 3/4; background: #111; border: 2px solid #555; border-radius: 8px; position: relative; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2px;}
+        .hand-card { flex: 1; max-width: 80px; aspect-ratio: 3/4; background: #111; border: 2px solid #555; border-radius: 8px; position: relative; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2px;}
         .hand-card.affordable { border-color: #0ff; box-shadow: 0 0 10px rgba(0,255,255,0.3);}
         .hand-card.selected-to-deploy { border-color: #ff00de; transform: translateY(-10px); box-shadow: 0 0 15px #ff00de; background: rgba(255,0,222,0.2);}
         .hand-card .c-name { font-size: 0.65rem; font-weight: bold; line-height: 1; margin-top: 5px; word-wrap: break-word; overflow: hidden;}
         .hand-card .c-cost { position: absolute; top: -5px; left: -5px; background: #ff00de; border-radius: 50%; width: 20px; height: 20px; font-size: 0.8rem; display: flex; justify-content: center; align-items: center; font-family: 'Share Tech Mono'; box-shadow: 0 0 5px #000;}
         
-        #btn-auto { background: #222; border: 1px solid #aaa; color: #aaa; padding: 5px 15px; border-radius: 5px; font-weight: bold; cursor: pointer;}
+        #btn-auto { background: #222; border: 1px solid #aaa; color: #aaa; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer;}
         #btn-auto.active { background: #0ff; color: #000; border-color: #0ff; box-shadow: 0 0 10px #0ff;}
 
-        /* FIX MOBILE: Layout que empilhava e escondia na tela pequena */
+        /* FIX MOBILE: Combate Sobreposição */
         @media (max-width: 900px) {
             #hub-container { flex-direction: column; overflow-y: auto; overflow-x: hidden; }
             .hub-sidebar { width: 100%; height: auto; flex-direction: column; border-right: none; border-bottom: 2px solid #0ff; flex-shrink: 0; }
-            .hub-profile-area { width: 100%; display: flex; align-items: center; text-align: left; padding: 15px; border-bottom: 1px solid #223; box-sizing: border-box;}
+            .hub-profile-area { width: 100%; display: flex; align-items: center; text-align: left; padding: 15px; border-bottom: 1px solid #223;}
             .hub-avatar-container { width: 70px; height: 70px; margin: 0 15px 0 0;}
             .hub-profile-info { flex: 1;}
             .hub-stats-row { justify-content: flex-start; gap: 15px; padding: 5px 0; background: transparent; border: none;}
-            #attributes-box { display: none; /* Esconde para economizar espaco vertical topo */ }
+            #attributes-box { display: none; }
             .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; white-space: nowrap; gap: 0; padding: 0; border-bottom: 1px solid #334; }
             .hub-nav-btn { font-size: 0.95rem; padding: 15px; flex: 0 0 auto; border-left: none; border-bottom: 3px solid transparent;}
             .hub-nav-btn.active { border-left-color: transparent; border-bottom-color: #0ff;}
@@ -144,6 +145,9 @@
             
             .hub-main-content { overflow: visible; height: auto; flex: none; padding: 15px; }
             .hub-radar { width: 100%; height: auto; border-left: none; border-top: 2px solid #ff00de; flex-shrink: 0; }
+            
+            .post-actions { flex-direction: column; gap: 5px; }
+            .vote-btn { width: 100%; }
         }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
@@ -153,7 +157,6 @@
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
     <div id="login-screen" class="modal" style="display: flex;">
         <div class="modal-box">
             <h1 style="color: #0ff; font-size: 1.8rem; margin-top:0;">CYBER ARENA FITNESS</h1>
@@ -167,7 +170,6 @@
         </div>
     </div>
 
-    <!-- MODAL DO SISTEMA -->
     <div class="modal" id="system-modal">
         <div class="modal-box">
             <h2 id="modal-title" style="color:#0ff; margin-top:0;">SISTEMA</h2>
@@ -176,7 +178,6 @@
         </div>
     </div>
 
-    <!-- HUB -->
     <div id="hub-container" style="display: none;">
         <div class="hub-sidebar">
             <div class="hub-profile-area">
@@ -218,39 +219,52 @@
 
         <div class="hub-main-content">
             
-            <!-- ABA: FEED COMUNIDADE -->
             <div id="tab-feed" class="hub-tab active">
                 <h2 class="hub-title">COMUNIDADE / FEED</h2>
 
                 <div class="post-form-box" id="quick-post-box" style="display:none;">
                     <h3 style="color:#0ff; margin-top:0;" id="form-box-title">📝 EVIDÊNCIA DO TREINO</h3>
+                    
+                    <select id="task-category-select" style="display:none;">
+                        <option value="Força">Força / Musculação Geral</option>
+                        <option value="Cardio">Cardio / Esteira</option>
+                        <option value="Flexibilidade">Yoga / Flexibilidade</option>
+                        <option value="Parkour">Parkour / Acrobacias</option>
+                        <option value="VR">VR Fitness (Quest)</option>
+                        <option value="Artes Marciais">Artes Marciais / Luta</option>
+                    </select>
+
                     <input type="text" id="task-desc" placeholder="Descreva como foi seu esforço...">
                     
-                    <!-- Painel de Rota GPS -->
                     <div id="gps-panel" class="gps-panel">
                         <button class="btn-action" id="btn-gps-toggle" style="background:#223; margin-bottom:10px;" onclick="window.toggleGPS()">Iniciar GPS (Gravar Rota)</button>
                         <div>Distância Medida: <span id="gps-dist" class="gps-status">0.00 km</span></div>
                     </div>
 
                     <p style="font-size:0.9rem; color:#aaa; margin-bottom:5px;">Foto/Vídeo de prova (Obrigatório):</p>
-                    <input type="file" id="task-file" accept="image/*,video/mp4" capture="environment" style="background:#111; padding:5px; width: 100%; border: 1px solid #334; color: #fff; margin-bottom:15px; border-radius: 5px;">
+                    <input type="file" id="task-file" accept="image/*,video/*" style="background:#111; padding:10px; width: 100%; border: 1px solid #334; color: #fff; margin-bottom:15px; border-radius: 5px; cursor: pointer;">
                     
                     <button class="btn-action" onclick="window.submitTaskEvidence()">ENVIAR E PEGAR BUFFS</button>
-                    <button class="btn-action" style="margin-top:5px; background:transparent; border-color:#555; color:#aaa;" onclick="document.getElementById('quick-post-box').style.display='none'">CANCELAR</button>
+                    <button class="btn-action" style="background:transparent; border-color:#555; color:#aaa;" onclick="document.getElementById('quick-post-box').style.display='none'">CANCELAR</button>
                     <div id="task-upload-status" style="color:#ffeb3b; font-size: 0.9rem; margin-top: 10px; font-family:'Share Tech Mono';"></div>
                 </div>
 
                 <div class="feed-container" id="feed-container-render">
-                    <!-- CARREGANDO FEED DO FIREBASE/LOCAL -->
-                </div>
+                    </div>
             </div>
 
-            <!-- ABA: MISSÕES IRL -->
             <div id="tab-missoes" class="hub-tab">
                 <h2 class="hub-title">REGISTRO DE TREINO FÍSICO</h2>
                 <p style="color:#aaa;">Realize ações reais, prove com foto/GPS e ganhe status na Arena.</p>
                 
                 <div class="grid-cards">
+                    <div class="action-card" style="border-color:#ff00de;">
+                        <h3 style="color:#ff00de;">✨ Treino Personalizado</h3>
+                        <p>Selecione sua modalidade esportiva (Parkour, VR, etc) e registre o progresso.</p>
+                        <span class="card-reward">Recompensas Variáveis (Dinâmicas)</span>
+                        <button class="btn-action" style="border-color:#ff00de; color:#ff00de; background:transparent;" onclick="window.openCustomTaskUploader()">CRIAR TREINO</button>
+                    </div>
+
                     <div class="action-card" style="border-color:#0ff;">
                         <h3>🏃 Corrida / Cardio na Rua</h3>
                         <p>Ligue o GPS e corra. Acelera a regeneração de Energia (+Regen).</p>
@@ -273,21 +287,18 @@
                         <h3 style="color:#f00;">🍔 Refeição Lixo / Deslize</h3>
                         <p>Confesse o vacilo. Alívio mental baixo, mas te deixa Lento (-Spd).</p>
                         <span class="card-reward">+50 XP | +0 Gold | -5% Velocidade</span>
-                        <button class="btn-action" style="border-color:#f00; color:#f00;" onclick="window.openTaskUploader('Deslize', 50, 0, 'slow', 0.05, false)">ASSUMIR CULPA</button>
+                        <button class="btn-action" style="border-color:#f00; color:#f00; background: transparent;" onclick="window.openTaskUploader('Deslize', 50, 0, 'slow', 0.05, false)">ASSUMIR CULPA</button>
                     </div>
                 </div>
             </div>
 
-            <!-- ABA: DECK -->
             <div id="tab-deck" class="hub-tab">
                 <h2 class="hub-title">SEU DECK DE BATALHA (<span id="deck-count">0</span>/8)</h2>
                 <p style="color:#aaa;">Selecione exatamente 8 cartas. Cartas não selecionadas ficam sem a marcação azul.</p>
                 <div id="deck-grid-render" class="deck-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));">
-                    <!-- Gerado JS -->
-                </div>
+                    </div>
             </div>
 
-            <!-- ABA: GACHA -->
             <div id="tab-gacha" class="hub-tab">
                 <h2 class="hub-title">MERCADO NEGRO: CÁPSULAS</h2>
                 <div class="capsule-box">
@@ -298,7 +309,6 @@
                 </div>
             </div>
 
-            <!-- ABA: PERFIL -->
             <div id="tab-perfil" class="hub-tab">
                 <h2 class="hub-title">CONFIGURAÇÕES</h2>
                 <div class="post-form-box">
@@ -315,27 +325,22 @@
             </div>
         </div>
 
-        <!-- RADAR PVP -->
         <div class="hub-radar">
             <h3 style="color:#ff00de; text-align:center; margin-top:0; font-size: 1.2rem;">📡 RADAR LOCAL</h3>
             <p style="font-size:0.8rem; color:#aaa; text-align:center; margin-bottom:15px; line-height:1.2;">Encontre outros jogadores reais para Duelos Físicos (IRL) ou Batalhas de Clash.</p>
             <div id="radar-loading" style="font-size:0.8rem; color:#0ff; text-align:center;">Procurando sinais...</div>
             <div id="radar-list">
-                <!-- Gerado JS Firebase -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- ARENA GAME (CANVAS) -->
     <div id="game-wrapper">
         <div id="battle-ui">
-            <!-- Topo: Base Inimiga -->
             <div style="position: relative; width: 100%; text-align: center;">
                 <span style="color:#f00; font-weight:bold; font-size:1.2rem; text-shadow: 0 0 5px #f00;">TORRE INIMIGA</span>
                 <div class="base-hp-bar enemy-hp"><div class="base-hp-fill" id="enemy-hp-fill"></div><div class="hp-text" id="enemy-hp-txt">2000/2000</div></div>
             </div>
             
-            <!-- Base Jogador / Energia / Cartas -->
             <div style="display: flex; flex-direction: column; gap: 5px;">
                 <div style="text-align: center;">
                     <span style="color:#0ff; font-weight:bold; font-size:1.2rem; text-shadow: 0 0 5px #0ff;">SUA TORRE</span>
@@ -349,8 +354,7 @@
                         <button id="btn-auto" onclick="window.toggleAuto()">AUTO</button>
                     </div>
                     <div id="hand-container">
-                        <!-- Gerado JS -->
-                    </div>
+                        </div>
                     <div style="text-align:center;">
                         <button style="background:transparent; color:#aaa; border:1px solid #555; padding:5px 15px; border-radius:5px; cursor:pointer;" onclick="window.surrender()">RENDER-SE</button>
                     </div>
@@ -360,7 +364,6 @@
         <canvas id="clash-canvas"></canvas>
     </div>
 
-    <!-- CANVAS PARA COMPRESSÃO DE IMAGEM -->
     <canvas id="task-compress-canvas" style="display:none;"></canvas>
 
 <script type="module">
@@ -434,7 +437,6 @@ window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
     if(!name) return alert("NOME OBRIGATÓRIO."); name = name.toUpperCase();
     
-    // Safety check no botao (fix login crash)
     let loginBtn = document.getElementById('btn-login');
     if(loginBtn) loginBtn.innerText = "CONECTANDO...";
     
@@ -541,8 +543,24 @@ function saveLocalFeed(postObj) { let l =[]; try { if(localStorage.getItem('loca
 function getLocalFeed() { try { if(localStorage.getItem('localFeed')) return JSON.parse(localStorage.getItem('localFeed')); }catch(e){} return[]; }
 
 let currentTaskConfig = null;
+
+// NOVO: Abertura para Treinos Customizados
+window.openCustomTaskUploader = function() {
+    document.getElementById('task-category-select').style.display = 'block';
+    document.getElementById('form-box-title').innerText = `CRIAR TREINO PERSONALIZADO`;
+    document.getElementById('task-desc').value = ""; 
+    document.getElementById('task-file').value = ""; 
+    document.getElementById('task-upload-status').innerText = "";
+    document.getElementById('gps-panel').style.display = 'none';
+    document.getElementById('quick-post-box').style.display = 'block';
+
+    currentTaskConfig = { isCustom: true };
+    window.switchTab('tab-feed', document.querySelector('.hub-nav-btn'));
+};
+
 window.openTaskUploader = function(name, xp, gold, buffType, buffAmount, requireGps) {
-    currentTaskConfig = { name, xp, gold, buffType, buffAmount };
+    currentTaskConfig = { isCustom: false, name, xp, gold, buffType, buffAmount };
+    document.getElementById('task-category-select').style.display = 'none'; // Esconde menu custom
     document.getElementById('form-box-title').innerText = `PROVAR MÉRITO: ${name.toUpperCase()}`;
     document.getElementById('task-desc').value = ""; document.getElementById('task-file').value = ""; document.getElementById('task-upload-status').innerText = "";
     document.getElementById('gps-panel').style.display = requireGps ? 'block' : 'none';
@@ -554,7 +572,8 @@ window.submitTaskEvidence = function() {
     if(!currentTaskConfig) return;
     const file = document.getElementById('task-file').files[0];
     if(!file) return alert("É obrigatório o upload de uma foto ou vídeo provando o treino!");
-    const desc = document.getElementById('task-desc').value; document.getElementById('task-upload-status').innerText = "Injetando pacote na rede...";
+    const desc = document.getElementById('task-desc').value; 
+    document.getElementById('task-upload-status').innerText = "Injetando pacote na rede...";
 
     if(file.type.startsWith("video/")) { postLogicExecution(desc, URL.createObjectURL(file), "video"); } 
     else {
@@ -571,6 +590,20 @@ window.submitTaskEvidence = function() {
 }
 
 function postLogicExecution(desc, midiaURL, midiaType) {
+    // Avalia caso seja custom task
+    if(currentTaskConfig.isCustom) {
+        let catSelect = document.getElementById('task-category-select').value;
+        let xp = 300, gold = 600, buffType = 'hp';
+        
+        if(catSelect === 'Cardio') { buffType = 'regen'; }
+        else if(catSelect === 'Flexibilidade') { buffType = 'dmg'; }
+        else if(catSelect === 'Parkour') { buffType = 'hp'; xp = 500; gold = 800; } // Buff focado em impacto
+        else if(catSelect === 'VR') { buffType = 'regen'; xp = 400; gold = 700; } // Buff focado agilidade
+        
+        currentTaskConfig = { name: 'Personalizado: ' + catSelect, xp: xp, gold: gold, buffType: buffType, buffAmount: 0.05 };
+        document.getElementById('task-category-select').style.display = 'none';
+    }
+
     hubProfile.xp += currentTaskConfig.xp; hubProfile.gold = (parseInt(hubProfile.gold)||0) + currentTaskConfig.gold;
     if(hubProfile.buffs[currentTaskConfig.buffType] !== undefined) hubProfile.buffs[currentTaskConfig.buffType] += currentTaskConfig.buffAmount;
     saveHubStateLocal(); syncUIWithProfile(); playSound('gacha');
@@ -613,7 +646,7 @@ function renderFeedItems() {
             <div class="post-header"><img class="post-avatar" src="${d.avatar || 'https://i.imgur.com/kKC1zaJ.png'}"><div class="post-meta"><span class="post-author">${d.author}</span><span class="post-type">[Treino] ${d.taskName}</span></div></div>
             <div style="color:#ddd; margin-bottom:10px; font-size:0.95rem; line-height: 1.4;">${d.desc}</div>
             ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' }
-            <div class="post-reward">Recompensa Obtida: XP +${d.rewardLog?.xp||0} | ${d.rewardLog?.gold ? '$ '+d.rewardLog.gold : ''} | Buff Ativo Integrado</div>
+            <div class="post-reward">Recompensa: XP +${d.rewardLog?.xp||0} | ${d.rewardLog?.gold ? '$ '+d.rewardLog.gold : ''} | Buff Integrado</div>
             <div class="post-actions">
                 <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">MANDOU BEM (${upArr.length})</button>
                 <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">FRAUDE (${dnArr.length})</button>
@@ -635,10 +668,10 @@ window.castVote = async function(postId, type) {
 };
 
 // =========================================================================
-// 6. GACHA E DECK BUILDER (Corrigido Gold)
+// 6. GACHA E DECK BUILDER
 // =========================================================================
 window.openCapsule = function() {
-    hubProfile.gold = parseInt(hubProfile.gold) || 0; // Transforma em numero para garantir logica matematica
+    hubProfile.gold = parseInt(hubProfile.gold) || 0; 
     let preco = 1000;
     
     if(hubProfile.gold < preco) return alert("Ouro Insuficiente! Treine ou vença na Arena para ganhar mais.");
@@ -685,7 +718,6 @@ function setupHubRealtime() {
         </div>`; return;
     }
     
-    // Conexão Realtime
     try {
         onDisconnect(ref(rtdb, 'hub_presence/'+hubProfile.uid)).remove(); 
         set(ref(rtdb, 'hub_presence/'+hubProfile.uid), { uid: hubProfile.uid, name: hubProfile.username, online: true, lvl: hubProfile.lvl });
@@ -695,20 +727,19 @@ function setupHubRealtime() {
                 if(k !== hubProfile.uid) {
                     document.getElementById('radar-list').innerHTML += `<div class="radar-player">
                         <span style="color:#fff; font-weight:bold; font-size:1.1rem;">👤 ${d[k].name} (Lvl ${d[k].lvl})</span>
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn-duel" style="flex:1;" onclick="window.sendDuelChallenge('${k}', '${d[k].name}')">DUELO IRL (FISICO)</button>
-                            <button class="btn-duel" style="flex:1; border-color:#0ff; color:#0ff;" onclick="window.startPvPAgainstPlayer('${k}')">BATALHA CLASH</button>
+                        <div style="display:flex; gap:5px; flex-direction: column;">
+                            <button class="btn-duel" onclick="window.sendDuelChallenge('${k}', '${d[k].name}')">DUELO IRL (FISICO)</button>
+                            <button class="btn-duel" style="border-color:#0ff; color:#0ff;" onclick="window.startPvPAgainstPlayer('${k}')">BATALHA CLASH</button>
                         </div>
                     </div>`;
                 }
             });
         });
         
-        // Escutar desafios Físicos IRL
         onChildAdded(ref(rtdb, 'hub_duels'), (snap) => { 
             let d = snap.val(); 
             if(d.targetId === hubProfile.uid && d.state === 'request') {
-                if(confirm(`⚔️ DESAFIO FÍSICO! \n\n${d.challengerName} te desafiou para quem faz mais flexões/corrida agora! \nAceitar a Glória?`)) { 
+                if(confirm(`⚔️ DESAFIO FÍSICO! \n\n${d.challengerName} te desafiou para quem faz mais esforço físico agora! \nAceitar a Glória?`)) { 
                     update(ref(rtdb, `hub_duels/${snap.key}`), { state: 'ongoing' }); 
                     showModal("INVASÃO FÍSICA APROVADA", "Vão para o mundo real executar e voltem para assinar quem ganhou.", `<button class="btn-action" onclick="window.monitorOngoingDuel('${snap.key}')">FINALIZAR COMBATE: ABRIR TRIBUNAL</button>`); 
                 } else { update(ref(rtdb, `hub_duels/${snap.key}`), { state: 'declined' }); }
@@ -717,14 +748,13 @@ function setupHubRealtime() {
     } catch(e) {}
 }
 
-// Fluxo de Duelo Físico IRL
 window.sendDuelChallenge = function(tId, tN) { 
     let keyId = push(ref(rtdb, 'hub_duels')).key;
     set(ref(rtdb, 'hub_duels/'+keyId), { challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' });
     alert(`Notificação física enviada! Espere a resposta...`);
     onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
         let v = s.val(); if(!v) return;
-        if(v.state === 'declined') { alert("Aquele humano correu da chance."); off(ref(rtdb, 'hub_duels/'+keyId)); }
+        if(v.state === 'declined') { alert("O oponente correu da chance."); off(ref(rtdb, 'hub_duels/'+keyId)); }
         if(v.state === 'ongoing' && !v.resolvedChallengerAlert) {
             update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); 
             showModal("ELE ACEITOU!", "Vão para o mundo físico. Quando acabar, decidam o ganhador.", `<button class="btn-action" onclick="window.monitorOngoingDuel('${s.key}')">VOTAR NO GANHADOR</button>`);
@@ -786,6 +816,8 @@ class Base {
     constructor(team, hpMultiplier) {
         this.team = team; this.maxHp = 2500 * (1 + hpMultiplier); this.hp = this.maxHp;
         this.x = cw / 2; this.y = team === 0 ? ch - 100 : 100; this.radius = 40; this.isBase = true;
+        // FIX CLASH CRASH: Tropa inimiga tentava ler o tipo da Base sem isso. Adicionamos a tag nativa.
+        this.data = { tags: ['building', 'ground'], type: 'building' };
     }
     draw(ctx) {
         ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
@@ -971,7 +1003,7 @@ function gameLoop(now) {
     
     for(let i=entities.length-1; i>=0; i--) { let e = entities[i]; if(e.update) e.update(dt); if(e.hp <= 0) { if(e.die) e.die(); entities.splice(i, 1); } }
     
-    // FIX CLASH CRASH: Remoção otimizada para balas e efeitos visuais
+    // FIX CLASH CRASH: O array de partículas estava engolindo objetos errados e falhando
     for(let i=particles.length-1; i>=0; i--) { 
         let p = particles[i];
         p.update(dt); 
