@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fitness RPG & Cyber Clash Auto-Battler</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap');
         
@@ -12,6 +18,7 @@
             --neon-pink: #ff00ea;
             --neon-green: #00ff66;
             --neon-yellow: #ffea00;
+            --neon-red: #ff3333;
             --dark-bg: #0b0c10;
             --panel-bg: #15161e;
             --panel-border: #232533;
@@ -21,6 +28,10 @@
 
         body { margin: 0; overflow: hidden; background: var(--dark-bg); user-select: none; font-family: 'Rajdhani', sans-serif; -webkit-touch-callout: none; color: #e0e0e0; touch-action: manipulation;}
         
+        /* Efeito de Tremer Tela para Estímulo Visual */
+        @keyframes shakeScreenAnim { 0% {transform: translate(1px, 1px) rotate(0deg);} 10% {transform: translate(-1px, -2px) rotate(-1deg);} 20% {transform: translate(-3px, 0px) rotate(1deg);} 30% {transform: translate(3px, 2px) rotate(0deg);} 40% {transform: translate(1px, -1px) rotate(1deg);} 50% {transform: translate(-1px, 2px) rotate(-1deg);} 60% {transform: translate(-3px, 1px) rotate(0deg);} 70% {transform: translate(3px, 1px) rotate(-1deg);} 80% {transform: translate(-1px, -1px) rotate(1deg);} 90% {transform: translate(1px, 2px) rotate(0deg);} 100% {transform: translate(1px, -2px) rotate(-1deg);} }
+        .shake-screen { animation: shakeScreenAnim 0.3s; }
+
         ::-webkit-scrollbar { width: 6px; height: 6px;}
         ::-webkit-scrollbar-track { background: var(--dark-bg); }
         ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
@@ -32,6 +43,7 @@
         .glow-text { text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); color: var(--neon-blue); }
         .glow-pink { text-shadow: 0 0 10px rgba(255, 0, 234, 0.6); color: var(--neon-pink); }
         .glow-green { text-shadow: 0 0 10px rgba(0, 255, 102, 0.6); color: var(--neon-green); }
+        .glow-red { text-shadow: 0 0 10px rgba(255, 51, 51, 0.6); color: var(--neon-red); }
 
         #hub-container { display: flex; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000; background: radial-gradient(circle at 50% 0%, #1a1a2e, var(--dark-bg)); overflow: hidden;}
         #hub-bg-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index: -1; pointer-events: none; opacity: 0.4;}
@@ -43,8 +55,9 @@
         .hub-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #222; border: 2px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);}
         .hub-lvl-badge { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); background: var(--neon-blue); color: #000; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: 900;}
         .hub-username { font-size: 1.3rem; font-weight: bold; color: #fff; margin-bottom: 5px; font-family: 'Orbitron', sans-serif;}
+        .hub-faction-badge { font-size: 0.75rem; font-weight: bold; padding: 3px 8px; border-radius: 12px; display: inline-block; margin-bottom: 10px; border: 1px solid transparent; }
         
-        .hub-stats-row { display: flex; justify-content: space-between; font-size: 0.9rem; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--panel-border);}
+        .hub-stats-row { display: flex; justify-content: space-between; font-size: 0.9rem; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; margin-top: 5px; border: 1px solid var(--panel-border);}
         .stat-item { text-align: center; color: #888; font-size: 0.75rem; font-weight: 700;}
         .stat-item span { display: block; font-family: 'Orbitron', sans-serif; font-size: 1rem; margin-top: 5px; color: var(--neon-yellow); }
         
@@ -58,10 +71,16 @@
         .hub-start-arena { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--neon-blue), #00aaff); color: #000; font-size: 1rem; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); animation: pulseBtn 2s infinite;}
 
         /* CONTEÚDO PRINCIPAL HUB */
-        .hub-main-content { flex: 1; padding: 30px 40px 80px 40px; overflow-y: auto; scroll-behavior: smooth; position: relative;}
-        .hub-tab { display: none; animation: fadeIn 0.4s ease-out; }
+        .hub-main-content { flex: 1; padding: 0 40px 80px 40px; overflow-y: auto; scroll-behavior: smooth; position: relative;}
+        .hub-tab { display: none; animation: fadeIn 0.4s ease-out; padding-top: 30px; }
         .hub-tab.active { display: block; }
         .hub-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 10px; margin-top: 0; margin-bottom: 25px; color: #fff; letter-spacing: 1px;}
+
+        /* BOSS GLOBAL BANNER */
+        .global-boss-banner { width: 100%; background: linear-gradient(90deg, rgba(20,0,0,0.9), rgba(50,0,0,0.8)); border: 2px solid var(--neon-red); border-radius: 12px; padding: 20px; margin-bottom: 25px; text-align: center; box-shadow: 0 0 20px rgba(255, 51, 51, 0.3); position: relative; overflow: hidden; margin-top: 30px;}
+        .global-boss-banner::before { content:'RAID'; position:absolute; top:-20px; left:-10px; font-size: 6rem; font-family: 'Orbitron'; font-weight:900; color:rgba(255,51,51,0.05); pointer-events:none;}
+        .boss-hp-bar { width: 100%; height: 20px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon-red); border-radius: 10px; margin-top: 10px; overflow: hidden; position: relative; }
+        .boss-hp-fill { height: 100%; background: linear-gradient(90deg, darkred, var(--neon-red)); width: 100%; transition: width 0.5s; }
 
         /* CARDS DE AÇÃO E FORMS */
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;}
@@ -82,6 +101,7 @@
         .btn-neon.pink { border-color: var(--neon-pink); color: var(--neon-pink); } .btn-neon.pink:hover { background: var(--neon-pink); box-shadow: 0 0 15px var(--neon-pink); color: #000;}
         .btn-neon.green { border-color: var(--neon-green); color: var(--neon-green); } .btn-neon.green:hover { background: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); color: #000;}
         .btn-neon.yellow { border-color: var(--neon-yellow); color: var(--neon-yellow); } .btn-neon.yellow:hover { background: var(--neon-yellow); box-shadow: 0 0 15px var(--neon-yellow); color: #000;}
+        .btn-neon.red { border-color: var(--neon-red); color: var(--neon-red); } .btn-neon.red:hover { background: var(--neon-red); box-shadow: 0 0 15px var(--neon-red); color: #000;}
 
         .post-form-box { background: rgba(20,20,30,0.8); border: 1px solid var(--neon-blue); border-radius: 12px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(8px);}
         .input-cyber { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--panel-border); border-radius: 6px; margin-bottom: 15px; font-family: 'Rajdhani', sans-serif; font-size: 16px; box-sizing: border-box; transition: 0.3s;}
@@ -100,35 +120,45 @@
         .feed-post[data-cat="Mente"] { border-top-color: var(--neon-yellow); }
         .feed-post[data-cat="Duelo"] { border-top-color: var(--neon-yellow); background: rgba(20,20,10,0.8); }
         
-        .post-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
+        .post-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; cursor: pointer;}
+        .post-header:hover .post-author { color: var(--neon-blue); }
         .post-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #555;}
-        .post-author { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: bold; color: #fff;}
+        .post-author { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: bold; color: #fff; transition: 0.2s;}
         .post-type { font-size: 0.85rem; color: #888; font-weight: 700; text-transform: uppercase;}
         
-        .post-img-container { width: 100%; max-height: 400px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 15px; display: flex; justify-content: center;}
-        .post-img, .post-vid { width: 100%; height: 100%; object-fit: cover;}
+        .post-img-container { width: 100%; max-height: 400px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 15px; display: flex; justify-content: center; cursor: zoom-in;}
+        .post-img, .post-vid { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;}
+        .post-img-container:hover .post-img { transform: scale(1.02); }
         
         .post-actions { display: flex; gap: 15px; border-top: 1px solid var(--panel-border); padding-top: 15px; flex-wrap: wrap;}
         .vote-btn { flex: 1; min-width: 120px; padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #ccc; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .vote-btn.up:hover { background: rgba(0, 255, 102, 0.2); color: var(--neon-green); }
         .vote-btn.down:hover { background: rgba(255, 0, 0, 0.2); color: #ff5555; }
         
+        /* MODAL DE ZOOM IMAGEM */
+        #image-zoom-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; cursor: zoom-out; backdrop-filter: blur(10px); }
+        #image-zoom-content { max-width: 95vw; max-height: 95vh; border: 2px solid var(--neon-blue); border-radius: 8px; box-shadow: 0 0 40px rgba(0,243,255,0.4); }
+
         /* RADAR PVP */
         .hub-radar { width: 300px; background: rgba(15, 16, 25, 0.85); border-left: 1px solid var(--panel-border); display: flex; flex-direction: column; padding: 25px 20px; overflow-y: auto; flex-shrink: 0; backdrop-filter: blur(15px);}
         .radar-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--neon-pink); text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--panel-border);}
-        .radar-player { background: rgba(0,0,0,0.6); border: 1px solid #333; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; transition: 0.3s;}
+        .radar-player { background: rgba(0,0,0,0.6); border: 1px solid #333; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; transition: 0.3s; cursor: pointer;}
         .radar-player:hover { border-color: var(--neon-pink); transform: translateX(-5px);}
         .radar-player span { font-weight: bold; color: #fff;}
         .btn-duel { background: rgba(255, 0, 234, 0.1); border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 10px; font-size: 0.8rem;}
         .btn-duel:hover { background: var(--neon-pink); color: #000; box-shadow: 0 0 15px var(--neon-pink);}
+
+        /* MAPA E TERRITÓRIOS (LEAFLET) */
+        #map-container { width: 100%; height: 400px; border-radius: 12px; border: 2px solid var(--neon-blue); margin-bottom: 25px; z-index: 10;}
+        .leaflet-container { background: #0b0c10; font-family: 'Rajdhani', sans-serif; }
+        .leaflet-popup-content-wrapper { background: rgba(20,20,30,0.9); color: #fff; border: 1px solid var(--neon-blue); border-radius: 8px; }
+        .leaflet-popup-tip { background: rgba(20,20,30,0.9); }
         
         /* ENGINE AUTO BATTLER CYBER CLASH */
         #game-wrapper { display: none; width: 100vw; height: 100vh; position: fixed; top:0; left:0; z-index: 1; background: #050508;}
         #arena-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: radial-gradient(circle at center, #101018, #050508);}
         
         #arena-ui { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between;}
-        
-        /* IMPORTANTE: A reativação do clique na arena! */
         #arena-clickable-zone { flex-grow: 1; width: 100%; position: relative; pointer-events: auto; cursor: crosshair; }
         
         .top-bar-arena { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; font-family: 'Orbitron', sans-serif; color: #fff; pointer-events: auto; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);}
@@ -182,44 +212,30 @@
         
         #death-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.95); z-index: 110; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(8px);}
         
-        /* ================= RESPONSIVIDADE MOBILE LIMPA ================= */
+        /* RESPONSIVIDADE MOBILE */
         @media (max-width: 900px) {
             .hub-title { font-size: 1.4rem; margin-bottom: 15px; }
             #hub-container { flex-direction: column; }
-            
-            /* Sidebar de Perfil Topo - Compacta */
             .hub-sidebar { width: 100%; order: -1; padding: 5px; border-bottom: 2px solid var(--neon-blue); flex-direction: column; z-index: 100;}
             .hub-profile-area { display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 10px; border-bottom: none;}
             .hub-avatar-container { width: 55px; height: 55px; margin: 0; }
             .hub-username { font-size: 1.1rem; text-align: right; margin-bottom: 2px;}
             .hub-stats-row { flex-direction: row; gap: 15px; background: none; border: none; padding: 0; margin-top: 5px; justify-content: flex-end;}
             .stat-item { text-align: right; font-size: 0.65rem; } .stat-item span { font-size: 0.85rem; }
-            
-            /* Navbar Scroll Horizontal Limpo */
             .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 10px; padding: 10px; background: transparent; scrollbar-width: none;}
             .hub-nav::-webkit-scrollbar { display: none;}
             .hub-nav-btn { font-size: 0.85rem; padding: 10px 18px; border-radius: 25px; white-space:nowrap; border: 1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.6);}
             .hub-nav-btn.active { border: 1px solid var(--neon-blue); background:rgba(0,243,255,0.2); }
-            
-            /* O botão PvE some da base do sidebar no mobile, então realocamos ele */
             .pve-btn-wrapper { padding: 10px; border-top: none; background: transparent; }
             .hub-start-arena { margin: 0; padding: 12px; font-size: 0.9rem;}
-
-            /* Conteudo Hub com respiro no fundo pro scroll funcionar bem */
             .hub-main-content { padding: 15px 10px 60px 10px; flex: 1; overflow-y: auto; }
-            
-            /* Cards Limpos */
             .grid-cards { grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px;}
             .action-card { padding: 20px; border-radius: 10px; }
-            
-            /* Radar PvP Carrossel Horizontal - Fora do caminho do feed */
             .hub-radar { width: 100%; flex-direction: row; overflow-x: auto; overflow-y: hidden; height: auto; border-left: none; border-top: 1px solid var(--panel-border); padding: 15px 10px; scrollbar-width: none; background: rgba(10,10,15,0.95); }
             .hub-radar::-webkit-scrollbar { display: none; }
-            .radar-title { display: none; } /* Ocultar título no mobile pra dar espaço */
+            .radar-title { display: none; } 
             .radar-list { display: flex; flex-direction: row; gap: 15px; }
             .radar-player { min-width: 260px; margin: 0; padding: 15px; flex-shrink: 0; }
-            
-            /* Deck Consertado no Mobile */
             .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); padding: 10px; gap: 10px; }
             .deck-slot { height: 100px; border-radius: 6px; }
             .battle-card { width: 100%; height: 100px; border-radius: 6px;}
@@ -227,13 +243,10 @@
             .b-card-name { font-size: 0.5rem; padding: 0 2px; line-height: 1; margin-bottom: 2px;}
             .b-card-cost { font-size: 0.6rem; padding: 2px 4px; }
             .b-card-lvl { font-size: 0.55rem; top: 2px; right: 2px; }
-            
-            /* Arena HUD Mobile Extremo */
             .top-bar-arena { padding: 8px 12px; }
             .hp-hud { font-size: 0.85rem; padding: 6px; }
             .btn-leave { font-size: 0.7rem; padding: 6px; }
             .auto-btn { top: 60px; right: 10px; font-size: 0.7rem; padding: 6px 10px; border-width: 1px;}
-            
             .bottom-ui-arena { padding-bottom: 15px; }
             .energy-container { height: 16px; margin-bottom: 10px; max-width: 95%; border-width: 1px;}
             .energy-text { line-height: 16px; font-size: 0.7rem; }
@@ -280,19 +293,45 @@
                 osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(600, now + 0.2); osc.frequency.linearRampToValueAtTime(800, now + 0.4);
                 gainNode.gain.setValueAtTime(0.15, now); gainNode.gain.linearRampToValueAtTime(0.001, now + 0.8);
                 osc.start(now); osc.stop(now + 0.8);
+            } else if(type === 'epic') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.5);
+                gainNode.gain.setValueAtTime(0.2, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+                osc.start(now); osc.stop(now + 1.0);
+            } else if(type === 'scan') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(1500, now); osc.frequency.linearRampToValueAtTime(2000, now + 0.1);
+                gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.linearRampToValueAtTime(0.001, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if(type === 'boss_hit') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(50, now); osc.frequency.exponentialRampToValueAtTime(20, now + 0.4);
+                gainNode.gain.setValueAtTime(0.2, now); gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
             }
         };
+
+        window.shakeScreen = function() {
+            document.body.classList.add('shake-screen');
+            setTimeout(() => document.body.classList.remove('shake-screen'), 300);
+        }
 
         document.addEventListener('click', (e) => {
             if(e.target.tagName === 'BUTTON' || e.target.closest('.battle-card') || e.target.closest('.action-card')) { window.playSound('click'); }
         });
     </script>
 
+    <div id="image-zoom-modal" onclick="this.style.display='none'">
+        <img id="image-zoom-content" src="" alt="Zoom Imagem">
+    </div>
+
     <div id="hub-login">
-        <div class="login-box">
-            <h1 class="glow-text">CYBER FITNESS</h1>
+        <div class="login-box" style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(15,16,25,0.95); padding:40px; border-radius:12px; border:2px solid var(--neon-blue); text-align:center; box-shadow: 0 0 50px rgba(0,243,255,0.3);">
+            <h1 class="glow-text" style="font-family:'Orbitron'; font-size:2.5rem; margin-top:0;">CYBER FITNESS</h1>
             <p style="color:#aaa; font-size: 0.95rem; margin-bottom: 25px;">Sincronize seu corpo físico com o Servidor Tático Central.</p>
-            <input type="text" id="login-username" class="input-cyber" placeholder="Seu Nome / Vulgo..." style="text-align: center;">
+            <input type="text" id="login-username" class="input-cyber" placeholder="Seu Nome / Vulgo..." style="text-align: center; margin-bottom: 10px;">
+            <select id="login-faction" class="input-cyber" style="text-align: center; margin-bottom: 25px;">
+                <option value="Sindicato Neon">Facção: Sindicato Neon (Mobilidade)</option>
+                <option value="Clã de Sangue">Facção: Clã de Sangue (Força Bruta)</option>
+                <option value="Cromo Tático">Facção: Cromo Tático (Inteligência)</option>
+            </select>
             <button class="btn-neon" style="font-size: 1.1rem; padding: 15px; background: rgba(0,243,255,0.1);" onclick="window.hubLogin()">Iniciar Uplink</button>
         </div>
     </div>
@@ -303,11 +342,12 @@
         <div class="hub-sidebar">
             <div class="hub-profile-area">
                 <div class="hub-avatar-container">
-                    <img id="hub-avatar-img" class="hub-avatar" src="https://i.imgur.com/kKC1zaJ.png">
+                    <img id="hub-avatar-img" class="hub-avatar" src="https://i.imgur.com/kKC1zaJ.png" onclick="window.showMyProfileModal()" style="cursor:pointer;">
                     <div class="hub-lvl-badge" id="hub-ui-lvl">LV.1</div>
                 </div>
                 <div>
                     <div class="hub-username" id="hub-ui-name">JOGADOR</div>
+                    <div class="hub-faction-badge" id="hub-ui-faction" style="color:var(--neon-blue); border-color:var(--neon-blue);">SINDICATO NEON</div>
                     <div class="hub-stats-row">
                         <div class="stat-item">XP <span id="hub-ui-xp" class="glow-green">0</span></div>
                         <div class="stat-item">Ouro <span id="hub-ui-gold" style="color:var(--neon-yellow); text-shadow: 0 0 10px rgba(255,234,0,0.5);">0</span></div>
@@ -318,9 +358,11 @@
             <div class="hub-nav">
                 <button class="hub-nav-btn active" onclick="window.switchTab('tab-feed')">Feed Hub</button>
                 <button class="hub-nav-btn" onclick="window.switchTab('tab-missoes')">Treinos</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-mundo')" style="color:var(--neon-pink);">Mapa & Nodos (GPS)</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-mercado')" style="color:var(--neon-yellow);">Mercado Clandestino</button>
                 <button class="hub-nav-btn" onclick="window.switchTab('tab-deck')">Seu Deck</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-loja')">Mercado</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-perfil')">Perfil</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-loja')">Gacha Store</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-perfil')">Perfil & Clã</button>
             </div>
             
             <div class="pve-btn-wrapper">
@@ -329,6 +371,17 @@
         </div>
 
         <div class="hub-main-content">
+            
+            <div class="global-boss-banner" id="global-boss-banner">
+                <h2 style="margin:0; font-family:'Orbitron'; color:var(--neon-red); text-shadow:0 0 10px var(--neon-red);">🔥 RAID BOSS GLOBAL: MECHA LEVIATÃ 🔥</h2>
+                <p style="color:#ddd; margin-top:5px; margin-bottom:10px; font-size:0.9rem;">Toda a comunidade precisa atacar. Gere Energia e vá pra Guerra!</p>
+                <div class="boss-hp-bar">
+                    <div class="boss-hp-fill" id="boss-hp-fill-ui" style="width: 85%;"></div>
+                </div>
+                <div style="color:#fff; font-family:'Orbitron'; font-weight:bold; margin-top:5px;" id="boss-hp-text-ui">HP: 4.250.000 / 5.000.000</div>
+                <button class="btn-neon red" style="margin-top:15px; width: 50%;" onclick="window.attackGlobalBoss()">ATACAR BOSS AGORA</button>
+            </div>
+
             <div id="tab-feed" class="hub-tab active">
                 <h2 class="hub-title">Rede Global de Atletas</h2>
                 
@@ -435,6 +488,35 @@
                 </div>
             </div>
 
+            <div id="tab-mundo" class="hub-tab">
+                <h2 class="hub-title glow-pink">Guerra de Trincheiras & Nodos</h2>
+                <p style="color:#aaa; font-size:0.95rem; margin-bottom: 15px;">Domine territórios para sua facção correndo pela cidade e hackeie Nodos de Suprimento indo até eles presencialmente.</p>
+                <div id="map-container"></div>
+                <div style="display:flex; justify-content: space-between; gap: 10px;">
+                    <button class="btn-neon pink" onclick="window.scanLocalNodes()">PROCURAR NODOS PRÓXIMOS (Loot)</button>
+                    <button class="btn-neon" onclick="window.claimTerritory()">REIVINDICAR ÁREA (Check-In de Treino)</button>
+                </div>
+            </div>
+
+            <div id="tab-mercado" class="hub-tab">
+                <h2 class="hub-title glow-yellow">Mercado Negro (Contato Real)</h2>
+                <p style="color:#ccc; margin-bottom: 25px; font-size:1rem; line-height:1.5;">O comércio de cartas raras exige encontro presencial. Gere um QR Code de Troca ou Escaneie o do seu parceiro (Vocês têm 10 segundos para a chave não expirar).</p>
+                <div class="grid-cards">
+                    <div class="action-card" style="border-color: var(--neon-yellow);">
+                        <h3 class="glow-yellow">Vender/Transferir Fragmento</h3>
+                        <select id="qr-card-select" class="input-cyber" style="padding:10px; margin-bottom:15px;"></select>
+                        <button class="btn-neon yellow" onclick="window.generateTradeQR()">GERAR CÓDIGO DE TRANSMISSÃO</button>
+                        <div id="qr-code-display" style="margin-top:20px; background:#fff; padding:10px; display:none; justify-content:center;"></div>
+                    </div>
+                    <div class="action-card" style="border-color: var(--neon-green);">
+                        <h3 class="glow-green">Adquirir Fragmento (Escanear)</h3>
+                        <p>Aponte a câmera para o QR Code do aliado.</p>
+                        <div id="qr-reader" style="width: 100%; margin-bottom: 15px;"></div>
+                        <button class="btn-neon green" onclick="window.startQRScanner()">ABRIR CÂMERA E EXTRAIR</button>
+                    </div>
+                </div>
+            </div>
+
             <div id="tab-deck" class="hub-tab">
                 <h2 class="hub-title">Gerenciador de Cartas (Deck)</h2>
                 <p style="color:#aaa; font-size:0.95rem; margin-bottom: 25px;">Escale seu time. Apenas 8 tropas ou magias entram na Batalha com você.</p>
@@ -459,13 +541,16 @@
             </div>
 
             <div id="tab-perfil" class="hub-tab">
-                <h2 class="hub-title">Módulo de Perfil e Conexão</h2>
+                <h2 class="hub-title">Módulo de Perfil e Clã</h2>
                 <div class="post-form-box">
                     <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; display:block;">Como deseja ser chamado?</label>
                     <input type="text" id="prof-edit-name" class="input-cyber" placeholder="O código de rastreio...">
                     
                     <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; margin-top:10px; display:block;">Qual sua Bio? (Aparece no seu Radar e Lutas)</label>
                     <input type="text" id="prof-edit-bio" class="input-cyber" placeholder="Sem dor não tem vitória." maxlength="50">
+
+                    <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; margin-top:10px; display:block;">Associação a Clã/Grupo de Treino (Opcional):</label>
+                    <input type="text" id="prof-edit-clan" class="input-cyber" placeholder="Ex: Ratos de Academia, Runners BR...">
                     
                     <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; margin-top:10px; display:block;">Fotografia de Perfil do Avatar:</label>
                     <input type="file" id="prof-edit-avatar-file" class="input-cyber" accept="image/*" style="padding: 10px;">
@@ -553,6 +638,7 @@ function animHubBg() {
 }
 animHubBg();
 
+// EXPANSÃO DO BANCO DE CARTAS
 const CARD_DB = {
     "Brawler": { id: "Brawler", name: "Lutador de Rua", icon: "🥊", cost: 2, rarity: 1, type: "unit", hp: 350, dmg: 40, range: 40, ms: 60, as: 1.2 },
     "CorredorNeon": { id: "CorredorNeon", name: "Corredor Rápido", icon: "⚡", cost: 1, rarity: 1, type: "unit", hp: 150, dmg: 20, range: 40, ms: 140, as: 0.8 },
@@ -568,10 +654,13 @@ const CARD_DB = {
     "Medica": { id: "Medica", name: "Enfermeira Base", icon: "💉", cost: 5, rarity: 3, type: "unit", hp: 400, dmg: -30, range: 150, ms: 65, as: 1.5, targetType: 'ally' }, 
     "Sniper": { id: "Sniper", name: "Sniper Longe", icon: "🎯", cost: 4, rarity: 3, type: "unit", hp: 180, dmg: 180, range: 250, ms: 50, as: 2.5 },
     "Toxico": { id: "Toxico", name: "Monstro Ácido", icon: "🧪", cost: 6, rarity: 3, type: "unit", hp: 500, dmg: 20, range: 120, ms: 55, as: 2.0, mechanics: ['acid_pool'] },
+    "VampiroDigital": { id: "VampiroDigital", name: "Sugador de Dados", icon: "🧛", cost: 6, rarity: 3, type: "unit", hp: 400, dmg: 60, range: 40, ms: 80, as: 1.2, mechanics:['lifesteal'] },
+    "MagaHolografica": { id: "MagaHolografica", name: "Ilusionista", icon: "🧚", cost: 4, rarity: 3, type: "unit", hp: 200, dmg: 40, range: 100, ms: 60, as: 1.5, mechanics:['dodge_aura'] },
     "Mecha": { id: "Mecha", name: "Titã Destruidor", icon: "🤖", cost: 8, rarity: 4, type: "unit", hp: 1500, dmg: 40, range: 150, ms: 35, as: 0.5, mechanics:['cleave'], isTank: true },
     "Barao": { id: "Barao", name: "Barão do Lodo", icon: "🐙", cost: 9, rarity: 4, type: "unit", hp: 2000, dmg: 50, range: 60, ms: 30, as: 2.0, mechanics: ['slow_trail', 'spawn_drones'], isTank: true },
     "Hacker": { id: "Hacker", name: "Hacker Cérebro", icon: "💻", cost: 7, rarity: 4, type: "unit", hp: 500, dmg: 80, range: 180, ms: 55, as: 1.5, mechanics:['spawn_emp_base'] },
     "MestreParkour": { id: "MestreParkour", name: "Neo O Lenda", icon: "🕶️", cost: 8, rarity: 4, type: "unit", hp: 700, dmg: 120, range: 50, ms: 150, as: 1.0, mechanics: ['jump_backline'] },
+    "TitanRaio": { id: "TitanRaio", name: "Deus da Rede", icon: "🌩️", cost: 10, rarity: 4, type: "unit", hp: 2500, dmg: 120, range: 80, ms: 25, as: 1.0, mechanics:['chain_lightning', 'cleave'], isTank: true },
     "MagiaCrio": { id: "MagiaCrio", name: "Crio Congelante", icon: "❄️", cost: 3, rarity: 3, type: "spell", range: 100, mechanics:['spell_freeze'] },
     "MagiaOrbital": { id: "MagiaOrbital", name: "Laser Orbital", icon: "🛰️", cost: 4, rarity: 4, type: "spell", range: 60, dmg: 500, mechanics: ['spell_dmg'] },
     "MagiaAcido": { id: "MagiaAcido", name: "Chuva de Fogo", icon: "🔥", cost: 5, rarity: 3, type: "spell", range: 150, mechanics: ['spell_dot'] },
@@ -584,35 +673,57 @@ const PVE_CAMPAIGN = [
     { name: "Setor 2: Patrulha de Drones", lvl: 3, buffs: {hp: 50, dmg: 0.1, spd: 0.1}, deck: ['DroneRastreador', 'Sniper', 'Barricada'], cardLevels: {} },
     { name: "Setor 3: Mutação Tóxica", lvl: 6, buffs: {hp: 200, dmg: 0.2, spd: 0.1}, deck: ['BioTank', 'Toxico', 'Kamikaze'], cardLevels: {} },
     { name: "Setor 4: Elite Hacker", lvl: 10, buffs: {hp: 500, dmg: 0.3, spd: 0.3}, deck: ['Hacker', 'Striker', 'Fantasma', 'Mecha'], cardLevels: {} },
-    { name: "Setor 5: O Cérebro Matriz", lvl: 15, buffs: {hp: 1000, dmg: 0.5, spd: 0.5}, deck: ['Barao', 'MestreParkour', 'MagiaOrbital', 'MagiaRewind'], cardLevels: {} }
+    { name: "Setor 5: O Cérebro Matriz", lvl: 15, buffs: {hp: 1000, dmg: 0.5, spd: 0.5}, deck: ['Barao', 'MestreParkour', 'MagiaOrbital', 'TitanRaio'], cardLevels: {} }
 ];
 
 let hubProfile = { 
-    uid: null, username: "Jogador Alpha", bio: "O meu corpo garante a vitória da máquina.", lvl: 1, xp: 0, gold: 1000, avatar: "https://i.imgur.com/kKC1zaJ.png",
+    uid: null, username: "Jogador Alpha", bio: "O meu corpo garante a vitória da máquina.", clan: "", faction: "Sindicato Neon", friends: [], lvl: 1, xp: 0, gold: 1000, avatar: "https://i.imgur.com/kKC1zaJ.png",
     buffs: { hp: 0, dmg: 0.0, spd: 0.0, magic: 0.0 }, 
     cardsOwned:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], cardLevels: { 'Brawler': 1, 'CorredorNeon': 1, 'DroneRastreador':1, 'Barricada':1 },
     deck:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], pveStage: 0
 };
 
-window.gameLoopInterval = null; window.animationFrameId = null;
+// ======================== SISTEMAS DE PERFIL, ZOOM E SOCIAL ========================
+window.zoomImage = function(src) { document.getElementById('image-zoom-content').src = src; document.getElementById('image-zoom-modal').style.display = 'flex'; };
 
+window.showProfileModal = function(userStr) {
+    // Usado ao clicar em alguém no radar ou feed para exibir status e clã
+    try { let p = JSON.parse(decodeURIComponent(userStr));
+        window.showModal(`PERFIL: ${p.username}`, `
+            <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+                <img src="${p.avatar || 'https://i.imgur.com/kKC1zaJ.png'}" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--neon-blue);">
+                <span class="hub-faction-badge" style="border-color:var(--neon-pink); color:var(--neon-pink);">${p.faction || 'Sindicato Neon'}</span>
+                <p style="color:#aaa; font-style:italic; font-size:0.9rem;">"${p.bio || 'Sem bio.'}"</p>
+                <p style="color:#fff; font-weight:bold;">CLÃ: <span style="color:var(--neon-yellow);">${p.clan || 'Lobo Solitário'}</span></p>
+                <p style="color:var(--neon-green);">Level: ${p.lvl}</p>
+            </div>
+        `);
+    } catch(e) {}
+}
+
+window.showMyProfileModal = function() {
+    window.showProfileModal(encodeURIComponent(JSON.stringify(hubProfile)));
+}
+
+// LÓGICA DE LOGIN COM FACÇÃO
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
+    let faction = document.getElementById('login-faction').value;
     if(!name) { window.showModal("Aviso","O Login na matriz exige nome digital limpo."); return; }
     name = name.toUpperCase(); 
-    if(!db || useLocalBypass) { useLocalBypass = true; hubProfile.uid = 'local_' + Math.random().toString(36).substring(2,8); hubProfile.username = name; finishLoginUI(); return; }
+    if(!db || useLocalBypass) { useLocalBypass = true; hubProfile.uid = 'local_' + Math.random().toString(36).substring(2,8); hubProfile.username = name; hubProfile.faction = faction; finishLoginUI(); return; }
     try {
         const qs = await getDocs(query(collection(db, "hub_users"), where("username", "==", name)));
         if (!qs.empty) { hubProfile = { ...hubProfile, ...qs.docs[0].data() }; hubProfile.uid = qs.docs[0].id; } 
-        else { const res = await addDoc(collection(db, "hub_users"), hubProfile); hubProfile.uid = res.id; hubProfile.username = name; }
+        else { hubProfile.faction = faction; const res = await addDoc(collection(db, "hub_users"), hubProfile); hubProfile.uid = res.id; hubProfile.username = name; }
         finishLoginUI();
-    } catch(err) { useLocalBypass = true; hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name; finishLoginUI(); }
+    } catch(err) { useLocalBypass = true; hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name; hubProfile.faction = faction; finishLoginUI(); }
 };
 
 function finishLoginUI() {
     document.getElementById('hub-login').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex';
     if(hubProfile.pveStage === undefined) hubProfile.pveStage = 0;
-    saveHubStateLocal(); syncUIWithProfile(); setupHubRealtime();
+    saveHubStateLocal(); syncUIWithProfile(); setupHubRealtime(); initMapAndQR();
 }
 
 function saveHubStateLocal() { sessionStorage.setItem('hubProfile_JSON', JSON.stringify(hubProfile)); try { if(db && hubProfile.uid && !hubProfile.uid.startsWith('local_')) updateDoc(doc(db, "hub_users", hubProfile.uid), hubProfile).catch(()=>{}); } catch(e) {} }
@@ -621,8 +732,18 @@ function syncUIWithProfile() {
     hubProfile.lvl = 1 + Math.floor(hubProfile.xp / 1000);
     document.getElementById('hub-ui-name').innerText = hubProfile.username; document.getElementById('hub-ui-lvl').innerText = "NV." + hubProfile.lvl;
     document.getElementById('hub-ui-xp').innerText = Math.floor(hubProfile.xp); document.getElementById('hub-ui-gold').innerText = "$ " + Math.floor(hubProfile.gold);
+    
+    let facColor = hubProfile.faction === "Sindicato Neon" ? "var(--neon-blue)" : (hubProfile.faction === "Clã de Sangue" ? "var(--neon-pink)" : "var(--neon-green)");
+    let facUi = document.getElementById('hub-ui-faction'); facUi.innerText = hubProfile.faction; facUi.style.color = facColor; facUi.style.borderColor = facColor;
+
     if(hubProfile.avatar) document.getElementById('hub-avatar-img').src = hubProfile.avatar;
     document.getElementById('prof-edit-name').value = hubProfile.username; document.getElementById('prof-edit-bio').value = hubProfile.bio;
+    document.getElementById('prof-edit-clan').value = hubProfile.clan || "";
+
+    // Popular select do mercado negro
+    let sel = document.getElementById('qr-card-select'); sel.innerHTML = "";
+    hubProfile.cardsOwned.forEach(cId => { let opt = document.createElement('option'); opt.value = cId; opt.innerText = CARD_DB[cId].name + ` (Lvl ${hubProfile.cardLevels[cId]})`; sel.appendChild(opt); });
+
     let btnPvE = document.getElementById('btn-pve-campaign');
     if(hubProfile.pveStage >= PVE_CAMPAIGN.length) { btnPvE.innerText = "ARENA PVE BATTLE (SETOR MASTER)"; btnPvE.style.background = "linear-gradient(45deg, var(--neon-pink), #ff00aa)"; }
     else { btnPvE.innerText = `ARENA PVE BATTLE (${PVE_CAMPAIGN[hubProfile.pveStage].name})`; }
@@ -630,20 +751,94 @@ function syncUIWithProfile() {
 }
 
 window.saveProfileEdits = function() {
-    let n = document.getElementById('prof-edit-name').value.trim(); let b = document.getElementById('prof-edit-bio').value.trim(); let f = document.getElementById('prof-edit-avatar-file');
-    if(n) hubProfile.username = n; if(b) hubProfile.bio = b;
+    let n = document.getElementById('prof-edit-name').value.trim(); let b = document.getElementById('prof-edit-bio').value.trim(); let c = document.getElementById('prof-edit-clan').value.trim(); let f = document.getElementById('prof-edit-avatar-file');
+    if(n) hubProfile.username = n; if(b) hubProfile.bio = b; if(c) hubProfile.clan = c;
     if(f.files && f.files[0]) {
         let r = new FileReader(); r.onload = e=>{ let img = new Image(); img.onload = ()=>{ const cv=document.createElement('canvas'); const mx=120; const sc=mx/img.width; cv.width=mx; cv.height=img.height*sc; cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); hubProfile.avatar=cv.toDataURL('image/jpeg',0.8); finishPf(); }; img.src = e.target.result; }; r.readAsDataURL(f.files[0]);
     } else finishPf();
     function finishPf(){ saveHubStateLocal(); syncUIWithProfile(); window.showModal("Ajustado", "Suas credenciais biométricas mudaram."); }
 }
 
-window.switchTab = function(tabId) { document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
+window.switchTab = function(tabId) { document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); if(tabId === 'tab-mundo') setTimeout(() => window.mapInstance.invalidateSize(), 300); }
 window.showModal = function(title, desc, btnsHTML) { document.getElementById('modal-title').innerHTML=title; document.getElementById('modal-desc').innerHTML=desc; document.getElementById('modal-actions').innerHTML = btnsHTML || `<button class="btn-neon" style="width:200px;" onclick="document.getElementById('system-modal').style.display='none'">Fechar</button>`; document.getElementById('system-modal').style.display='flex'; }
 
 if(sessionStorage.getItem('hubProfile_JSON')) { hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) }; if(hubProfile.uid && hubProfile.uid.startsWith('local_')) useLocalBypass = true; finishLoginUI(); }
 
+// ======================== GPS E MAPAS (LEAFLET) ========================
 let trackingGeoId = null; let lastLat = null, lastLng = null; let totalKm = 0;
+window.mapInstance = null;
+
+function initMapAndQR() {
+    // Inicia mapa Leaflet na aba Mundo
+    window.mapInstance = L.map('map-container').setView([-23.5505, -46.6333], 13); // Default SP, ajusta no GPS
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap' }).addTo(window.mapInstance);
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            lastLat = pos.coords.latitude; lastLng = pos.coords.longitude;
+            window.mapInstance.setView([lastLat, lastLng], 14);
+            L.circle([lastLat, lastLng], {color: 'var(--neon-blue)', fillColor: '#0ff', fillOpacity: 0.1, radius: 500}).addTo(window.mapInstance).bindPopup("Seu Território Base");
+        });
+    }
+}
+
+window.scanLocalNodes = function() {
+    if(!lastLat) return window.showModal("Aviso", "GPS Desligado ou Buscando. Aguarde.");
+    window.playSound('scan');
+    // Gera "pontos de loot" aleatórios ao redor
+    for(let i=0; i<3; i++) {
+        let nLat = lastLat + (Math.random() - 0.5) * 0.01; let nLng = lastLng + (Math.random() - 0.5) * 0.01;
+        let m = L.circleMarker([nLat, nLng], {color: 'var(--neon-pink)', radius: 8}).addTo(window.mapInstance);
+        m.bindPopup(`<b>NODO DE SUPRIMENTO</b><br><button onclick="window.hackNode()" style="background:#ff00ea;color:#000;padding:5px;border:none;margin-top:5px;border-radius:4px;">Hackear Presencial (Ir até aqui)</button>`);
+    }
+    window.showModal("Radar Ativo", "Nodos identificados no mapa. Vá até eles fisicamente para recolher fragmentos!");
+}
+
+window.hackNode = function() { window.showModal("Erro de Proximidade", "Você não está próximo fisicamente o suficiente das coordenadas. Mova seu corpo real para hackear o nodo."); }
+window.claimTerritory = function() { window.showModal("Guerra de Território", "Tire uma foto de um treino aqui via aba 'Feed Hub' para gerar +10 Pontos de Influência para o " + hubProfile.faction + " nesta quadra."); }
+
+// ======================== MERCADO NEGRO (QR CODE) ========================
+let html5QrcodeScanner = null;
+window.generateTradeQR = function() {
+    let cId = document.getElementById('qr-card-select').value;
+    if(!cId) return;
+    let qrBox = document.getElementById('qr-code-display');
+    qrBox.style.display = 'flex'; qrBox.innerHTML = '';
+    // String mockada de transação: UID_CARDID_TIMESTAMP (na prática o DB validaria)
+    let tradeStr = `TRADE|${hubProfile.uid}|${cId}|${Date.now()}`;
+    new QRCode(qrBox, { text: tradeStr, width: 200, height: 200, colorDark : "#0b0c10", colorLight : "#ffea00", correctLevel : QRCode.CorrectLevel.H });
+    window.showModal("Código Gerado!", "Mostre essa tela para o aliado. O código expira em breve. (Obs: Isso remove a carta da sua mão se concretizado)");
+}
+
+window.startQRScanner = function() {
+    document.getElementById('qr-reader').style.display = 'block';
+    if(!html5QrcodeScanner) {
+        html5QrcodeScanner = new Html5Qrcode("qr-reader");
+        html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: {width: 250, height: 250} },
+        (decodedText, decodedResult) => {
+            window.playSound('epic');
+            html5QrcodeScanner.stop(); document.getElementById('qr-reader').style.display = 'none';
+            let parts = decodedText.split('|');
+            if(parts[0] === 'TRADE') {
+                let rCid = parts[2];
+                if(hubProfile.cardsOwned.includes(rCid)) { hubProfile.cardLevels[rCid] = (hubProfile.cardLevels[rCid]||1) + 1; }
+                else { hubProfile.cardsOwned.push(rCid); hubProfile.cardLevels[rCid] = 1; }
+                saveHubStateLocal(); syncUIWithProfile();
+                window.showModal("Transferência Completa!", `Você hackeou a carta ${CARD_DB[rCid].name} com sucesso presencialmente!`);
+            } else { window.showModal("Erro", "Formato de Código Neo-Tec Invalido."); }
+        }, (errorMessage) => { /* ignora erros contínuos de leitura vazia */ });
+    }
+}
+
+// ======================== BOSS GLOBAL ========================
+let globalBossHP = 4250000; let globalBossMax = 5000000;
+window.attackGlobalBoss = function() {
+    window.startClash(false, {name: "MECHA LEVIATÃ (GLOBAL BOSS)", lvl: 50, buffs: {hp: 2000, dmg: 1.5, spd: 0.5}, deck: ['Mecha', 'TitanRaio', 'MagiaOrbital', 'Barao', 'Toxico', 'Sniper'], cardLevels:{'Mecha':10, 'TitanRaio':10}});
+    // Um hack visual: a engine normal lida, e depois ao morrer, mandamos o dano causado para "abater" o boss no UI.
+    window.isGlobalRaid = true; 
+}
+
+
 window.toggleGPS = function() {
     const btn = document.getElementById('btn-gps-toggle'); const display = document.getElementById('gps-dist');
     if(trackingGeoId !== null) { navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null; btn.innerText = "📍 INICIAR GRAVAÇÃO DE ROTA"; btn.style.background = "transparent"; btn.style.borderColor = "var(--neon-blue)"; document.getElementById('task-desc').value += `\n[Distância de ${totalKm.toFixed(2)} km medida atestada.]`; return; }
@@ -676,11 +871,14 @@ window.submitTaskEvidence = async function() {
     if(file && file.type.startsWith("video/")) { const vURL = URL.createObjectURL(file); await window.executePostInjection(desc, vURL, "video"); } 
     else if(file) { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = async function() { const cvs = document.getElementById('task-compress-canvas'); const maxW = 320; const scale = maxW/img.width; cvs.width = maxW; cvs.height = img.height*scale; const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0, cvs.width, cvs.height); await window.executePostInjection(desc, cvs.toDataURL('image/jpeg', 0.5), "image"); }; img.src = e.target.result; }; reader.readAsDataURL(file); } else { await window.executePostInjection(desc, "", "none"); } 
 }
+
 window.executePostInjection = async function(desc, midiaURL, midiaType) {
     hubProfile.xp += curTaskConfig.xp||0; hubProfile.gold += curTaskConfig.gold||0;
     if(curTaskConfig.buffHp) hubProfile.buffs.hp += curTaskConfig.buffHp; if(curTaskConfig.buffDmg) hubProfile.buffs.dmg += curTaskConfig.buffDmg; if(curTaskConfig.buffSpd) hubProfile.buffs.spd += curTaskConfig.buffSpd; if(curTaskConfig.buffMagic) { hubProfile.buffs.magic = (hubProfile.buffs.magic || 0) + curTaskConfig.buffMagic; }
     saveHubStateLocal(); syncUIWithProfile(); 
-    let feedObj = { uid: hubProfile.uid, author: hubProfile.username, avatar: hubProfile.avatar, taskName: curTaskConfig.name, category: curTaskCat, desc: desc, midiaURL: midiaURL, midiaType: midiaType||'none', rewardLog: curTaskConfig, upvotes: {}, downvotes: {}, comments:[], active: true, timestamp: Date.now() };
+    // Injeta dados completos (incluindo avatar e clã na rede social para click no modal)
+    let pData = encodeURIComponent(JSON.stringify(hubProfile));
+    let feedObj = { uid: hubProfile.uid, author: hubProfile.username, pData: pData, avatar: hubProfile.avatar, taskName: curTaskConfig.name, category: curTaskCat, desc: desc, midiaURL: midiaURL, midiaType: midiaType||'none', rewardLog: curTaskConfig, upvotes: {}, downvotes: {}, comments:[], active: true, timestamp: Date.now() };
     let btn = document.getElementById('btn-post-upload'); btn.innerText = "COMPARTILHAR E GANHAR STATUS"; btn.disabled = false;
     document.getElementById('quick-post-box').style.display = 'none'; document.getElementById('task-file').value = ""; document.getElementById('task-desc').value = "";
     if(!useLocalBypass && db) { try { let clObj = { ...feedObj }; clObj.timestamp = serverTimestamp(); await addDoc(collection(db, "hub_feed"), clObj); window.showModal("Publicação Validada", "Os Fibras aceitaram sua postagem. Seu status social aumentou."); return; } catch(e) { } }
@@ -702,10 +900,11 @@ function renderFeedItems() {
     dataSource.forEach((d) => {
         if(window.currentFeedFilter !== "todos" && d.category !== window.currentFeedFilter) return;
         let upArr = Object.keys(d.upvotes || {}); let dnArr = Object.keys(d.downvotes || {}); let av = d.avatar ? d.avatar : "https://i.imgur.com/kKC1zaJ.png";
-        let midiaTag = ""; if(d.midiaType === 'video') midiaTag = `<video class="post-vid" controls src="${d.midiaURL}"></video>`; else if(d.midiaURL && d.midiaURL!=="") midiaTag = `<img class="post-img" src="${d.midiaURL}">`;
+        let midiaTag = ""; if(d.midiaType === 'video') midiaTag = `<video class="post-vid" controls src="${d.midiaURL}"></video>`; else if(d.midiaURL && d.midiaURL!=="") midiaTag = `<img class="post-img" src="${d.midiaURL}" onclick="window.zoomImage(this.src)">`;
         let commentsHTML = (d.comments||[]).map(c => `<div class="comment-item"><b>${c.author}:</b> ${c.text}</div>`).join('');
+        
         let el = document.createElement('div'); el.className = `feed-post ${!d.active ? 'revoked' : ''}`; el.setAttribute("data-cat", d.category||""); 
-        el.innerHTML = `<div class="post-header"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">${d.taskName} (${d.category||'GERAL'})</span> </div> </div> <div style="color:#ddd; margin-bottom:15px; font-size:0.95rem; line-height: 1.5; font-family:'Rajdhani';">${d.desc}</div> ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' } <div class="post-actions"> <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">Aprovo o Empenho (${upArr.length})</button> <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">Mente / Exijo Morte (${dnArr.length})</button> </div> <div class="post-comments"> <div class="comments-list">${commentsHTML}</div> <div class="comment-input-area"><input type="text" id="cmt-${d.id}" placeholder="Insurja neste perfil, diga seu adendo humano!..." class="input-cyber" style="margin:0; padding:10px; font-size:0.85rem;"><button class="btn-neon green" style="width:auto; padding:10px 15px;" onclick="window.addComment('${d.id}')">RESPONDER</button></div> </div>`;
+        el.innerHTML = `<div class="post-header" onclick="window.showProfileModal('${d.pData || ''}')"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">${d.taskName} (${d.category||'GERAL'})</span> </div> </div> <div style="color:#ddd; margin-bottom:15px; font-size:0.95rem; line-height: 1.5; font-family:'Rajdhani';">${d.desc}</div> ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' } <div class="post-actions"> <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">Aprovo o Empenho (${upArr.length})</button> <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">Mente / Exijo Morte (${dnArr.length})</button> </div> <div class="post-comments"> <div class="comments-list">${commentsHTML}</div> <div class="comment-input-area"><input type="text" id="cmt-${d.id}" placeholder="Insurja neste perfil, diga seu adendo humano!..." class="input-cyber" style="margin:0; padding:10px; font-size:0.85rem;"><button class="btn-neon green" style="width:auto; padding:10px 15px;" onclick="window.addComment('${d.id}')">RESPONDER</button></div> </div>`;
         c.appendChild(el);
     });
 }
@@ -771,7 +970,7 @@ function setupHubRealtime() {
     
     try {
         onDisconnect(ref(rtdb, 'hub_presence/'+hubProfile.uid)).remove(); 
-        set(ref(rtdb, 'hub_presence/'+hubProfile.uid), { uid: hubProfile.uid, username: hubProfile.username, lvl: hubProfile.lvl, buffs: hubProfile.buffs, deck: hubProfile.deck, cardLevels: hubProfile.cardLevels });
+        set(ref(rtdb, 'hub_presence/'+hubProfile.uid), { uid: hubProfile.uid, username: hubProfile.username, pData: encodeURIComponent(JSON.stringify(hubProfile)), lvl: hubProfile.lvl, buffs: hubProfile.buffs, deck: hubProfile.deck, cardLevels: hubProfile.cardLevels });
         
         onValue(ref(rtdb, 'hub_presence'), (snap) => {
             document.getElementById('radar-loading').style.display = 'none'; document.getElementById('radar-list').innerHTML = ""; let d = snap.val()||{}; 
@@ -781,9 +980,9 @@ function setupHubRealtime() {
                     let htmlBts = `
                     <div style="display:flex; gap:10px; margin-top:10px; flex-direction:column;">
                         <button class="btn-neon pink" style="font-size:0.7rem; padding:10px;" onclick="window.sendRealDuel('${k}', '${d[k].username}')">TREINO FÍSICO REAL (IRL)</button>
-                        <button class="btn-neon" style="font-size:0.7rem; padding:10px;" onclick='window.sendCyberPvpDuel("${k}", "${d[k].username}")'>ARENA CYBER CLASH (SYNC PVP)</button>
+                        <button class="btn-neon" style="font-size:0.7rem; padding:10px;" onclick='window.sendCyberPvpDuel("${k}", "${d[k].username}")'>ARENA CYBER CLASH</button>
                     </div>`;
-                    document.getElementById('radar-list').innerHTML += `<div class="radar-player"><span class="radar-name glow-text">♦ ALVO CIBERNÉTICO [${d[k].username}] Lvl ${d[k].lvl}</span>${htmlBts}</div>`; 
+                    document.getElementById('radar-list').innerHTML += `<div class="radar-player" onclick="window.showProfileModal('${d[k].pData||''}')"><span class="radar-name glow-text">♦ ALVO: [${d[k].username}] Lvl ${d[k].lvl}</span>${htmlBts}</div>`; 
                 }
             });
         });
@@ -811,64 +1010,30 @@ window.sendCyberPvpDuel = function(tId, tN) {
     let keyId = push(ref(rtdb, 'hub_duels')).key; 
     set(ref(rtdb, 'hub_duels/'+keyId), { type: 'cyber', challengerId: hubProfile.uid, challengerName: hubProfile.username, challengerData: hubProfile, targetId: tId, targetName: tN, state: 'request' }); 
     window.showModal("Aguarde...", `Injetando protocolo de combate no terminal de ${tN}. Aguarde a aceitação para a conexão Real-Time.`);
-    
     const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
         let v = s.val(); if(!v) return;
         if(v.state === 'declined') { window.showModal("Rejeitado", "O oponente fugiu da conexão neural."); unsub(); }
-        if(v.state === 'playing' && v.targetData) { 
-            unsub(); 
-            document.getElementById('system-modal').style.display = 'none';
-            window.isPvPHost = true;
-            window.startClash(true, { matchId: keyId, oppData: v.targetData });
-        }
+        if(v.state === 'playing' && v.targetData) { unsub(); document.getElementById('system-modal').style.display = 'none'; window.isPvPHost = true; window.startClash(true, { matchId: keyId, oppData: v.targetData }); }
     });
 }
-
-window.acceptCyberDuel = function(keyId) {
-    document.getElementById('system-modal').style.display='none'; 
-    if(!window.pendingPvpData) { window.showModal("Erro Fatal", "Dados do desafiante corrompidos no cache."); return; }
-    
-    update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile });
-    window.isPvPHost = false;
-    window.startClash(true, { matchId: keyId, oppData: window.pendingPvpData });
-}
-
-window.sendRealDuel = function(tId, tN) { 
-    let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'irl', challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); window.showModal("Aguarde...", `Injetando Sirene Agressiva na interface de ${tN}.`);
-    const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => { let v = s.val(); if(!v) return; if(v.state === 'declined') { window.showModal("Rejeitado", "O oponente tremeu."); unsub(); } if(v.state === 'ongoing' && !v.resolvedChallengerAlert) { update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); window.showModal("GUERRA DEFINITIVA", "Desligue e vá treinar. Só volte pra reportar resultado.", `<button class="btn-neon green" onclick="window.monitorOngoingDuel('${s.key}', '${tN}')">ESTAMOS RESOLVIDOS</button>`); } });
-};
+window.acceptCyberDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; if(!window.pendingPvpData) { window.showModal("Erro Fatal", "Dados corrompidos."); return; } update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile }); window.isPvPHost = false; window.startClash(true, { matchId: keyId, oppData: window.pendingPvpData }); }
+window.sendRealDuel = function(tId, tN) { let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'irl', challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); window.showModal("Aguarde...", `Injetando Sirene Agressiva na interface de ${tN}.`); const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => { let v = s.val(); if(!v) return; if(v.state === 'declined') { window.showModal("Rejeitado", "O oponente tremeu."); unsub(); } if(v.state === 'ongoing' && !v.resolvedChallengerAlert) { update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); window.showModal("GUERRA DEFINITIVA", "Desligue e vá treinar. Só volte pra reportar resultado.", `<button class="btn-neon green" onclick="window.monitorOngoingDuel('${s.key}', '${tN}')">ESTAMOS RESOLVIDOS</button>`); } }); };
 window.acceptRealDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'ongoing' }); window.showModal("CONFIANÇA BLINDADA", "Feche o radar e sangre no asfalto.", `<button class="btn-neon pink" onclick="window.monitorOngoingDuel('${keyId}', 'O Inimigo')">IR PARA TELA DE JULGAMENTO</button>`); };
 window.declineRealDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'declined' }); }
-window.monitorOngoingDuel = function(duelId, opName) { document.getElementById('system-modal').style.display='none'; window.currentDuelOpponent = opName || "OPONENTE DA RINHA"; window.showModal("JULGAMENTO DE GUERRA", `Se ambos entrarem em conflito de ego e disserem que ganharam, o Sistema pune os dois com banimento de moedas. Vote com honra contra ${opName}.`, `<button class="btn-neon green" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', '${hubProfile.uid}', '${opName}')">FUI UM MONSTRO (GANHEI)</button> <button class="btn-neon pink" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', 'OPONENTE_WIN', '${opName}')">ELE FOI MELHOR HOJE (PERDI)</button>`); }
-window.submitDuelResult = function(duelId, vpick, opName) {
-    update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: vpick }); document.getElementById('system-modal').style.display = 'none'; window.showModal("Cálculos de Matriz", "Aguardando veredito do oponente.");
-    let isTreated = false;
-    onValue(ref(rtdb, 'hub_duels/'+duelId), (snap) => {
-        let d = snap.val(); if(!d.votes || isTreated) return; let vArr = Object.keys(d.votes);
-        if(vArr.length >= 2 && !d.resolved) {
-            update(ref(rtdb, 'hub_duels/'+duelId), { resolved: true }); isTreated = true;
-            let voteA = d.votes[vArr[0]].pick; let voteB = d.votes[vArr[1]].pick; 
-            let wonId = null; if(voteA === vArr[0] && voteB === 'OPONENTE_WIN') wonId = vArr[0]; else if(voteB === vArr[1] && voteA === 'OPONENTE_WIN') wonId = vArr[1]; 
-            if(wonId) { 
-                if(wonId === hubProfile.uid) { hubProfile.gold += 12000; hubProfile.buffs.spd += 0.5; hubProfile.xp += 2000; saveHubStateLocal(); syncUIWithProfile(); window.showModal("A CRENÇA VEIO", `Você massacrou. Ele atestou.\n+ 12.000 CyberGolds!!`, `<button class="btn-neon green" style="width:100%;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', true)">MOSTRAR MEUS FEITOS PRO MUNDO!</button>`);
-                } else { window.showModal("FORÇA ENTELECIONAL LIMPA!", `Você honrou sua palavra.\nCansado? Mostre pro mundo.`, `<button class="btn-neon pink" style="width:100%; margin-bottom:5px;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', false)">POSTAR DERROTA HONROSA</button><br> <button class="btn-neon" style="background:#222; border-color:#222; width:100%;" onclick="document.getElementById('system-modal').style.display='none'">SILÊNCIO TÁTICO HOJE</button>`); }
-            } else { window.showModal("DANO ALGORÍTMICO", "Votos conflitantes. Fraude detectada. Sistema punindo os dois!"); }
-        }
-    });
-}
+window.monitorOngoingDuel = function(duelId, opName) { document.getElementById('system-modal').style.display='none'; window.currentDuelOpponent = opName || "OPONENTE"; window.showModal("JULGAMENTO DE GUERRA", `Vote com honra contra ${opName}.`, `<button class="btn-neon green" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', '${hubProfile.uid}', '${opName}')">FUI UM MONSTRO (GANHEI)</button> <button class="btn-neon pink" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', 'OPONENTE_WIN', '${opName}')">ELE FOI MELHOR HOJE (PERDI)</button>`); }
+window.submitDuelResult = function(duelId, vpick, opName) { update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: vpick }); document.getElementById('system-modal').style.display = 'none'; window.showModal("Cálculos de Matriz", "Aguardando veredito."); let isTreated = false; onValue(ref(rtdb, 'hub_duels/'+duelId), (snap) => { let d = snap.val(); if(!d.votes || isTreated) return; let vArr = Object.keys(d.votes); if(vArr.length >= 2 && !d.resolved) { update(ref(rtdb, 'hub_duels/'+duelId), { resolved: true }); isTreated = true; let voteA = d.votes[vArr[0]].pick; let voteB = d.votes[vArr[1]].pick; let wonId = null; if(voteA === vArr[0] && voteB === 'OPONENTE_WIN') wonId = vArr[0]; else if(voteB === vArr[1] && voteA === 'OPONENTE_WIN') wonId = vArr[1]; if(wonId) { if(wonId === hubProfile.uid) { hubProfile.gold += 12000; hubProfile.buffs.spd += 0.5; hubProfile.xp += 2000; saveHubStateLocal(); syncUIWithProfile(); window.showModal("VITÓRIA", `Você massacrou.\n+ 12.000 CyberGolds!!`, `<button class="btn-neon green" style="width:100%;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', true)">MOSTRAR FEITOS PRO MUNDO!</button>`); } else { window.showModal("DERROTA LIMPA", `Você honrou sua palavra.`, `<button class="btn-neon pink" style="width:100%; margin-bottom:5px;" onclick="window.promptDuelPost('${window.currentDuelOpponent}', false)">POSTAR DERROTA HONROSA</button><br> <button class="btn-neon" style="background:#222; border-color:#222; width:100%;" onclick="document.getElementById('system-modal').style.display='none'">SILÊNCIO TÁTICO HOJE</button>`); } } else { window.showModal("FRAUDE", "Votos conflitantes. Sistema punindo os dois!"); } } }); }
 window.promptDuelPost = function(opponentName, won) { document.getElementById('system-modal').style.display='none'; curTaskCat = 'Duelo'; curTaskConfig = { name: "Combate Corporal vs " + opponentName, xp: won ? 500 : 200, gold: won ? 500 : 50 }; let resTxt = won ? `Derreti as fibras de @${opponentName} em soberania...` : `Destruído fisicamente de forma honrosa por @${opponentName}...`; document.getElementById('task-desc').value = `${resTxt} \n[Adicione Relatos]`; document.getElementById('form-box-title').innerText = `EXPOR TENSÕES OCORRIDAS`; document.getElementById('task-file').value = ""; document.getElementById('gps-panel').style.display = 'none'; document.getElementById('quick-post-box').style.display = 'block'; window.switchTab('tab-feed'); }
 
 // ==================================================================================
-// CYBER CLASH - AUTO BATTLER ARENA 2D DE BOTS CYBERNETICOS 
+// CYBER CLASH - AUTO BATTLER ARENA 
 // ==================================================================================
-
 let cvs, ctx; let engineState = 'MENU'; let lastTime = 0; let energy = 0; let MAX_ENERGY = 10;
 let arenaW = 500; let arenaH = 900; let opponentAI = null; let isAFK = false;
 let entities = []; let projectiles =[]; let effects =[]; let spawnEffects =[]; let playerBase, enemyBase;
 let pvpMatchListener = null;
 
 window.startPvECampaign = function() {
-    if(hubProfile.pveStage >= PVE_CAMPAIGN.length) { window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck: ['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido'], cardLevels:{}});
+    if(hubProfile.pveStage >= PVE_CAMPAIGN.length) { window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck: ['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido', 'TitanRaio'], cardLevels:{}});
     } else { window.startClash(false, PVE_CAMPAIGN[hubProfile.pveStage]); }
 }
 
@@ -896,20 +1061,10 @@ window.startClash = function(isPvP = false, matchData = null) {
     if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); requestAnimationFrame(clashLoop);
 };
 
-window.leaveArena = function() { engineState = 'MENU'; if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); document.getElementById('game-wrapper').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex'; if(pvpMatchListener && window.activeMatchId) { off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions')); pvpMatchListener = null; } }
+window.leaveArena = function() { engineState = 'MENU'; if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); document.getElementById('game-wrapper').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex'; if(pvpMatchListener && window.activeMatchId) { off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions')); pvpMatchListener = null; } window.isGlobalRaid = false; }
 window.returnToHubAndSave = function() { saveHubStateLocal(); syncUIWithProfile(); window.leaveArena(); }
 
-function setupPvPSyncListeners() {
-    const actionsRef = ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions');
-    pvpMatchListener = onChildAdded(actionsRef, (snap) => {
-        let action = snap.val();
-        if(action.uid !== hubProfile.uid) {
-            let mirroredY = arenaH - action.y; let mirroredX = arenaW - action.x; 
-            deployCard(action.cardId, 'enemy', mirroredX, mirroredY, action.lvl, opponentAI.buffs);
-            spawnEffects.push({t:'exp', x:mirroredX, y:mirroredY, life:0.5, col:'var(--neon-pink)'});
-        }
-    });
-}
+function setupPvPSyncListeners() { const actionsRef = ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions'); pvpMatchListener = onChildAdded(actionsRef, (snap) => { let action = snap.val(); if(action.uid !== hubProfile.uid) { let mirroredY = arenaH - action.y; let mirroredX = arenaW - action.x; deployCard(action.cardId, 'enemy', mirroredX, mirroredY, action.lvl, opponentAI.buffs); spawnEffects.push({t:'exp', x:mirroredX, y:mirroredY, life:0.5, col:'var(--neon-pink)'}); } }); }
 
 function getPlayerBuffs() { return hubProfile.buffs || {hp:0, dmg:0, spd:0, magic:0}; }
 
@@ -920,7 +1075,7 @@ function resetArena() {
     document.getElementById('death-screen').style.display = 'none';
 
     playerBase = new Entity(CARD_DB["Barricada"], 'player', arenaW/2, arenaH - 50, pB, 1); playerBase.type = 'base'; playerBase.name="TORRE PRINCIPAL"; playerBase.maxHp = 2000 * (1+(pB.hp/200)); playerBase.hp = playerBase.maxHp; playerBase.w = 120; playerBase.h = 60; playerBase.range = 100; playerBase.dmg = 15 * (1+(pB.dmg||0)); playerBase.atkSpeed = 1.0;
-    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', arenaW/2, 50, oB, opponentAI.lvl); enemyBase.type = 'base'; enemyBase.name = opponentAI.username.toUpperCase(); enemyBase.maxHp = 2000 * (1+(oB.hp/200)); enemyBase.hp = enemyBase.maxHp; enemyBase.w = 120; enemyBase.h = 60; enemyBase.range = 100; enemyBase.dmg = 15 * (1+(oB.dmg||0)); enemyBase.atkSpeed = 1.0;
+    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', arenaW/2, 50, oB, opponentAI.lvl); enemyBase.type = 'base'; enemyBase.name = opponentAI.username.toUpperCase(); enemyBase.maxHp = window.isGlobalRaid ? 5000000 : 2000 * (1+(oB.hp/200)); enemyBase.hp = enemyBase.maxHp; enemyBase.w = 120; enemyBase.h = 60; enemyBase.range = 100; enemyBase.dmg = 15 * (1+(oB.dmg||0)); enemyBase.atkSpeed = 1.0;
     entities.push(playerBase); entities.push(enemyBase);
 }
 
@@ -941,22 +1096,13 @@ function selectCardToPlay(idx) {
     activeCardIdx = idx; let n = document.getElementById(`card-ui-${idx}`); if(n) n.classList.add('active');
 }
 
-// FIX: A zona de clique da arena! Pointer Events reativados
 window.arenaClick = function(e) {
     let rect = cvs.getBoundingClientRect(); let sX = arenaW / rect.width; let sY = arenaH / rect.height; let cx = (e.clientX - rect.left) * sX; let cy = (e.clientY - rect.top) * sY;
     if(activeCardIdx === null || isAFK) { spawnEffects.push({t:'hit', x:cx, y:cy, life:0.2}); return; }
-    
     let cId = hubProfile.deck[activeCardIdx]; let cD = CARD_DB[cId];
-    
-    // TÁTICA: OBRIGA O JOGADOR A POSICIONAR DO SEU LADO DO CAMPO
-    if(cD.type !== 'spell' && cy < arenaH / 2) { 
-        spawnEffects.push({t:'text', txt:'ÁREA RESTRITA (JOGUE DO SEU LADO)', x:cx, y:cy, life:1.2, col:'var(--neon-yellow)'}); 
-        window.playSound('hit'); return;
-    }
-    
+    if(cD.type !== 'spell' && cy < arenaH / 2) { spawnEffects.push({t:'text', txt:'ÁREA RESTRITA (JOGUE DO SEU LADO)', x:cx, y:cy, life:1.2, col:'var(--neon-yellow)'}); window.playSound('hit'); return; }
     let cLvl = hubProfile.cardLevels[cId]||1;
     if(window.activeMatchId) { push(ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions'), { uid: hubProfile.uid, cardId: cId, x: cx, y: cy, lvl: cLvl, timestamp: serverTimestamp() }); }
-
     deployCard(cId, 'player', cx, cy, cLvl, getPlayerBuffs()); energy -= cD.cost; document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx = null;
     spawnEffects.push({t:'exp', x:cx, y:cy, life:0.5, col:'var(--neon-blue)'});
 }
@@ -997,12 +1143,14 @@ class Entity {
     }
     attack(target) {
         if(this.mechanics.includes('cleave') && this.db.id==='Mecha') { window.playSound('shoot'); spawnEffects.push({t:'laser', x1:this.x, y1:this.y, x2:target.x, y2:target.y, life:0.3, col: this.color}); for(let e of entities) { if(e.team!==this.team && Math.hypot(e.x-target.x, e.y-target.y) < 40) e.receiveDmg(this.dmg, this); } } 
+        else if(this.mechanics.includes('chain_lightning')) { window.playSound('shoot'); spawnEffects.push({t:'laser', x1:this.x, y1:this.y, x2:target.x, y2:target.y, life:0.4, col: 'var(--neon-yellow)', w:4}); target.receiveDmg(this.dmg, this); let bounces=3; let lastT = target; for(let b=0; b<bounces; b++){ let nT=null; let nD=999; for(let ee of entities){ if(ee.team!==this.team && ee!==lastT && ee.hp>0) { let td=Math.hypot(ee.x-lastT.x, ee.y-lastT.y); if(td<100 && td<nD){ nD=td; nT=ee; } } } if(nT){ spawnEffects.push({t:'laser', x1:lastT.x, y1:lastT.y, x2:nT.x, y2:nT.y, life:0.4, col: 'var(--neon-yellow)', w:2}); nT.receiveDmg(this.dmg*0.5, this); lastT = nT; } } }
         else if (this.range > 60) { window.playSound('shoot'); projectiles.push({ x:this.x, y:this.y, tx:target.x, ty:target.y, speed: 450, dmg:this.dmg, shooter:this, tObj:target, col:this.color }); } 
-        else { spawnEffects.push({t:'hit', x:target.x, y:target.y, life:0.2}); target.receiveDmg(this.dmg, this); }
+        else { spawnEffects.push({t:'hit', x:target.x, y:target.y, life:0.2}); target.receiveDmg(this.dmg, this); if(this.mechanics.includes('lifesteal')) this.hp = Math.min(this.maxHp, this.hp + this.dmg*0.5); }
     }
     receiveDmg(amt, sourceEntity) {
         if(this.mechanics.includes('dodge') && Math.random() < 0.5) { spawnEffects.push({t:'text', txt:'ESQUIVOU', x:this.x, y:this.y-10, life:0.6}); return; }
-        if(this.exposed) amt *= 1.2; this.hp -= amt; window.playSound('hit');
+        if(this.exposed) amt *= 1.2; this.hp -= amt; window.playSound(this.type === 'base' ? 'boss_hit' : 'hit');
+        if(amt > 100 && this.team === 'player' && this.type === 'base') window.shakeScreen();
         spawnEffects.push({t:'text', txt:`-${Math.floor(amt)}`, x:this.x + (Math.random()*15), y:this.y-(Math.random()*15), life:0.4, col: '#f55'});
         for(let j=0; j<3; j++) spawnEffects.push({t:'debris', x: this.x, y: this.y, vx: (Math.random()-0.5)*150, vy: (Math.random()-0.5)*150, life: 0.4, col: this.color});
         if(this.hp <= 0 && this.type !== 'base') {
@@ -1084,10 +1232,26 @@ function clashLoop() {
     for(let i=entities.length-1; i>=0; i--) { let e = entities[i]; if(e.hp <= 0) { entities.splice(i, 1); continue; } e.update(dt); }
     
     if(enemyBase.hp <= 0) { 
+        if(window.isGlobalRaid) { 
+            let damageDealt = 5000000 - enemyBase.hp; 
+            globalBossHP = Math.max(0, globalBossHP - damageDealt);
+            document.getElementById('boss-hp-fill-ui').style.width = `${(globalBossHP/globalBossMax)*100}%`;
+            document.getElementById('boss-hp-text-ui').innerText = `HP: ${Math.floor(globalBossHP)} / ${globalBossMax}`;
+            endGame("LEVIATÃ ABATIDO", `Você e seu esquadrão ajudaram a comunidade! Dano Causado: ${Math.floor(damageDealt)}. Recompensas épicas geradas!`, true); return;
+        }
         if(!window.activeMatchId) { hubProfile.pveStage++; saveHubStateLocal(); }
         endGame("SUCESSO ABSOLUTO!", "As muralhas do inimigo colapsaram frente aos seus Esquadrões Biológicos.", true); return; 
     }
-    if(playerBase.hp <= 0) { endGame("SISTEMAS EXTERMINADOS", "Seu condicionamento falhou... Vá treinar.", false); return; }
+    if(playerBase.hp <= 0) { 
+        if(window.isGlobalRaid) { 
+            let damageDealt = 5000000 - enemyBase.hp;
+            globalBossHP = Math.max(0, globalBossHP - damageDealt);
+            document.getElementById('boss-hp-fill-ui').style.width = `${(globalBossHP/globalBossMax)*100}%`;
+            document.getElementById('boss-hp-text-ui').innerText = `HP: ${Math.floor(globalBossHP)} / ${globalBossMax}`;
+            endGame("MURALHA DERRUBADA", `Sua base ruiu perante o Leviatã, mas você mitigou ${Math.floor(damageDealt)} de Dano do Boss Global!`, false); return;
+        }
+        endGame("SISTEMAS EXTERMINADOS", "Seu condicionamento falhou... Vá treinar.", false); return; 
+    }
 
     for(let i=projectiles.length-1; i>=0; i--) {
         let p = projectiles[i]; let d = Math.hypot(p.tx-p.x, p.ty-p.y);
@@ -1110,11 +1274,7 @@ function drawArena() {
     
     ctx.fillStyle = "rgba(255,0,234,0.15)"; ctx.fillRect(0, arenaH/2 - 2, arenaW, 4);
 
-    // HIGHLIGHT DA ÁREA DE POSICIONAMENTO TÁTICO
-    if (activeCardIdx !== null && !isAFK) {
-        ctx.fillStyle = "rgba(0, 255, 102, 0.05)";
-        ctx.fillRect(0, arenaH/2, arenaW, arenaH/2);
-    }
+    if (activeCardIdx !== null && !isAFK) { ctx.fillStyle = "rgba(0, 255, 102, 0.05)"; ctx.fillRect(0, arenaH/2, arenaW, arenaH/2); }
 
     effects.forEach(e => e.render(ctx)); entities.forEach(e => e.render(ctx));
     
@@ -1139,12 +1299,9 @@ function updateUIRealtime() {
 function endGame(tit, flv, win) {
     engineState = 'DEAD';
     if(win) window.playSound('victory'); else window.playSound('explosion');
-    
-    // NERF DA ECONOMIA DO JOGO PARA INCENTIVAR A VIDA REAL (Tasks dão Ouro, Lutas dão pouco)
-    let recompensa = (enemyBase.hp <= 0) ? (150 + Math.floor(Math.random()*100)) : 25; 
-    
+    let recompensa = window.isGlobalRaid ? 2000 : ((enemyBase.hp <= 0) ? (150 + Math.floor(Math.random()*100)) : 25); 
     document.getElementById('end-title').innerText = tit; document.getElementById('end-flavor').innerText = flv; document.getElementById('final-score').innerText = `$ ${recompensa}`; 
-    hubProfile.gold += recompensa; hubProfile.xp += (enemyBase.hp<=0) ? 100 : 10;
+    hubProfile.gold += recompensa; hubProfile.xp += (enemyBase.hp<=0 || window.isGlobalRaid) ? 500 : 10;
     document.getElementById('death-screen').style.display='flex';
 }
 </script>
