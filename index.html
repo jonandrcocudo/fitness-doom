@@ -7,7 +7,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
         
-        * { box-sizing: border-box; } /* FIX: Evita que o padding estoure as divs no mobile */
+        * { box-sizing: border-box; }
         
         body { margin: 0; overflow: hidden; background: #050510; user-select: none; font-family: 'Rajdhani', sans-serif; -webkit-touch-callout: none; color: white;}
         ::-webkit-scrollbar { width: 6px; height: 6px;}
@@ -129,7 +129,7 @@
         #btn-auto { background: #222; border: 1px solid #aaa; color: #aaa; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer;}
         #btn-auto.active { background: #0ff; color: #000; border-color: #0ff; box-shadow: 0 0 10px #0ff;}
 
-        /* FIX MOBILE: Combate Sobreposição */
+        /* FIX MOBILE: Layout Layout Stack */
         @media (max-width: 900px) {
             #hub-container { flex-direction: column; overflow-y: auto; overflow-x: hidden; }
             .hub-sidebar { width: 100%; height: auto; flex-direction: column; border-right: none; border-bottom: 2px solid #0ff; flex-shrink: 0; }
@@ -255,7 +255,7 @@
 
             <div id="tab-missoes" class="hub-tab">
                 <h2 class="hub-title">REGISTRO DE TREINO FÍSICO</h2>
-                <p style="color:#aaa;">Realize ações reais, prove com foto/GPS e ganhe status na Arena.</p>
+                <p style="color:#aaa;">Realize ações reais, prove e ganhe status reais na Arena.</p>
                 
                 <div class="grid-cards">
                     <div class="action-card" style="border-color:#ff00de;">
@@ -392,7 +392,7 @@ const CARD_DB =[
     { id: 'c2', name: 'Corredor Neon', cat: 'comum', type: 'troop', cost: 1, hp: 100, dmg: 20, range: 40, spd: 90, atkSpd: 0.8, tags: ['melee', 'ground'] },
     { id: 'c3', name: 'Drone Rastreador', cat: 'comum', type: 'troop', cost: 2, hp: 120, dmg: 15, range: 120, spd: 50, atkSpd: 1.0, tags:['ranged', 'flyer'], ability: 'expose' },
     { id: 'c4', name: 'Falcão de Sucata', cat: 'comum', type: 'troop', cost: 2, hp: 150, dmg: 35, range: 40, spd: 60, atkSpd: 1.2, tags:['melee', 'flyer'] },
-    { id: 'r1', name: 'Bot Kamikaze', cat: 'rara', type: 'troop', cost: 3, hp: 200, dmg: 300, range: 50, spd: 70, atkSpd: 0, tags: ['melee', 'ground'], ability: 'explode' },
+    { id: 'r1', name: 'Bot Kamikaze', cat: 'rara', type: 'troop', cost: 3, hp: 200, dmg: 300, range: 50, spd: 70, atkSpd: 0.1, tags: ['melee', 'ground'], ability: 'explode' }, // FIX: AtkSpd 0 travava lógica, agora com 0.1 permite engatilhar a explosão
     { id: 'r2', name: 'Bio-Tank', cat: 'rara', type: 'troop', cost: 5, hp: 1200, dmg: 50, range: 50, spd: 25, atkSpd: 1.5, tags: ['melee', 'ground', 'tank'] },
     { id: 'r3', name: 'Holo-Fantasma', cat: 'rara', type: 'troop', cost: 4, hp: 250, dmg: 60, range: 40, spd: 45, atkSpd: 1.0, tags:['melee', 'ground'], ability: 'dodge' },
     { id: 'r4', name: 'Assassino Furtivo', cat: 'rara', type: 'troop', cost: 4, hp: 200, dmg: 150, range: 40, spd: 65, atkSpd: 1.5, tags:['melee', 'ground'], ability: 'stealth' },
@@ -462,18 +462,18 @@ function saveHubStateLocal() {
 }
 
 function syncUIWithProfile() {
-    hubProfile.lvl = 1 + Math.floor(hubProfile.xp / 1000);
+    hubProfile.lvl = 1 + Math.floor((hubProfile.xp || 0) / 1000);
     document.getElementById('hub-ui-name').innerText = hubProfile.username;
     document.getElementById('hub-ui-lvl').innerText = "NÍVEL " + hubProfile.lvl;
     document.getElementById('hub-ui-bio').innerText = `"${hubProfile.bio}"`;
     document.getElementById('hub-avatar-img').src = hubProfile.avatar;
-    document.getElementById('hub-ui-xp').innerText = Math.floor(hubProfile.xp);
-    document.getElementById('hub-ui-gold').innerText = Math.floor(hubProfile.gold);
+    document.getElementById('hub-ui-xp').innerText = Math.floor(hubProfile.xp || 0);
+    document.getElementById('hub-ui-gold').innerText = Math.floor(hubProfile.gold || 0);
     
-    document.getElementById('hub-ui-regen').innerText = `+${(hubProfile.buffs.regen*100).toFixed(0)}%`;
-    document.getElementById('hub-ui-hp').innerText = `+${(hubProfile.buffs.hp*100).toFixed(0)}%`;
-    document.getElementById('hub-ui-dmg').innerText = `+${(hubProfile.buffs.dmg*100).toFixed(0)}%`;
-    document.getElementById('hub-ui-slow').innerText = `-${(hubProfile.buffs.slow*100).toFixed(0)}%`;
+    document.getElementById('hub-ui-regen').innerText = `+${((hubProfile.buffs.regen||0)*100).toFixed(0)}%`;
+    document.getElementById('hub-ui-hp').innerText = `+${((hubProfile.buffs.hp||0)*100).toFixed(0)}%`;
+    document.getElementById('hub-ui-dmg').innerText = `+${((hubProfile.buffs.dmg||0)*100).toFixed(0)}%`;
+    document.getElementById('hub-ui-slow').innerText = `-${((hubProfile.buffs.slow||0)*100).toFixed(0)}%`;
     
     document.getElementById('prof-edit-name').value = hubProfile.username;
     document.getElementById('prof-edit-bio').value = hubProfile.bio;
@@ -537,20 +537,17 @@ window.toggleGPS = function() {
 };
 
 // =========================================================================
-// 5. MISSÕES E FEED (TRIBUNAL FIREBASE/LOCAL)
+// 5. MISSÕES E FEED (TRIBUNAL FIX - PUNIÇÃO ATIVADA)
 // =========================================================================
 function saveLocalFeed(postObj) { let l =[]; try { if(localStorage.getItem('localFeed')) l = JSON.parse(localStorage.getItem('localFeed')); }catch(e){} l.unshift(postObj); if(l.length > 15) l = l.slice(0, 15); localStorage.setItem('localFeed', JSON.stringify(l)); }
 function getLocalFeed() { try { if(localStorage.getItem('localFeed')) return JSON.parse(localStorage.getItem('localFeed')); }catch(e){} return[]; }
 
 let currentTaskConfig = null;
 
-// NOVO: Abertura para Treinos Customizados
 window.openCustomTaskUploader = function() {
     document.getElementById('task-category-select').style.display = 'block';
     document.getElementById('form-box-title').innerText = `CRIAR TREINO PERSONALIZADO`;
-    document.getElementById('task-desc').value = ""; 
-    document.getElementById('task-file').value = ""; 
-    document.getElementById('task-upload-status').innerText = "";
+    document.getElementById('task-desc').value = ""; document.getElementById('task-file').value = ""; document.getElementById('task-upload-status').innerText = "";
     document.getElementById('gps-panel').style.display = 'none';
     document.getElementById('quick-post-box').style.display = 'block';
 
@@ -560,7 +557,7 @@ window.openCustomTaskUploader = function() {
 
 window.openTaskUploader = function(name, xp, gold, buffType, buffAmount, requireGps) {
     currentTaskConfig = { isCustom: false, name, xp, gold, buffType, buffAmount };
-    document.getElementById('task-category-select').style.display = 'none'; // Esconde menu custom
+    document.getElementById('task-category-select').style.display = 'none';
     document.getElementById('form-box-title').innerText = `PROVAR MÉRITO: ${name.toUpperCase()}`;
     document.getElementById('task-desc').value = ""; document.getElementById('task-file').value = ""; document.getElementById('task-upload-status').innerText = "";
     document.getElementById('gps-panel').style.display = requireGps ? 'block' : 'none';
@@ -590,31 +587,34 @@ window.submitTaskEvidence = function() {
 }
 
 function postLogicExecution(desc, midiaURL, midiaType) {
-    // Avalia caso seja custom task
     if(currentTaskConfig.isCustom) {
         let catSelect = document.getElementById('task-category-select').value;
         let xp = 300, gold = 600, buffType = 'hp';
-        
         if(catSelect === 'Cardio') { buffType = 'regen'; }
         else if(catSelect === 'Flexibilidade') { buffType = 'dmg'; }
-        else if(catSelect === 'Parkour') { buffType = 'hp'; xp = 500; gold = 800; } // Buff focado em impacto
-        else if(catSelect === 'VR') { buffType = 'regen'; xp = 400; gold = 700; } // Buff focado agilidade
+        else if(catSelect === 'Parkour') { buffType = 'hp'; xp = 500; gold = 800; } 
+        else if(catSelect === 'VR') { buffType = 'regen'; xp = 400; gold = 700; } 
         
         currentTaskConfig = { name: 'Personalizado: ' + catSelect, xp: xp, gold: gold, buffType: buffType, buffAmount: 0.05 };
-        document.getElementById('task-category-select').style.display = 'none';
     }
 
-    hubProfile.xp += currentTaskConfig.xp; hubProfile.gold = (parseInt(hubProfile.gold)||0) + currentTaskConfig.gold;
-    if(hubProfile.buffs[currentTaskConfig.buffType] !== undefined) hubProfile.buffs[currentTaskConfig.buffType] += currentTaskConfig.buffAmount;
+    hubProfile.xp = (hubProfile.xp || 0) + currentTaskConfig.xp; 
+    hubProfile.gold = (parseInt(hubProfile.gold)||0) + currentTaskConfig.gold;
+    
+    // FIX: Garantir que não vire NaN
+    if(hubProfile.buffs[currentTaskConfig.buffType] !== undefined) {
+        hubProfile.buffs[currentTaskConfig.buffType] = (parseFloat(hubProfile.buffs[currentTaskConfig.buffType]) || 0) + currentTaskConfig.buffAmount;
+    }
+    
     saveHubStateLocal(); syncUIWithProfile(); playSound('gacha');
 
-    let feedObj = { uid: hubProfile.uid, author: hubProfile.username, avatar: hubProfile.avatar, taskName: currentTaskConfig.name, category: currentTaskConfig.name, desc: desc, midiaURL: midiaURL, midiaType: midiaType, rewardLog: currentTaskConfig, upvotes: {}, downvotes: {}, active: true, timestamp: Date.now() };
+    let feedObj = { uid: hubProfile.uid, author: hubProfile.username, avatar: hubProfile.avatar, taskName: currentTaskConfig.name, category: currentTaskConfig.name, desc: desc, midiaURL: midiaURL, midiaType: midiaType, rewardLog: currentTaskConfig, upvotes: {}, downvotes: {}, active: true, timestamp: Date.now(), clientPunished: false, clientBonus: false };
     document.getElementById('quick-post-box').style.display = 'none';
 
     try {
         if(!window.isFirebaseActive || hubProfile.uid.startsWith('local_')) throw new Error("Offline");
         feedObj.timestamp = serverTimestamp();
-        addDoc(collection(db, "hub_feed"), feedObj).then(() => { showModal("PACOTE EM ÓRBITA", "Sua prova foi postada na comunidade global."); });
+        addDoc(collection(db, "hub_feed"), feedObj).then(() => { showModal("PACOTE EM ÓRBITA", "Sua prova foi postada na comunidade global. A comunidade vai julgar."); });
     } catch(e) {
         feedObj.id = Math.random().toString(36).substring(2,9); saveLocalFeed(feedObj); showModal("RECOMPENSA COMPUTADA OFFLINE", "Você está jogando localmente. Seus buffs foram aplicados e o post salvo no dispositivo."); renderFeedItems();
     }
@@ -626,7 +626,40 @@ function listenToFeed() {
         if(!window.isFirebaseActive) throw new Error("Offline Request");
         const q = query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(15));
         onSnapshot(q, (snap) => {
-            lastCloudSnapshot =[]; snap.forEach((docSnap) => { let d = docSnap.data(); d.id = docSnap.id; lastCloudSnapshot.push(d); }); renderFeedItems();
+            lastCloudSnapshot =[]; 
+            snap.forEach((docSnap) => { 
+                let d = docSnap.data(); d.id = docSnap.id; 
+                lastCloudSnapshot.push(d); 
+                
+                // SISTEMA DE JUSTIÇA - PUNIÇÃO E RECOMPENSA LOCAL DO AUTOR
+                if (d.uid === hubProfile.uid) {
+                    if (d.active === false && !d.clientPunished) {
+                        // Autor toma o prejuízo porque postou fraude
+                        hubProfile.xp = Math.max(0, hubProfile.xp - (d.rewardLog?.xp || 0));
+                        hubProfile.gold = Math.max(0, hubProfile.gold - (d.rewardLog?.gold || 0));
+                        if(hubProfile.buffs[d.rewardLog?.buffType] !== undefined) {
+                            hubProfile.buffs[d.rewardLog.buffType] = Math.max(0, (hubProfile.buffs[d.rewardLog.buffType] || 0) - (d.rewardLog?.buffAmount || 0));
+                        }
+                        
+                        d.clientPunished = true;
+                        updateDoc(doc(db, "hub_feed", d.id), { clientPunished: true }).catch(()=>{});
+                        
+                        alert(`🚨 TRIBUNAL: Sua missão '${d.taskName}' foi declarada FRAUDE pela comunidade. XP, Gold e Buffs revogados!`);
+                        saveHubStateLocal(); syncUIWithProfile();
+                    } else if (d.bonusAwarded && !d.clientBonus) {
+                        // Autor ganha bônus de engajamento limpo
+                        hubProfile.gold = (parseInt(hubProfile.gold)||0) + 500;
+                        hubProfile.xp += 200;
+                        
+                        d.clientBonus = true;
+                        updateDoc(doc(db, "hub_feed", d.id), { clientBonus: true }).catch(()=>{});
+                        
+                        alert(`🌟 TRIBUNAL: Missão '${d.taskName}' 100% Aprovada! +500 Gold e +200 XP de Bônus!`);
+                        saveHubStateLocal(); syncUIWithProfile();
+                    }
+                }
+            }); 
+            renderFeedItems();
         }, (error) => { throw error; });
     } catch(e) { lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
 }
@@ -655,16 +688,32 @@ function renderFeedItems() {
     });
 }
 
+// FIX TRIBUNAL: Agora afeta os dados no banco real e marca as tags
 window.castVote = async function(postId, type) {
     if(!window.isFirebaseActive || hubProfile.uid.startsWith('local_')) return alert("Votação online bloqueada (Offline).");
     try {
         const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef); if(!pSn.exists()) return; let p = pSn.data();
+        
+        if(hubProfile.uid === p.uid) return alert("Sistema anti-fraude: Você não pode julgar seu próprio treino!");
         if(!p.active) return alert("Esse veredito não reabre (REVOGADO DEFINITIVO).");
-        if(type === 'up') { p.upvotes = p.upvotes || {}; p.upvotes[hubProfile.uid] = true; delete (p.downvotes||{})[hubProfile.uid]; } else { p.downvotes = p.downvotes || {}; p.downvotes[hubProfile.uid] = true; delete (p.upvotes||{})[hubProfile.uid]; }
+        
+        if(type === 'up') { p.upvotes = p.upvotes || {}; p.upvotes[hubProfile.uid] = true; delete (p.downvotes||{})[hubProfile.uid]; } 
+        else { p.downvotes = p.downvotes || {}; p.downvotes[hubProfile.uid] = true; delete (p.upvotes||{})[hubProfile.uid]; }
+        
         let uCnt = Object.keys(p.upvotes).length; let dCnt = Object.keys(p.downvotes).length;
-        if( (uCnt+dCnt) >= 3 && dCnt > uCnt ) { p.active = false; alert("Post marcado como Fraude pela comunidade."); }
+        
+        // Votos de fraude ou mérito têm peso (Basta 1 para efeito imediato em redes pequenas)
+        if( (uCnt+dCnt) >= 1 ) { 
+            if(dCnt > uCnt && !p.clientPunished) {
+                p.active = false; // Derruba o post
+                alert("Veredito: FRAUDE. O sistema vai aplicar as penalidades no autor automaticamente.");
+            } else if (uCnt > dCnt && !p.bonusAwarded) {
+                p.bonusAwarded = true; // Marca bônus
+                alert("Veredito: APROVADO! Você ajudou o autor a garantir um bônus no sistema.");
+            }
+        }
         await updateDoc(pRef, p);
-    } catch(e) {}
+    } catch(e) { console.error(e) }
 };
 
 // =========================================================================
@@ -787,7 +836,7 @@ function showModal(t, d, btns) {
 }
 
 // =========================================================================
-// 8. ENGINE 2D - CLASH ARENA E AUDIO NATIVO
+// 8. ENGINE 2D - CLASH ARENA E AUDIO NATIVO (FIX CONGELAMENTO)
 // =========================================================================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playSound(type) {
@@ -814,9 +863,8 @@ let selectedCardId = null;
 
 class Base {
     constructor(team, hpMultiplier) {
-        this.team = team; this.maxHp = 2500 * (1 + hpMultiplier); this.hp = this.maxHp;
+        this.team = team; this.maxHp = 2500 * (1 + (hpMultiplier||0)); this.hp = this.maxHp;
         this.x = cw / 2; this.y = team === 0 ? ch - 100 : 100; this.radius = 40; this.isBase = true;
-        // FIX CLASH CRASH: Tropa inimiga tentava ler o tipo da Base sem isso. Adicionamos a tag nativa.
         this.data = { tags: ['building', 'ground'], type: 'building' };
     }
     draw(ctx) {
@@ -830,27 +878,63 @@ class Unit {
     constructor(data, level, team, x, y, globalBuffs) {
         this.id = Math.random().toString(); this.data = data; this.team = team; this.x = x; this.y = y;
         let lvlMult = 1 + (level * 0.1);
-        let hpMult = 1 + globalBuffs.hp; if(!data.tags.includes('tank')) hpMult = 1;
+        let hpMult = 1 + (globalBuffs.hp||0); if(!data.tags.includes('tank')) hpMult = 1;
         this.maxHp = data.hp * lvlMult * hpMult; this.hp = this.maxHp;
-        this.dmg = data.dmg * lvlMult * (1 + globalBuffs.dmg);
-        this.spd = data.spd * (1 - globalBuffs.slow); this.atkSpd = data.atkSpd * (1 - globalBuffs.slow);
+        this.dmg = data.dmg * lvlMult * (1 + (globalBuffs.dmg||0));
+        this.spd = data.spd * (1 - (globalBuffs.slow||0)); this.atkSpd = data.atkSpd * (1 - (globalBuffs.slow||0));
         this.radius = data.tags.includes('tank') ? 18 : 12; this.target = null; this.atkCooldown = 0; this.state = 'move'; this.status =[];
         this.color = team === 0 ? '#0ff' : '#f00'; this.yOffset = data.tags.includes('flyer') ? -20 : 0; this.isStealth = data.ability === 'stealth';
     }
+    
     update(dt) {
         if(this.hp <= 0) return;
         let isFrozen = false; let atkMod = 1; let spdMod = 1;
-        for(let i=this.status.length-1; i>=0; i--) { let s = this.status[i]; s.timer -= dt; if(s.type === 'freeze' || s.type === 'stun') isFrozen = true; if(s.type === 'buff_atkspd') atkMod = 2; if(s.timer <= 0) this.status.splice(i, 1); }
+        
+        for(let i=this.status.length-1; i>=0; i--) { 
+            let s = this.status[i]; s.timer -= dt; 
+            if(s.type === 'freeze' || s.type === 'stun') isFrozen = true; 
+            if(s.type === 'buff_atkspd') atkMod = 2; 
+            if(s.timer <= 0) this.status.splice(i, 1); 
+        }
+        
         if(isFrozen) return;
         if(this.atkCooldown > 0) this.atkCooldown -= dt;
+        
         if(!this.target || this.target.hp <= 0) this.findTarget();
+        
+        // FIX CONGELAMENTO: Lógica blindada contra divisões por zero ou unidades paradas (Ex: Barricadas)
         if(this.target) {
             let dx = this.target.x - this.x; let dy = this.target.y - this.y; let dist = Math.sqrt(dx*dx + dy*dy);
+            
             if(dist <= this.data.range + this.radius + this.target.radius) {
-                this.state = 'attack'; if(this.atkCooldown <= 0 && this.atkSpd > 0) { this.attack(this.target); this.atkCooldown = this.atkSpd / atkMod; this.isStealth = false; }
-            } else { this.state = 'move'; this.x += (dx/dist) * this.spd * spdMod * dt; this.y += (dy/dist) * this.spd * spdMod * dt; }
-        } else { this.y += (this.team === 0 ? -1 : 1) * this.spd * spdMod * dt; }
+                this.state = 'attack'; 
+                if(this.atkCooldown <= 0) {
+                    if (this.atkSpd > 0) {
+                        this.attack(this.target); 
+                        this.atkCooldown = this.atkSpd / atkMod; 
+                        this.isStealth = false; 
+                    } else if (this.data.ability === 'explode') {
+                        // Unidades suicidas garantem seu ataque ao invés de congelar no lugar
+                        this.attack(this.target);
+                    }
+                }
+            } else { 
+                this.state = 'move'; 
+                if(this.spd > 0 && dist > 0) {
+                    this.x += (dx/dist) * this.spd * spdMod * dt; 
+                    this.y += (dy/dist) * this.spd * spdMod * dt; 
+                }
+            }
+        } else { 
+            if(this.spd > 0) {
+                this.y += (this.team === 0 ? -1 : 1) * this.spd * spdMod * dt; 
+            }
+        }
+
+        // Limpeza de mapa para evitar loops infinitos de busca offscreen
+        if(this.y < -300 || this.y > ch + 300) this.hp = 0;
     }
+    
     findTarget() {
         let nearest = null; let minDist = Infinity;
         for(let e of entities) {
@@ -860,13 +944,26 @@ class Unit {
             if(d < minDist) { minDist = d; nearest = e; }
         } this.target = nearest;
     }
+    
     attack(tgt) {
         if(this.data.tags.includes('healer')) { tgt.hp = Math.min(tgt.maxHp, tgt.hp - this.dmg); createText("Cura", tgt.x, tgt.y, '#0f0'); return; }
         playSound('hit');
-        if(this.data.ability === 'explode') { this.hp = 0; entities.forEach(e => { if(e.team !== this.team && !e.isBase) { let d=Math.sqrt((e.x-this.x)**2 + (e.y-this.y)**2); if(d<100) e.hp -= this.dmg; } }); createExplosion(this.x, this.y, 100); return; }
+        if(this.data.ability === 'explode') { 
+            this.hp = 0; 
+            entities.forEach(e => { 
+                if(e.team !== this.team && !e.isBase) { 
+                    let d=Math.sqrt((e.x-this.x)**2 + (e.y-this.y)**2); 
+                    if(d<100) e.hp -= this.dmg; 
+                } 
+            }); 
+            createExplosion(this.x, this.y, 100); 
+            return; 
+        }
         if(this.data.ability === 'expose') { tgt.status.push({type:'expose', timer:3}); }
+        
         let finalDmg = this.dmg; if(tgt.status.some(s=>s.type==='expose')) finalDmg *= 1.2;
         if(tgt.data && tgt.data.ability === 'dodge' && Math.random() < 0.5) { createText("Esquiva!", tgt.x, tgt.y, '#fff'); return; }
+        
         if(this.data.tags.includes('ranged')) particles.push(new Projectile(this.x, this.y, tgt, finalDmg, this.color));
         else { tgt.hp -= finalDmg; createText(`-${Math.floor(finalDmg)}`, tgt.x, tgt.y, '#f00'); }
     }
@@ -933,12 +1030,18 @@ window.startPvPAgainstPlayer = async function(enemyUid) {
 
 function startBattle(enemyData) {
     document.getElementById('hub-container').style.display = 'none'; document.getElementById('game-wrapper').style.display = 'block';
+    
+    // FIX CONGELAMENTO MULTIPLO: Se o botão for clicado múltiplas vezes, previne loops sobrepostos.
+    if(gameLoopId) cancelAnimationFrame(gameLoopId);
+    
     playerStats = { buffs: hubProfile.buffs, inv: hubProfile.inventory };
     enemyAI = enemyData;
     p1Base = new Base(0, playerStats.buffs.hp); p2Base = new Base(1, enemyAI.buffs.hp);
     entities =[p1Base, p2Base]; particles =[]; energy = 0; drawPile =[...hubProfile.deck]; hand =[];
     for(let i=0; i<4; i++) drawCard();
-    renderHand(); lastTime = performance.now(); isGameRunning = true; gameLoopId = requestAnimationFrame(gameLoop);
+    renderHand(); lastTime = performance.now(); isGameRunning = true; 
+    
+    gameLoopId = requestAnimationFrame(gameLoop);
 }
 
 function drawCard() { if(drawPile.length === 0) drawPile =[...hubProfile.deck]; let idx = Math.floor(Math.random() * drawPile.length); hand.push(drawPile.splice(idx, 1)[0]); }
@@ -979,7 +1082,7 @@ function deployCard(id, team, x, y) {
 }
 
 function updateAI(dt) {
-    enemyAI.energy += (energyRegenRate * (1 + enemyAI.buffs.regen)) * dt; if(enemyAI.energy >= 10) enemyAI.energy = 10;
+    enemyAI.energy += (energyRegenRate * (1 + (enemyAI.buffs.regen||0))) * dt; if(enemyAI.energy >= 10) enemyAI.energy = 10;
     if(enemyAI.energy >= 3 && Math.random() < 0.02) {
         let affordable = enemyAI.deck.filter(id => getCard(id).cost <= enemyAI.energy);
         if(affordable.length > 0) {
@@ -998,12 +1101,11 @@ function updateAutoMode() {
 function gameLoop(now) {
     if(!isGameRunning) return; let dt = (now - lastTime) / 1000; if(dt > 0.1) dt = 0.1; lastTime = now;
     
-    energy += (energyRegenRate * (1 + playerStats.buffs.regen)) * dt; if(energy > MAX_ENERGY) energy = MAX_ENERGY;
+    energy += (energyRegenRate * (1 + (playerStats.buffs.regen||0))) * dt; if(energy > MAX_ENERGY) energy = MAX_ENERGY;
     updateAI(dt); if(isAutoMode) updateAutoMode();
     
     for(let i=entities.length-1; i>=0; i--) { let e = entities[i]; if(e.update) e.update(dt); if(e.hp <= 0) { if(e.die) e.die(); entities.splice(i, 1); } }
     
-    // FIX CLASH CRASH: O array de partículas estava engolindo objetos errados e falhando
     for(let i=particles.length-1; i>=0; i--) { 
         let p = particles[i];
         p.update(dt); 
