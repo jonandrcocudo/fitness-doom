@@ -392,7 +392,7 @@ const CARD_DB =[
     { id: 'c2', name: 'Corredor Neon', cat: 'comum', type: 'troop', cost: 1, hp: 100, dmg: 20, range: 40, spd: 90, atkSpd: 0.8, tags: ['melee', 'ground'] },
     { id: 'c3', name: 'Drone Rastreador', cat: 'comum', type: 'troop', cost: 2, hp: 120, dmg: 15, range: 120, spd: 50, atkSpd: 1.0, tags:['ranged', 'flyer'], ability: 'expose' },
     { id: 'c4', name: 'Falcão de Sucata', cat: 'comum', type: 'troop', cost: 2, hp: 150, dmg: 35, range: 40, spd: 60, atkSpd: 1.2, tags:['melee', 'flyer'] },
-    { id: 'r1', name: 'Bot Kamikaze', cat: 'rara', type: 'troop', cost: 3, hp: 200, dmg: 300, range: 50, spd: 70, atkSpd: 0.1, tags: ['melee', 'ground'], ability: 'explode' }, // FIX: AtkSpd 0 travava lógica, agora com 0.1 permite engatilhar a explosão
+    { id: 'r1', name: 'Bot Kamikaze', cat: 'rara', type: 'troop', cost: 3, hp: 200, dmg: 300, range: 50, spd: 70, atkSpd: 0.1, tags: ['melee', 'ground'], ability: 'explode' }, 
     { id: 'r2', name: 'Bio-Tank', cat: 'rara', type: 'troop', cost: 5, hp: 1200, dmg: 50, range: 50, spd: 25, atkSpd: 1.5, tags: ['melee', 'ground', 'tank'] },
     { id: 'r3', name: 'Holo-Fantasma', cat: 'rara', type: 'troop', cost: 4, hp: 250, dmg: 60, range: 40, spd: 45, atkSpd: 1.0, tags:['melee', 'ground'], ability: 'dodge' },
     { id: 'r4', name: 'Assassino Furtivo', cat: 'rara', type: 'troop', cost: 4, hp: 200, dmg: 150, range: 40, spd: 65, atkSpd: 1.5, tags:['melee', 'ground'], ability: 'stealth' },
@@ -537,7 +537,7 @@ window.toggleGPS = function() {
 };
 
 // =========================================================================
-// 5. MISSÕES E FEED (TRIBUNAL FIX - PUNIÇÃO ATIVADA)
+// 5. MISSÕES E FEED
 // =========================================================================
 function saveLocalFeed(postObj) { let l =[]; try { if(localStorage.getItem('localFeed')) l = JSON.parse(localStorage.getItem('localFeed')); }catch(e){} l.unshift(postObj); if(l.length > 15) l = l.slice(0, 15); localStorage.setItem('localFeed', JSON.stringify(l)); }
 function getLocalFeed() { try { if(localStorage.getItem('localFeed')) return JSON.parse(localStorage.getItem('localFeed')); }catch(e){} return[]; }
@@ -601,7 +601,6 @@ function postLogicExecution(desc, midiaURL, midiaType) {
     hubProfile.xp = (hubProfile.xp || 0) + currentTaskConfig.xp; 
     hubProfile.gold = (parseInt(hubProfile.gold)||0) + currentTaskConfig.gold;
     
-    // FIX: Garantir que não vire NaN
     if(hubProfile.buffs[currentTaskConfig.buffType] !== undefined) {
         hubProfile.buffs[currentTaskConfig.buffType] = (parseFloat(hubProfile.buffs[currentTaskConfig.buffType]) || 0) + currentTaskConfig.buffAmount;
     }
@@ -631,10 +630,8 @@ function listenToFeed() {
                 let d = docSnap.data(); d.id = docSnap.id; 
                 lastCloudSnapshot.push(d); 
                 
-                // SISTEMA DE JUSTIÇA - PUNIÇÃO E RECOMPENSA LOCAL DO AUTOR
                 if (d.uid === hubProfile.uid) {
                     if (d.active === false && !d.clientPunished) {
-                        // Autor toma o prejuízo porque postou fraude
                         hubProfile.xp = Math.max(0, hubProfile.xp - (d.rewardLog?.xp || 0));
                         hubProfile.gold = Math.max(0, hubProfile.gold - (d.rewardLog?.gold || 0));
                         if(hubProfile.buffs[d.rewardLog?.buffType] !== undefined) {
@@ -647,7 +644,6 @@ function listenToFeed() {
                         alert(`🚨 TRIBUNAL: Sua missão '${d.taskName}' foi declarada FRAUDE pela comunidade. XP, Gold e Buffs revogados!`);
                         saveHubStateLocal(); syncUIWithProfile();
                     } else if (d.bonusAwarded && !d.clientBonus) {
-                        // Autor ganha bônus de engajamento limpo
                         hubProfile.gold = (parseInt(hubProfile.gold)||0) + 500;
                         hubProfile.xp += 200;
                         
@@ -688,7 +684,6 @@ function renderFeedItems() {
     });
 }
 
-// FIX TRIBUNAL: Agora afeta os dados no banco real e marca as tags
 window.castVote = async function(postId, type) {
     if(!window.isFirebaseActive || hubProfile.uid.startsWith('local_')) return alert("Votação online bloqueada (Offline).");
     try {
@@ -702,13 +697,12 @@ window.castVote = async function(postId, type) {
         
         let uCnt = Object.keys(p.upvotes).length; let dCnt = Object.keys(p.downvotes).length;
         
-        // Votos de fraude ou mérito têm peso (Basta 1 para efeito imediato em redes pequenas)
         if( (uCnt+dCnt) >= 1 ) { 
             if(dCnt > uCnt && !p.clientPunished) {
-                p.active = false; // Derruba o post
+                p.active = false; 
                 alert("Veredito: FRAUDE. O sistema vai aplicar as penalidades no autor automaticamente.");
             } else if (uCnt > dCnt && !p.bonusAwarded) {
-                p.bonusAwarded = true; // Marca bônus
+                p.bonusAwarded = true; 
                 alert("Veredito: APROVADO! Você ajudou o autor a garantir um bônus no sistema.");
             }
         }
@@ -836,7 +830,7 @@ function showModal(t, d, btns) {
 }
 
 // =========================================================================
-// 8. ENGINE 2D - CLASH ARENA E AUDIO NATIVO (FIX CONGELAMENTO)
+// 8. ENGINE 2D - CLASH ARENA E AUDIO NATIVO
 // =========================================================================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playSound(type) {
@@ -866,6 +860,14 @@ class Base {
         this.team = team; this.maxHp = 2500 * (1 + (hpMultiplier||0)); this.hp = this.maxHp;
         this.x = cw / 2; this.y = team === 0 ? ch - 100 : 100; this.radius = 40; this.isBase = true;
         this.data = { tags: ['building', 'ground'], type: 'building' };
+        this.status = []; // FIX: Base agora tem array de status para não quebrar com buffs/debuffs
+    }
+    update(dt) {
+        // FIX: Base também precisa processar e limpar o tempo dos debuffs que recebe (como expose do drone)
+        for(let i=this.status.length-1; i>=0; i--) { 
+            this.status[i].timer -= dt; 
+            if(this.status[i].timer <= 0) this.status.splice(i, 1); 
+        }
     }
     draw(ctx) {
         ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
@@ -902,7 +904,6 @@ class Unit {
         
         if(!this.target || this.target.hp <= 0) this.findTarget();
         
-        // FIX CONGELAMENTO: Lógica blindada contra divisões por zero ou unidades paradas (Ex: Barricadas)
         if(this.target) {
             let dx = this.target.x - this.x; let dy = this.target.y - this.y; let dist = Math.sqrt(dx*dx + dy*dy);
             
@@ -914,7 +915,6 @@ class Unit {
                         this.atkCooldown = this.atkSpd / atkMod; 
                         this.isStealth = false; 
                     } else if (this.data.ability === 'explode') {
-                        // Unidades suicidas garantem seu ataque ao invés de congelar no lugar
                         this.attack(this.target);
                     }
                 }
@@ -931,7 +931,6 @@ class Unit {
             }
         }
 
-        // Limpeza de mapa para evitar loops infinitos de busca offscreen
         if(this.y < -300 || this.y > ch + 300) this.hp = 0;
     }
     
@@ -1031,7 +1030,6 @@ window.startPvPAgainstPlayer = async function(enemyUid) {
 function startBattle(enemyData) {
     document.getElementById('hub-container').style.display = 'none'; document.getElementById('game-wrapper').style.display = 'block';
     
-    // FIX CONGELAMENTO MULTIPLO: Se o botão for clicado múltiplas vezes, previne loops sobrepostos.
     if(gameLoopId) cancelAnimationFrame(gameLoopId);
     
     playerStats = { buffs: hubProfile.buffs, inv: hubProfile.inventory };
