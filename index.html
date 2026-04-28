@@ -137,7 +137,7 @@
         .top-bar-arena { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; font-family: 'Orbitron', sans-serif; color: #fff; pointer-events: auto; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);}
         .hp-hud { background: rgba(255,0,0,0.2); border: 1px solid red; padding: 8px 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: #ff5555;}
         
-        .bottom-ui-arena { width: 100%; padding-bottom: 20px; pointer-events: auto; display: flex; flex-direction: column; align-items: center; background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, transparent);}
+        .bottom-ui-arena { width: 100%; padding-bottom: 20px; pointer-events: auto; display: flex; flex-direction: column; align-items: center; background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, transparent); position: relative;}
         .energy-container { width: 90%; max-width: 600px; height: 22px; border: 2px solid var(--neon-blue); background: rgba(0,0,0,0.8); border-radius: 12px; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 0 10px rgba(0,243,255,0.3);}
         .energy-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #0055ff, var(--neon-blue)); transition: width 0.2s linear;}
         .energy-text { position: absolute; top: 0; width:100%; text-align:center; font-family:'Orbitron'; font-size:0.85rem; line-height:22px; color:#fff; text-shadow: 1px 1px 2px #000; font-weight: 900;}
@@ -184,7 +184,7 @@
         .deck-slot { width: 100%; height: 120px; border: 2px dashed #444; border-radius: 10px; display: flex; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;}
         .deck-slot.filled { border: none; background: transparent; }
 
-        .auto-btn { position: absolute; bottom: 150px; right: 15px; border: 2px solid var(--neon-yellow); background: rgba(0,0,0,0.7); color: var(--neon-yellow); font-size: 0.8rem; padding: 10px 15px; pointer-events: auto;}
+        .auto-btn { position: absolute; top: 75px; right: 15px; border: 2px solid var(--neon-yellow); background: rgba(0,0,0,0.7); color: var(--neon-yellow); font-size: 0.8rem; padding: 10px 15px; pointer-events: auto;}
         .auto-btn.active { background: var(--neon-yellow); color: #000; box-shadow: 0 0 15px var(--neon-yellow);}
 
         /* MODAIS E TELAS GERAIS */
@@ -197,7 +197,7 @@
 
         #death-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.95); z-index: 110; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(8px);}
         
-        /* RESPONSIVIDADE MOBILE ABSOLUTA */
+        /* RESPONSIVIDADE MOBILE ABSOLUTA FIXA */
         @media (max-width: 900px) {
             #hub-container { flex-direction: column; }
             .hub-sidebar { width: 100%; order: -1; padding: 0; border-right: none; border-bottom: 1px solid #333; flex-direction: column;}
@@ -210,15 +210,24 @@
             .hub-nav-btn { font-size: 0.9rem; padding: 10px 15px; white-space:nowrap; border:none; background:#15161e;}
             .hub-nav-btn.active { border-bottom: 2px solid var(--neon-blue); background:rgba(0,243,255,0.1); border-radius: 4px 4px 0 0;}
             
-            .hub-radar { width: 100%; border-left: none; border-top: 1px solid #333; flex-direction: row; overflow-x: auto; height:auto; padding:15px;}
+            /* Radar Consertado no Mobile */
+            .hub-radar { width: 100%; border-left: none; border-top: 1px solid #333; flex-direction: column; overflow-y: visible; height:auto; padding:15px;}
             .radar-title { display: none;}
-            .radar-list { flex-direction: row; gap: 15px;}
-            .radar-player { min-width: 260px; margin:0;}
+            .radar-list { flex-direction: column; gap: 15px;}
+            .radar-player { min-width: 100%; width: 100%; margin:0;}
             
             .hub-main-content { padding: 15px; }
-            .battle-card { width: 70px; height: 100px;}
-            .b-card-art { height: 35px; font-size: 1.2rem; margin-top: 18px; }
-            .b-card-name { font-size: 0.55rem;}
+            
+            /* Deck Consertado no Mobile */
+            .deck-builder-grid, .collection-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); padding: 10px; gap: 10px; }
+            .deck-slot { height: 110px; }
+            .battle-card { width: 100%; height: 110px;}
+            .b-card-art { height: 30px; font-size: 1.2rem; margin-top: 18px; }
+            .b-card-name { font-size: 0.5rem;}
+            
+            /* Arena HUD Mobile */
+            .cards-hand { gap: 5px; height: 100px; }
+            .cards-hand .battle-card { width: 65px; height: 100%; }
         }
 
         @keyframes pulseBtn { 0% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(0,243,255,0.7); } 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } }
@@ -454,6 +463,8 @@
                 <button class="btn-leave" onclick="window.leaveArena()" style="background: rgba(255,0,0,0.2); border:1px solid red; color:red; padding: 10px;">DESLIGAR CONEXÃO</button>
             </div>
             
+            <button class="auto-btn" id="btn-afk" onclick="window.toggleAFK()">COMANDO AFK IA (OFF)</button>
+
             <div style="flex-grow:1; width:100%; position:relative;" id="arena-clickable-zone" onclick="window.arenaClick(event)">
                 </div>
             
@@ -464,11 +475,9 @@
                 </div>
                 <div class="cards-hand" id="arena-hand-ui"></div>
             </div>
-            
-            <button class="auto-btn" id="btn-afk" onclick="window.toggleAFK()">COMANDO AFK IA (OFF)</button>
         </div>
         
-        <div id="death-screen" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,10,15,0.95); z-index:110; display:none; flex-direction:column; justify-content:center; align-items:center; font-family:'Orbitron'; padding: 30px; box-sizing:border-box; text-align:center; backdrop-filter: blur(5px);">
+        <div id="death-screen" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,10,15,0.95); z-index:110; display:none; flex-direction:column; justify-content:center; align-items:center; font-family:'Orbitron'; padding: 30px; box-sizing:border-box; text-align:center; backdrop-filter: blur(8px);">
             <h1 id="end-title" style="font-size: 2.5rem; margin-bottom: 15px; color:var(--neon-blue); text-shadow:0 0 10px var(--neon-blue);">FIM DE TRANSMISSÃO</h1>
             <p id="end-flavor" style="color:#ccc; font-family:'Rajdhani'; font-size: 1.3rem; max-width:600px; margin-bottom: 30px; line-height:1.5;"></p>
             
@@ -487,7 +496,8 @@
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where, updateDoc, doc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-import { getDatabase, ref, set, onDisconnect, onValue, update, push, off, onChildAdded } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+// FIX: A função "get" agora foi importada do Firebase Database, essencial para o PvP!
+import { getDatabase, ref, set, onDisconnect, onValue, update, push, off, onChildAdded, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
 const firebaseConfig = { apiKey: "AIzaSyCa3tr1mfYKvZ581A1omSQGFsVrIoQYOwQ", authDomain: "fishballserver.firebaseapp.com", projectId: "fishballserver", storageBucket: "fishballserver.firebasestorage.app", messagingSenderId: "626248800374", appId: "1:626248800374:web:fb912ed85fdfac23dba757" };
 let db, rtdb;
@@ -539,13 +549,13 @@ const CARD_DB = {
     "MagiaOverclock": { id: "MagiaOverclock", name: "Velocidade Soro", icon: "💊", cost: 2, rarity: 2, type: "spell", range: 60, mechanics: ['spell_haste'] }
 };
 
-// 2.1 - PROGRESSÃO PVE
+// FIX: Adicionada a propriedade `cardLevels: {}` no PvE, isso quebrava a inicialização dos bots.
 const PVE_CAMPAIGN = [
-    { name: "Setor 1: Gangue dos Brawlers", lvl: 1, buffs: {hp: 0, dmg: 0, spd: 0}, deck: ['Brawler', 'CorredorNeon'] },
-    { name: "Setor 2: Patrulha de Drones", lvl: 3, buffs: {hp: 50, dmg: 0.1, spd: 0.1}, deck: ['DroneRastreador', 'Sniper', 'Barricada'] },
-    { name: "Setor 3: Mutação Tóxica", lvl: 6, buffs: {hp: 200, dmg: 0.2, spd: 0.1}, deck: ['BioTank', 'Toxico', 'Kamikaze'] },
-    { name: "Setor 4: Elite Hacker", lvl: 10, buffs: {hp: 500, dmg: 0.3, spd: 0.3}, deck: ['Hacker', 'Striker', 'Fantasma', 'Mecha'] },
-    { name: "Setor 5: O Cérebro Matriz", lvl: 15, buffs: {hp: 1000, dmg: 0.5, spd: 0.5}, deck: ['Barao', 'MestreParkour', 'MagiaOrbital', 'MagiaRewind'] }
+    { name: "Setor 1: Gangue dos Brawlers", lvl: 1, buffs: {hp: 0, dmg: 0, spd: 0}, deck: ['Brawler', 'CorredorNeon'], cardLevels: {} },
+    { name: "Setor 2: Patrulha de Drones", lvl: 3, buffs: {hp: 50, dmg: 0.1, spd: 0.1}, deck: ['DroneRastreador', 'Sniper', 'Barricada'], cardLevels: {} },
+    { name: "Setor 3: Mutação Tóxica", lvl: 6, buffs: {hp: 200, dmg: 0.2, spd: 0.1}, deck: ['BioTank', 'Toxico', 'Kamikaze'], cardLevels: {} },
+    { name: "Setor 4: Elite Hacker", lvl: 10, buffs: {hp: 500, dmg: 0.3, spd: 0.3}, deck: ['Hacker', 'Striker', 'Fantasma', 'Mecha'], cardLevels: {} },
+    { name: "Setor 5: O Cérebro Matriz", lvl: 15, buffs: {hp: 1000, dmg: 0.5, spd: 0.5}, deck: ['Barao', 'MestreParkour', 'MagiaOrbital', 'MagiaRewind'], cardLevels: {} }
 ];
 
 let hubProfile = { 
@@ -625,7 +635,6 @@ window.saveProfileEdits = function() {
 
 window.switchTab = function(tabId) { document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
 window.showModal = function(title, desc, btnsHTML) { document.getElementById('modal-title').innerHTML=title; document.getElementById('modal-desc').innerHTML=desc; document.getElementById('modal-actions').innerHTML = btnsHTML || `<button class="btn-neon" style="width:200px;" onclick="document.getElementById('system-modal').style.display='none'">Fechar</button>`; document.getElementById('system-modal').style.display='flex'; }
-
 
 if(sessionStorage.getItem('hubProfile_JSON')) {
     hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) };
@@ -742,9 +751,8 @@ window.executePostInjection = async function(desc, midiaURL, midiaType) {
     window.showModal("Sucesso no Offline", "A conexão de segurança foi travada pelo Sistema (Firebase Firewall Localhost). Assim as recompensas e o registro do Diário permanecerão apenas nesse seu Dispositivo para leitura limpa.");
 }
 
-
 // =========================================================================
-// 5. SOCIAL FEED, LIKES, TRIBUNAL AVALIATIVO (O RESTO CORRIGIDO A BAIXO)
+// 5. SOCIAL FEED, LIKES, TRIBUNAL AVALIATIVO
 // =========================================================================
 
 window.currentFeedFilter = "todos";
@@ -754,7 +762,7 @@ window.lastCloudSnapshot =[];
 function listenToFeed() {
     if(useLocalBypass) { window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); return; }
     try {
-        onSnapshot(query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
+        const unsub = onSnapshot(query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
             window.lastCloudSnapshot =[]; snap.forEach((ds) => { let d = ds.data(); d.id = ds.id; window.lastCloudSnapshot.push(d); });
             renderFeedItems();
         }, (error) => { useLocalBypass = true; window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); });
@@ -819,7 +827,7 @@ window.addComment = async function(postId) {
 }
 
 // =========================================================================
-// 6. GERENCIADOR DE BANDA / GACHA CARTAS E MÃO ACTIVA DE DECK DO MUNDO CLASH
+// 6. GERENCIADOR DE BANDA / GACHA CARTAS E MÃO ACTIVA DE DECK
 // =========================================================================
 
 function renderDeckBuilder() {
@@ -828,9 +836,8 @@ function renderDeckBuilder() {
     for(let i=0; i<8; i++) {
         let sid = hubProfile.deck[i];
         let el = document.createElement('div'); el.className = 'deck-slot' + (sid ? ' filled' : '');
-        if(sid) {
+        if(sid && CARD_DB[sid]) {
             let cData = CARD_DB[sid]; let lvl = hubProfile.cardLevels[sid] || 1;
-            let cCol = cData.rarity == 4 ? 'var(--neon-pink)' : (cData.rarity == 3 ? 'var(--neon-yellow)' : (cData.rarity == 2 ? 'var(--neon-blue)' : '#888'));
             el.innerHTML = `
                 <div class="battle-card rarity-${cData.rarity}" style="pointer-events: none; width:100%; height:100%;">
                     <div class="b-card-cost">${cData.cost} N</div>
@@ -840,14 +847,14 @@ function renderDeckBuilder() {
                 </div>
             `;
             el.onclick = () => { hubProfile.deck.splice(i,1); saveHubStateLocal(); renderDeckBuilder(); };
-        } else { el.innerHTML = `<span style="color:#555; font-size:0.6rem; font-family:'Orbitron'; text-align:center;">VAGA ABERTA TROPAS</span>`; }
+        } else { el.innerHTML = `<span style="color:#555; font-size:0.6rem; font-family:'Orbitron'; text-align:center;">VAGA ABERTA</span>`; }
         dC.appendChild(el);
     }
     
     let cC = document.getElementById('collection-render'); cC.innerHTML="";
     let dedup =[...new Set(hubProfile.cardsOwned)];
     dedup.forEach(cId => {
-        if(hubProfile.deck.includes(cId)) return;
+        if(hubProfile.deck.includes(cId) || !CARD_DB[cId]) return;
         let cData = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1;
         
         let cv = document.createElement('div'); cv.className=`battle-card rarity-${cData.rarity}`; 
@@ -943,16 +950,16 @@ function setupHubRealtime() {
     } catch(e) {}
 }
 
-// NOVO: SISTEMA DE DESAFIO CYBER (PVP SYNC)
+// NOVO: SISTEMA DE DESAFIO CYBER (PVP SYNC) FIXED
 window.sendCyberPvpDuel = function(tId, tN) {
     let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'cyber', challengerId: hubProfile.uid, challengerName: hubProfile.username, challengerData: hubProfile, targetId: tId, targetName: tN, state: 'request' }); 
     window.showModal("Aguarde...", `Injetando protocolo de combate no terminal de ${tN}. Aguarde a aceitação para a conexão Real-Time.`);
     
-    const duelListener = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
+    const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
         let v = s.val(); if(!v) return;
-        if(v.state === 'declined') { window.showModal("Rejeitado", "O oponente fugiu da conexão neural."); off(ref(rtdb, 'hub_duels/'+keyId), 'value', duelListener); }
-        if(v.state === 'playing') { 
-            off(ref(rtdb, 'hub_duels/'+keyId), 'value', duelListener);
+        if(v.state === 'declined') { window.showModal("Rejeitado", "O oponente fugiu da conexão neural."); unsub(); }
+        if(v.state === 'playing' && v.targetData) { 
+            unsub(); // Desliga o listener para não chamar duas vezes
             document.getElementById('system-modal').style.display = 'none';
             window.isPvPHost = true;
             window.startClash(true, { matchId: keyId, oppData: v.targetData });
@@ -960,25 +967,29 @@ window.sendCyberPvpDuel = function(tId, tN) {
     });
 }
 
-window.acceptCyberDuel = function(keyId) {
+// FIX: Usando async/await e importando `get` para garantir que lemos oponente antes de entrar na arena
+window.acceptCyberDuel = async function(keyId) {
     document.getElementById('system-modal').style.display='none'; 
-    update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile });
-    
-    // Obter dados do host antes de entrar
-    get(ref(rtdb, `hub_duels/${keyId}`)).then(snap => {
+    try {
+        const snap = await get(ref(rtdb, `hub_duels/${keyId}`));
         let d = snap.val();
-        window.isPvPHost = false;
-        window.startClash(true, { matchId: keyId, oppData: d.challengerData });
-    });
+        if(d) {
+            await update(ref(rtdb, `hub_duels/${keyId}`), { state: 'playing', targetData: hubProfile });
+            window.isPvPHost = false;
+            window.startClash(true, { matchId: keyId, oppData: d.challengerData });
+        }
+    } catch(e) {
+        window.showModal("Erro Fatal de Matriz", "Não foi possível puxar os dados do desafiante.");
+    }
 }
 
 // Funcoes Originais Duelo IRL
 window.sendRealDuel = function(tId, tN) { 
     let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { type: 'irl', challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); window.showModal("Aguarde...", `Nós estamos hackeando a retina dele com sua Imagem do desafio. O terminal do Alvo[${tN}] foi chamado com uma sirene agressiva digital para provar um duelo Real Físico agora mesmo.`);
     
-    const duelListener = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
+    const unsub = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
         let v = s.val(); if(!v) return;
-        if(v.state === 'declined') { window.showModal("Rejeitado", "Fraco! Um fugitivo cibernético escorreu pros bueiros do Medo do seu Duelo de Luta Pessoal e apertou na tecla Não da Coragem Oportuna..."); off(ref(rtdb, 'hub_duels/'+keyId), 'value', duelListener); }
+        if(v.state === 'declined') { window.showModal("Rejeitado", "Fraco! Um fugitivo cibernético escorreu pros bueiros do Medo do seu Duelo de Luta Pessoal e apertou na tecla Não da Coragem Oportuna..."); unsub(); }
         if(v.state === 'ongoing' && !v.resolvedChallengerAlert) { 
             update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); 
             window.showModal("GUERRA DEFINITIVA FISICA (BATERAM O MARTELO)", "Saia do Sistema agora e faça. Não importe O QUÊ mas quem fizer maior dor de MÚSCULO sem perder é declarado Triunfal de Ganhos pelo Julgamento que fará a si mesmos em 5, 2 horas que voltarem.", 
@@ -1032,7 +1043,7 @@ window.promptDuelPost = function(opponentName, won) {
 }
 
 // ==================================================================================
-// CYBER CLASH - AUTO BATTLER ARENA 2D DE BOTS CYBERNETICOS HACKER VS MATRIZ HUB-CORE (JOGADOR) 
+// CYBER CLASH - AUTO BATTLER ARENA 2D DE BOTS CYBERNETICOS HACKER VS MATRIZ HUB-CORE
 // ==================================================================================
 
 let cvs, ctx; let engineState = 'MENU'; let lastTime = 0; let energy = 0; let MAX_ENERGY = 10;
@@ -1043,7 +1054,7 @@ let pvpMatchListener = null;
 // Botão de iniciar PVE Campaign
 window.startPvECampaign = function() {
     if(hubProfile.pveStage >= PVE_CAMPAIGN.length) {
-        window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck: ['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido']});
+        window.startClash(false, {name: "CÉREBRO DA MATRIZ (INFINITO)", lvl: 20 + hubProfile.lvl, buffs: {hp: 2000, dmg: 0.8, spd: 0.8}, deck: ['Mecha', 'Barao', 'Hacker', 'MestreParkour', 'MagiaOrbital', 'MagiaAcido'], cardLevels:{}});
     } else {
         window.startClash(false, PVE_CAMPAIGN[hubProfile.pveStage]);
     }
@@ -1064,7 +1075,9 @@ window.startClash = function(isPvP = false, matchData = null) {
     
     if(isPvP && matchData && matchData.matchId) {
         window.activeMatchId = matchData.matchId;
+        // Garantir que oppData tenha os mínimos aceitáveis para evitar falhas no PvP
         opponentAI = matchData.oppData;
+        if(!opponentAI.buffs) opponentAI.buffs = {hp:0, dmg:0, spd:0, magic:0};
         setupPvPSyncListeners();
     } else {
         opponentAI = matchData || { name: "I.A. Servidor", lvl: hubProfile.lvl, buffs: { hp: 50, spd: 0.1, dmg: 0.1 }, deck:['CorredorNeon','BioTank','Sniper'], cardLevels: {} };
@@ -1082,11 +1095,11 @@ window.leaveArena = function() {
     if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId); 
     document.getElementById('game-wrapper').style.display = 'none'; 
     document.getElementById('hub-container').style.display = 'flex'; 
-    if(pvpMatchListener && window.activeMatchId) off(ref(rtdb, 'hub_duels/'+window.activeMatchId+'/actions'));
+    if(pvpMatchListener) { pvpMatchListener(); pvpMatchListener = null; }
 }
 window.returnToHubAndSave = function() { saveHubStateLocal(); syncUIWithProfile(); window.leaveArena(); }
 
-// Sync PvP Listener
+// Sync PvP Listener - Recebe os comandos do oponente na arena
 function setupPvPSyncListeners() {
     const actionsRef = ref(rtdb, 'hub_duels/' + window.activeMatchId + '/actions');
     pvpMatchListener = onChildAdded(actionsRef, (snap) => {
@@ -1094,7 +1107,7 @@ function setupPvPSyncListeners() {
         if(action.uid !== hubProfile.uid) {
             // Se veio do oponente, spawna espelhado no Eixo Y pra ele vir de cima
             let mirroredY = arenaH - action.y;
-            let mirroredX = arenaW - action.x; // opcional espelhar X também
+            let mirroredX = arenaW - action.x; 
             deployCard(action.cardId, 'enemy', mirroredX, mirroredY, action.lvl, opponentAI.buffs || {hp:0, dmg:0, spd:0});
             spawnEffects.push({t:'exp', x:mirroredX, y:mirroredY, life:0.5, col:'var(--neon-pink)'});
         }
@@ -1118,7 +1131,9 @@ function resetArena() {
 function renderCardsHandUI() {
     let ui = document.getElementById('arena-hand-ui'); ui.innerHTML = "";
     hubProfile.deck.forEach((cId, index) => {
-        let dbC = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1; 
+        let dbC = CARD_DB[cId]; 
+        if(!dbC) return; // Evita crash caso deck tenha carta inválida
+        let lvl = hubProfile.cardLevels[cId] || 1; 
         let d = document.createElement('div'); d.className = `battle-card rarity-${dbC.rarity}`; d.id = `card-ui-${index}`; 
         d.innerHTML = `
             <div class="b-card-cost">${dbC.cost} N</div>
@@ -1133,7 +1148,7 @@ function renderCardsHandUI() {
 
 let activeCardIdx = null;
 function selectCardToPlay(idx) {
-    if(isAFK) return; let cId = hubProfile.deck[idx]; if(energy < CARD_DB[cId].cost) return;
+    if(isAFK) return; let cId = hubProfile.deck[idx]; if(!CARD_DB[cId]) return; if(energy < CARD_DB[cId].cost) return;
     if(activeCardIdx !== null) { let e = document.getElementById(`card-ui-${activeCardIdx}`); if(e) e.classList.remove('active'); } 
     activeCardIdx = idx; let n = document.getElementById(`card-ui-${idx}`); if(n) n.classList.add('active');
 }
@@ -1164,7 +1179,6 @@ class Entity {
         let fHpMod = Math.pow(1.1, level - 1) * (this.isTank ? (1 + (ownerBuffs.hp/100)) : 1);
         this.maxHp = dbData.hp * fHpMod; this.hp = this.maxHp;
         
-        // Multiplicador de Magia se for unidade mágica ou base de buffs mágicos
         let magicBonus = (this.team === 'player' && ownerBuffs.magic) ? ownerBuffs.magic : 0;
         this.dmg = dbData.dmg * Math.pow(1.1, level - 1) * (1 + ownerBuffs.dmg + magicBonus); 
         
@@ -1234,7 +1248,6 @@ class Entity {
         }
         else { 
             c.beginPath(); c.arc(this.x, this.y, this.w, 0, Math.PI*2); c.fill(); if(this.stealth) { c.globalAlpha=0.4; c.fillStyle="#fff"; c.fill(); c.globalAlpha=1; }
-            // Draw Icon
             c.fillStyle = '#fff'; c.font = '14px sans-serif'; c.textAlign='center'; c.textBaseline='middle';
             c.fillText(this.icon || '?', this.x, this.y);
         }
@@ -1254,6 +1267,7 @@ class EffectArea {
 
 function deployCard(cId, team, tx, ty, lvl, buffsRef) {
     let dbC = CARD_DB[cId];
+    if(!dbC) return;
     if(dbC.type === 'spell') {
         let magicDmgBonus = buffsRef.magic ? (1 + buffsRef.magic) : 1;
         if(cId === 'MagiaCrio') effects.push(new EffectArea(tx, ty, dbC.range, 'freeze_spell', 3, team, 3));
@@ -1277,7 +1291,11 @@ function updateAI(dt) {
         aiTimer = 1.0 + Math.random()*1.5; 
         if(opponentAI.deck && opponentAI.deck.length > 0) {
             let rndCard = opponentAI.deck[Math.floor(Math.random()*opponentAI.deck.length)]; let dbC = CARD_DB[rndCard];
-            if(aiMana >= dbC.cost && dbC) { aiMana -= dbC.cost; let tX = 50 + Math.random()*(arenaW-100); let tY = dbC.type==='spell' ? arenaH - 100 : 80 + Math.random()*150; let cLvl = opponentAI.cardLevels[rndCard] || 1; deployCard(rndCard, 'enemy', tX, tY, cLvl, oBuffs); spawnEffects.push({t:'exp', x:tX, y:tY, life:0.4, col:'rgba(255,0,0,0.5)'});}
+            if(aiMana >= dbC.cost && dbC) { aiMana -= dbC.cost; let tX = 50 + Math.random()*(arenaW-100); let tY = dbC.type==='spell' ? arenaH - 100 : 80 + Math.random()*150; 
+                // Proteção contra fallback nulo de CardLevels
+                let cLvl = (opponentAI.cardLevels && opponentAI.cardLevels[rndCard]) ? opponentAI.cardLevels[rndCard] : 1;
+                deployCard(rndCard, 'enemy', tX, tY, cLvl, oBuffs); spawnEffects.push({t:'exp', x:tX, y:tY, life:0.4, col:'rgba(255,0,0,0.5)'});
+            }
         }
     }
 }
@@ -1353,7 +1371,10 @@ function updateUIRealtime() {
     if(enemyBase && enemyBase.hp>0) document.getElementById('enemy-hp-text').innerText = `HP Base Alvo: ${Math.floor(enemyBase.hp)}`;
     for(let i=0; i<8; i++) {
         let cardDOM = document.getElementById(`card-ui-${i}`);
-        if(cardDOM && hubProfile.deck[i]) { let cost = CARD_DB[hubProfile.deck[i]].cost; if(energy < cost) cardDOM.classList.add('disabled'); else cardDOM.classList.remove('disabled'); }
+        if(cardDOM && hubProfile.deck[i]) { 
+            let dbC = CARD_DB[hubProfile.deck[i]];
+            if(dbC && energy < dbC.cost) cardDOM.classList.add('disabled'); else cardDOM.classList.remove('disabled'); 
+        }
     }
 }
 
