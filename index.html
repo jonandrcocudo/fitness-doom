@@ -383,13 +383,13 @@ try {
 // 2. DADOS DO JOGO: CARTAS DO CLASH ROYALE
 // =========================================================================
 const CARD_DB =[
-    { id: 'c1', name: 'Brawler', cat: 'comum', type: 'troop', cost: 2, hp: 300, dmg: 40, range: 40, spd: 40, atkSpd: 1.2, tags: ['melee', 'ground'] },
+    { id: 'c1', name: 'Brawler', cat: 'comum', type: 'troop', cost: 2, hp: 300, dmg: 40, range: 40, spd: 40, atkSpd: 1.2, tags:['melee', 'ground'] },
     { id: 'c2', name: 'Corredor Neon', cat: 'comum', type: 'troop', cost: 1, hp: 100, dmg: 20, range: 40, spd: 90, atkSpd: 0.8, tags: ['melee', 'ground'] },
     { id: 'c3', name: 'Drone Rastreador', cat: 'comum', type: 'troop', cost: 2, hp: 120, dmg: 15, range: 120, spd: 50, atkSpd: 1.0, tags: ['ranged', 'flyer'], ability: 'expose' },
-    { id: 'c4', name: 'Falcão de Sucata', cat: 'comum', type: 'troop', cost: 2, hp: 150, dmg: 35, range: 40, spd: 60, atkSpd: 1.2, tags: ['melee', 'flyer'] },
+    { id: 'c4', name: 'Falcão de Sucata', cat: 'comum', type: 'troop', cost: 2, hp: 150, dmg: 35, range: 40, spd: 60, atkSpd: 1.2, tags:['melee', 'flyer'] },
     { id: 'r1', name: 'Bot Kamikaze', cat: 'rara', type: 'troop', cost: 3, hp: 200, dmg: 300, range: 50, spd: 70, atkSpd: 0, tags: ['melee', 'ground'], ability: 'explode' },
     { id: 'r2', name: 'Bio-Tank', cat: 'rara', type: 'troop', cost: 5, hp: 1200, dmg: 50, range: 50, spd: 25, atkSpd: 1.5, tags: ['melee', 'ground', 'tank'] },
-    { id: 'r3', name: 'Holo-Fantasma', cat: 'rara', type: 'troop', cost: 4, hp: 250, dmg: 60, range: 40, spd: 45, atkSpd: 1.0, tags: ['melee', 'ground'], ability: 'dodge' },
+    { id: 'r3', name: 'Holo-Fantasma', cat: 'rara', type: 'troop', cost: 4, hp: 250, dmg: 60, range: 40, spd: 45, atkSpd: 1.0, tags:['melee', 'ground'], ability: 'dodge' },
     { id: 'r4', name: 'Assassino Furtivo', cat: 'rara', type: 'troop', cost: 4, hp: 200, dmg: 150, range: 40, spd: 65, atkSpd: 1.5, tags: ['melee', 'ground'], ability: 'stealth' },
     { id: 'r5', name: 'Barricada Holo', cat: 'rara', type: 'building', cost: 3, hp: 800, dmg: 0, range: 0, spd: 0, atkSpd: 0, tags:['building', 'ground'] },
     { id: 'e1', name: 'Comandante Tático', cat: 'epica', type: 'troop', cost: 6, hp: 400, dmg: 30, range: 100, spd: 35, atkSpd: 1.5, tags: ['ranged', 'ground'], ability: 'aura_buff' },
@@ -431,7 +431,10 @@ if(sessionStorage.getItem('hubProfile_JSON')) {
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
     if(!name) return alert("NOME OBRIGATÓRIO."); name = name.toUpperCase();
-    document.querySelector('.login-box button.btn-action:last-child').innerText = "CONECTANDO...";
+    
+    // Safety check no botão para não dar crash (motivo do erro que não deixava entrar no sistema)
+    let loginBtn = document.querySelector('.modal-box button.btn-action:last-child');
+    if(loginBtn) loginBtn.innerText = "CONECTANDO...";
     
     initStarterDeck();
     try {
@@ -517,7 +520,7 @@ window.toggleGPS = function() {
     if(trackingGeoId !== null) {
         navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null;
         btn.innerText = "Iniciar GPS (Gravar Rota)"; btn.style.background = "#223";
-        document.getElementById('task-desc').value += ` [GPS Mediu: ${totalKm.toFixed(2)} km]`; return;
+        document.getElementById('task-desc').value += `[GPS Mediu: ${totalKm.toFixed(2)} km]`; return;
     }
     if (!navigator.geolocation) return alert("Seu navegador não tem GPS nativo.");
     totalKm = 0; lastLat = null; lastLng = null; display.innerText = "0.00 km";
@@ -709,7 +712,7 @@ function setupHubRealtime() {
     } catch(e) {}
 }
 
-// Fluxo de Duelo Físico IRL (Original)
+// Fluxo de Duelo Físico IRL
 window.sendDuelChallenge = function(tId, tN) { 
     let keyId = push(ref(rtdb, 'hub_duels')).key;
     set(ref(rtdb, 'hub_duels/'+keyId), { challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' });
@@ -862,8 +865,12 @@ function createExplosion(x, y, r, c='#f00') { ctx.beginPath(); ctx.arc(x,y,r,0,M
 
 
 // -------------------------------------------------------------------------
-// INICIALIZADORES DO CLASH
+// INICIALIZADORES DO CLASH E BOT
 // -------------------------------------------------------------------------
+window.startPvP = function(type) {
+    if(type === 'bot') window.startPvE();
+};
+
 window.startPvE = function() {
     if(hubProfile.deck.length !== 8) return alert("Seu deck precisa de exatamente 8 cartas! Vá na aba MEU DECK.");
     let eDeck =['c1','c2','r2','c4','s2','e4','c3','r1']; let eInv = {}; eDeck.forEach(id => eInv[id] = {level: 1});
