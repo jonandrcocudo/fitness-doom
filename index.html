@@ -374,12 +374,12 @@
             
             <div class="global-boss-banner" id="global-boss-banner">
                 <h2 style="margin:0; font-family:'Orbitron'; color:var(--neon-red); text-shadow:0 0 10px var(--neon-red);">🔥 RAID BOSS GLOBAL: MECHA LEVIATÃ 🔥</h2>
-                <p style="color:#ddd; margin-top:5px; margin-bottom:10px; font-size:0.9rem;">Toda a comunidade precisa atacar. Gere Energia e vá pra Guerra!</p>
+                <p style="color:#ddd; margin-top:5px; margin-bottom:10px; font-size:0.9rem;">Para atacá-lo, você precisa se deslocar fisicamente até a Zona do Boss no Mapa GPS!</p>
                 <div class="boss-hp-bar">
                     <div class="boss-hp-fill" id="boss-hp-fill-ui" style="width: 85%;"></div>
                 </div>
                 <div style="color:#fff; font-family:'Orbitron'; font-weight:bold; margin-top:5px;" id="boss-hp-text-ui">HP: 4.250.000 / 5.000.000</div>
-                <button class="btn-neon red" style="margin-top:15px; width: 50%;" onclick="window.attackGlobalBoss()">ATACAR BOSS AGORA</button>
+                <button class="btn-neon red" style="margin-top:15px; width: 50%;" onclick="window.attackGlobalBoss()">VERIFICAR GPS & ATACAR BOSS</button>
             </div>
 
             <div id="tab-feed" class="hub-tab active">
@@ -683,11 +683,19 @@ let hubProfile = {
     deck:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], pveStage: 0
 };
 
+// ======================== FUNÇÃO MATEMÁTICA DE DISTÂNCIA GPS ========================
+window.calcDist = function(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Raio da Terra em KM
+    const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; 
+}
+
 // ======================== SISTEMAS DE PERFIL, ZOOM E SOCIAL ========================
 window.zoomImage = function(src) { document.getElementById('image-zoom-content').src = src; document.getElementById('image-zoom-modal').style.display = 'flex'; };
 
 window.showProfileModal = function(userStr) {
-    // Usado ao clicar em alguém no radar ou feed para exibir status e clã
     try { let p = JSON.parse(decodeURIComponent(userStr));
         window.showModal(`PERFIL: ${p.username}`, `
             <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
@@ -701,11 +709,8 @@ window.showProfileModal = function(userStr) {
     } catch(e) {}
 }
 
-window.showMyProfileModal = function() {
-    window.showProfileModal(encodeURIComponent(JSON.stringify(hubProfile)));
-}
+window.showMyProfileModal = function() { window.showProfileModal(encodeURIComponent(JSON.stringify(hubProfile))); }
 
-// LÓGICA DE LOGIN COM FACÇÃO
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
     let faction = document.getElementById('login-faction').value;
@@ -723,7 +728,7 @@ window.hubLogin = async function() {
 function finishLoginUI() {
     document.getElementById('hub-login').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex';
     if(hubProfile.pveStage === undefined) hubProfile.pveStage = 0;
-    saveHubStateLocal(); syncUIWithProfile(); setupHubRealtime(); initMapAndQR();
+    saveHubStateLocal(); syncUIWithProfile(); setupHubRealtime(); 
 }
 
 function saveHubStateLocal() { sessionStorage.setItem('hubProfile_JSON', JSON.stringify(hubProfile)); try { if(db && hubProfile.uid && !hubProfile.uid.startsWith('local_')) updateDoc(doc(db, "hub_users", hubProfile.uid), hubProfile).catch(()=>{}); } catch(e) {} }
@@ -740,7 +745,6 @@ function syncUIWithProfile() {
     document.getElementById('prof-edit-name').value = hubProfile.username; document.getElementById('prof-edit-bio').value = hubProfile.bio;
     document.getElementById('prof-edit-clan').value = hubProfile.clan || "";
 
-    // Popular select do mercado negro
     let sel = document.getElementById('qr-card-select'); sel.innerHTML = "";
     hubProfile.cardsOwned.forEach(cId => { let opt = document.createElement('option'); opt.value = cId; opt.innerText = CARD_DB[cId].name + ` (Lvl ${hubProfile.cardLevels[cId]})`; sel.appendChild(opt); });
 
@@ -759,33 +763,54 @@ window.saveProfileEdits = function() {
     function finishPf(){ saveHubStateLocal(); syncUIWithProfile(); window.showModal("Ajustado", "Suas credenciais biométricas mudaram."); }
 }
 
-window.switchTab = function(tabId) { document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); if(tabId === 'tab-mundo') setTimeout(() => window.mapInstance.invalidateSize(), 300); }
-window.showModal = function(title, desc, btnsHTML) { document.getElementById('modal-title').innerHTML=title; document.getElementById('modal-desc').innerHTML=desc; document.getElementById('modal-actions').innerHTML = btnsHTML || `<button class="btn-neon" style="width:200px;" onclick="document.getElementById('system-modal').style.display='none'">Fechar</button>`; document.getElementById('system-modal').style.display='flex'; }
+window.switchTab = function(tabId) { 
+    document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); 
+    document.getElementById(tabId).classList.add('active'); 
+    event.currentTarget.classList.add('active'); 
+    if(tabId === 'tab-mundo') { window.setupMap(); } 
+}
 
 if(sessionStorage.getItem('hubProfile_JSON')) { hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) }; if(hubProfile.uid && hubProfile.uid.startsWith('local_')) useLocalBypass = true; finishLoginUI(); }
 
 // ======================== GPS E MAPAS (LEAFLET) ========================
 let trackingGeoId = null; let lastLat = null, lastLng = null; let totalKm = 0;
-window.mapInstance = null;
+window.mapInstance = null; window.mapInitialized = false;
+window.userMarker = null; window.bossCircle = null; window.bossLat = null; window.bossLng = null;
 
-function initMapAndQR() {
-    // Inicia mapa Leaflet na aba Mundo
-    window.mapInstance = L.map('map-container').setView([-23.5505, -46.6333], 13); // Default SP, ajusta no GPS
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap' }).addTo(window.mapInstance);
+window.setupMap = function() {
+    // Atraso intencional para permitir que o fadeIn do CSS termine e o Leaflet pegue as dimensões corretas
+    if(window.mapInitialized) { setTimeout(()=> { window.mapInstance.invalidateSize(); }, 400); return; }
     
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-            lastLat = pos.coords.latitude; lastLng = pos.coords.longitude;
-            window.mapInstance.setView([lastLat, lastLng], 14);
-            L.circle([lastLat, lastLng], {color: 'var(--neon-blue)', fillColor: '#0ff', fillOpacity: 0.1, radius: 500}).addTo(window.mapInstance).bindPopup("Seu Território Base");
-        });
-    }
+    setTimeout(() => {
+        // Centro genérico inicialmente em Vitória, ES
+        window.mapInstance = L.map('map-container').setView([-20.3155, -40.3128], 14); 
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap' }).addTo(window.mapInstance);
+        window.mapInitialized = true;
+        window.mapInstance.invalidateSize();
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(pos => {
+                lastLat = pos.coords.latitude; lastLng = pos.coords.longitude;
+                
+                if(!window.userMarker) {
+                    window.mapInstance.setView([lastLat, lastLng], 15);
+                    window.userMarker = L.circle([lastLat, lastLng], {color: 'var(--neon-blue)', fillColor: '#0ff', fillOpacity: 0.2, radius: 80}).addTo(window.mapInstance).bindPopup("Sua Posição Exata");
+                    
+                    // SPAWN DO BOSS RELATIVO A SUA LOCALIZAÇÃO (Distância em torno de 400~600m para obrigar o deslocamento)
+                    window.bossLat = lastLat + (Math.random() > 0.5 ? 0.003 : -0.003); 
+                    window.bossLng = lastLng + (Math.random() > 0.5 ? 0.003 : -0.003);
+                    window.bossCircle = L.circle([window.bossLat, window.bossLng], {color: 'var(--neon-red)', fillColor: 'darkred', fillOpacity: 0.3, radius: 250}).addTo(window.mapInstance).bindPopup("ZONA DO LEVIATÃ (RAID BOSS)");
+                } else {
+                    window.userMarker.setLatLng([lastLat, lastLng]);
+                }
+            }, err => { console.warn("Erro GPS", err); }, {enableHighAccuracy: true, maximumAge: 10000});
+        }
+    }, 400); // 400ms bate com a duração da animação de fadeIn
 }
 
 window.scanLocalNodes = function() {
-    if(!lastLat) return window.showModal("Aviso", "GPS Desligado ou Buscando. Aguarde.");
+    if(!lastLat) return window.showModal("Aviso", "GPS Desligado ou Buscando Posição. Aguarde.");
     window.playSound('scan');
-    // Gera "pontos de loot" aleatórios ao redor
     for(let i=0; i<3; i++) {
         let nLat = lastLat + (Math.random() - 0.5) * 0.01; let nLng = lastLng + (Math.random() - 0.5) * 0.01;
         let m = L.circleMarker([nLat, nLng], {color: 'var(--neon-pink)', radius: 8}).addTo(window.mapInstance);
@@ -795,7 +820,7 @@ window.scanLocalNodes = function() {
 }
 
 window.hackNode = function() { window.showModal("Erro de Proximidade", "Você não está próximo fisicamente o suficiente das coordenadas. Mova seu corpo real para hackear o nodo."); }
-window.claimTerritory = function() { window.showModal("Guerra de Território", "Tire uma foto de um treino aqui via aba 'Feed Hub' para gerar +10 Pontos de Influência para o " + hubProfile.faction + " nesta quadra."); }
+window.claimTerritory = function() { window.showModal("Guerra de Território", "Tire uma foto de um treino aqui via aba 'Feed Hub' para gerar +10 Pontos de Influência para a " + hubProfile.faction + " nesta quadra."); }
 
 // ======================== MERCADO NEGRO (QR CODE) ========================
 let html5QrcodeScanner = null;
@@ -804,7 +829,6 @@ window.generateTradeQR = function() {
     if(!cId) return;
     let qrBox = document.getElementById('qr-code-display');
     qrBox.style.display = 'flex'; qrBox.innerHTML = '';
-    // String mockada de transação: UID_CARDID_TIMESTAMP (na prática o DB validaria)
     let tradeStr = `TRADE|${hubProfile.uid}|${cId}|${Date.now()}`;
     new QRCode(qrBox, { text: tradeStr, width: 200, height: 200, colorDark : "#0b0c10", colorLight : "#ffea00", correctLevel : QRCode.CorrectLevel.H });
     window.showModal("Código Gerado!", "Mostre essa tela para o aliado. O código expira em breve. (Obs: Isso remove a carta da sua mão se concretizado)");
@@ -833,11 +857,19 @@ window.startQRScanner = function() {
 // ======================== BOSS GLOBAL ========================
 let globalBossHP = 4250000; let globalBossMax = 5000000;
 window.attackGlobalBoss = function() {
+    if(!lastLat || !window.bossLat) {
+        return window.showModal("Sinal GPS Perdido", "Abra a aba 'Mapa & Nodos (GPS)' e aguarde o sinal estabilizar para rastrear onde o Boss está na cidade.");
+    }
+    
+    // GEOFENCING: Restrição de distância (0.4 km = 400 metros)
+    let dist = window.calcDist(lastLat, lastLng, window.bossLat, window.bossLng);
+    if(dist > 0.4) {
+        return window.showModal("Fora de Alcance (Zona Segura)", `O Leviatã está a <b>${(dist).toFixed(2)} km</b> de distância. \n\nVocê precisa estar a menos de 400 metros dele para abrir o portal da arena! Olhe o círculo vermelho no seu Mapa GPS e vá até lá.`);
+    }
+
     window.startClash(false, {name: "MECHA LEVIATÃ (GLOBAL BOSS)", lvl: 50, buffs: {hp: 2000, dmg: 1.5, spd: 0.5}, deck: ['Mecha', 'TitanRaio', 'MagiaOrbital', 'Barao', 'Toxico', 'Sniper'], cardLevels:{'Mecha':10, 'TitanRaio':10}});
-    // Um hack visual: a engine normal lida, e depois ao morrer, mandamos o dano causado para "abater" o boss no UI.
     window.isGlobalRaid = true; 
 }
-
 
 window.toggleGPS = function() {
     const btn = document.getElementById('btn-gps-toggle'); const display = document.getElementById('gps-dist');
@@ -876,7 +908,6 @@ window.executePostInjection = async function(desc, midiaURL, midiaType) {
     hubProfile.xp += curTaskConfig.xp||0; hubProfile.gold += curTaskConfig.gold||0;
     if(curTaskConfig.buffHp) hubProfile.buffs.hp += curTaskConfig.buffHp; if(curTaskConfig.buffDmg) hubProfile.buffs.dmg += curTaskConfig.buffDmg; if(curTaskConfig.buffSpd) hubProfile.buffs.spd += curTaskConfig.buffSpd; if(curTaskConfig.buffMagic) { hubProfile.buffs.magic = (hubProfile.buffs.magic || 0) + curTaskConfig.buffMagic; }
     saveHubStateLocal(); syncUIWithProfile(); 
-    // Injeta dados completos (incluindo avatar e clã na rede social para click no modal)
     let pData = encodeURIComponent(JSON.stringify(hubProfile));
     let feedObj = { uid: hubProfile.uid, author: hubProfile.username, pData: pData, avatar: hubProfile.avatar, taskName: curTaskConfig.name, category: curTaskCat, desc: desc, midiaURL: midiaURL, midiaType: midiaType||'none', rewardLog: curTaskConfig, upvotes: {}, downvotes: {}, comments:[], active: true, timestamp: Date.now() };
     let btn = document.getElementById('btn-post-upload'); btn.innerText = "COMPARTILHAR E GANHAR STATUS"; btn.disabled = false;
