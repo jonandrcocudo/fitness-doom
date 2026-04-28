@@ -102,11 +102,11 @@
         #login-username { width: 100%; padding: 15px; background: rgba(0,0,0,0.5); color: #0ff; border: 2px solid #0ff; border-radius: 6px; margin-bottom: 20px; font-family: 'Rajdhani'; font-size: 1.2rem; box-sizing: border-box; text-align: center;}
 
         /* GAME ARENA 2D */
-        #game-wrapper { display: none; width: 100vw; height: 100vh; position: fixed; top:0; left:0; z-index: 2000; background: #050510; }
-        #clash-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: repeating-linear-gradient(0deg, #050510, #0a0f1a 40px); box-shadow: inset 0 0 50px #000; }
+        #game-wrapper { display: none; width: 100vw; height: 100vh; position: fixed; top:0; left:0; z-index: 2000; background: #050510; touch-action: none; }
+        #clash-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: repeating-linear-gradient(0deg, #050510, #0a0f1a 40px); box-shadow: inset 0 0 50px #000; touch-action: none; }
         
         /* HUD DO JOGO */
-        #battle-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; box-sizing: border-box;}
+        #battle-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; padding-bottom: max(10px, env(safe-area-inset-bottom)); box-sizing: border-box;}
         .base-hp-bar { width: 150px; height: 15px; background: #333; border: 2px solid #fff; border-radius: 10px; overflow: hidden; margin: 5px auto; box-shadow: 0 0 10px rgba(0,0,0,0.5);}
         .base-hp-fill { height: 100%; width: 100%; background: #0ff; transition: width 0.2s;}
         .enemy-hp .base-hp-fill { background: #f00; }
@@ -118,30 +118,32 @@
         #energy-bar-fill { height: 100%; width: 0%; background: #ff00de; box-shadow: 0 0 10px #ff00de; transition: width 0.1s linear;}
         #energy-text { color: #fff; font-family: 'Share Tech Mono'; font-weight: bold; width: 40px; text-align: right;}
         
-        #hand-container { display: flex; justify-content: space-around; gap: 5px;}
-        .hand-card { flex: 1; aspect-ratio: 3/4; background: #111; border: 2px solid #555; border-radius: 8px; position: relative; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2px;}
+        #hand-container { display: flex; justify-content: center; width: 100%; gap: 5px;}
+        .hand-card { width: 22%; max-width: 80px; aspect-ratio: 3/4; background: #111; border: 2px solid #555; border-radius: 8px; position: relative; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2px;}
         .hand-card.affordable { border-color: #0ff; box-shadow: 0 0 10px rgba(0,255,255,0.3);}
         .hand-card.selected-to-deploy { border-color: #ff00de; transform: translateY(-10px); box-shadow: 0 0 15px #ff00de; background: rgba(255,0,222,0.2);}
-        .hand-card .c-name { font-size: 0.65rem; font-weight: bold; line-height: 1; margin-top: 5px;}
+        .hand-card .c-name { font-size: 0.65rem; font-weight: bold; line-height: 1; margin-top: 5px; word-wrap: break-word; overflow: hidden;}
         .hand-card .c-cost { position: absolute; top: -5px; left: -5px; background: #ff00de; border-radius: 50%; width: 20px; height: 20px; font-size: 0.8rem; display: flex; justify-content: center; align-items: center; font-family: 'Share Tech Mono'; box-shadow: 0 0 5px #000;}
         
         #btn-auto { background: #222; border: 1px solid #aaa; color: #aaa; padding: 5px 15px; border-radius: 5px; font-weight: bold; cursor: pointer;}
         #btn-auto.active { background: #0ff; color: #000; border-color: #0ff; box-shadow: 0 0 10px #0ff;}
 
+        /* FIX MOBILE: Layout que empilhava e escondia na tela pequena */
         @media (max-width: 900px) {
-            #hub-container { flex-direction: column; }
-            .hub-sidebar { width: 100%; height: auto; order: -1; flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 2px solid #0ff; padding: 0; box-shadow: 0 5px 15px rgba(0,255,255,0.2);}
-            .hub-profile-area { width: 100%; display: flex; align-items: center; text-align: left; padding: 10px; border-bottom: 1px solid #223;}
-            .hub-avatar-container { width: 60px; height: 60px; margin: 0 15px 0 0;}
+            #hub-container { flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+            .hub-sidebar { width: 100%; height: auto; flex-direction: column; border-right: none; border-bottom: 2px solid #0ff; flex-shrink: 0; }
+            .hub-profile-area { width: 100%; display: flex; align-items: center; text-align: left; padding: 15px; border-bottom: 1px solid #223; box-sizing: border-box;}
+            .hub-avatar-container { width: 70px; height: 70px; margin: 0 15px 0 0;}
             .hub-profile-info { flex: 1;}
-            .hub-stats-row { justify-content: flex-start; gap: 15px; padding: 5px; background: transparent; border: none;}
-            #attributes-box { display: none; }
-            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; white-space: nowrap; gap: 0; padding: 0; border-bottom: 1px solid #334;}
+            .hub-stats-row { justify-content: flex-start; gap: 15px; padding: 5px 0; background: transparent; border: none;}
+            #attributes-box { display: none; /* Esconde para economizar espaco vertical topo */ }
+            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; white-space: nowrap; gap: 0; padding: 0; border-bottom: 1px solid #334; }
             .hub-nav-btn { font-size: 0.95rem; padding: 15px; flex: 0 0 auto; border-left: none; border-bottom: 3px solid transparent;}
             .hub-nav-btn.active { border-left-color: transparent; border-bottom-color: #0ff;}
             .hub-start-arena { width: 95%; margin: 10px auto; padding: 10px;}
-            .hub-radar { width: 100%; border-left: none; border-top: 2px solid #ff00de; height: 250px; flex-shrink: 0; order: 3;}
-            .hub-main-content { padding: 15px; overflow-x: hidden; }
+            
+            .hub-main-content { overflow: visible; height: auto; flex: none; padding: 15px; }
+            .hub-radar { width: 100%; height: auto; border-left: none; border-top: 2px solid #ff00de; flex-shrink: 0; }
         }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
@@ -161,7 +163,7 @@
             <button class="btn-action" style="background:#000; color:#ff00de; border-color:#ff00de; margin-bottom:10px;" onclick="window.requestPermissionsUI()">PERMITIR GPS E CÂMERA</button>
             <div id="permission-status" style="font-size:0.8rem; color:#aaa; margin-bottom: 15px; font-family:'Share Tech Mono';">Necessário para as Provas Físicas Reais.</div>
             
-            <button class="btn-action" onclick="window.hubLogin()">ENTRAR NO SISTEMA</button>
+            <button class="btn-action" id="btn-login" onclick="window.hubLogin()">ENTRAR NO SISTEMA</button>
         </div>
     </div>
 
@@ -385,19 +387,19 @@ try {
 const CARD_DB =[
     { id: 'c1', name: 'Brawler', cat: 'comum', type: 'troop', cost: 2, hp: 300, dmg: 40, range: 40, spd: 40, atkSpd: 1.2, tags:['melee', 'ground'] },
     { id: 'c2', name: 'Corredor Neon', cat: 'comum', type: 'troop', cost: 1, hp: 100, dmg: 20, range: 40, spd: 90, atkSpd: 0.8, tags: ['melee', 'ground'] },
-    { id: 'c3', name: 'Drone Rastreador', cat: 'comum', type: 'troop', cost: 2, hp: 120, dmg: 15, range: 120, spd: 50, atkSpd: 1.0, tags: ['ranged', 'flyer'], ability: 'expose' },
+    { id: 'c3', name: 'Drone Rastreador', cat: 'comum', type: 'troop', cost: 2, hp: 120, dmg: 15, range: 120, spd: 50, atkSpd: 1.0, tags:['ranged', 'flyer'], ability: 'expose' },
     { id: 'c4', name: 'Falcão de Sucata', cat: 'comum', type: 'troop', cost: 2, hp: 150, dmg: 35, range: 40, spd: 60, atkSpd: 1.2, tags:['melee', 'flyer'] },
     { id: 'r1', name: 'Bot Kamikaze', cat: 'rara', type: 'troop', cost: 3, hp: 200, dmg: 300, range: 50, spd: 70, atkSpd: 0, tags: ['melee', 'ground'], ability: 'explode' },
     { id: 'r2', name: 'Bio-Tank', cat: 'rara', type: 'troop', cost: 5, hp: 1200, dmg: 50, range: 50, spd: 25, atkSpd: 1.5, tags: ['melee', 'ground', 'tank'] },
     { id: 'r3', name: 'Holo-Fantasma', cat: 'rara', type: 'troop', cost: 4, hp: 250, dmg: 60, range: 40, spd: 45, atkSpd: 1.0, tags:['melee', 'ground'], ability: 'dodge' },
-    { id: 'r4', name: 'Assassino Furtivo', cat: 'rara', type: 'troop', cost: 4, hp: 200, dmg: 150, range: 40, spd: 65, atkSpd: 1.5, tags: ['melee', 'ground'], ability: 'stealth' },
+    { id: 'r4', name: 'Assassino Furtivo', cat: 'rara', type: 'troop', cost: 4, hp: 200, dmg: 150, range: 40, spd: 65, atkSpd: 1.5, tags:['melee', 'ground'], ability: 'stealth' },
     { id: 'r5', name: 'Barricada Holo', cat: 'rara', type: 'building', cost: 3, hp: 800, dmg: 0, range: 0, spd: 0, atkSpd: 0, tags:['building', 'ground'] },
     { id: 'e1', name: 'Comandante Tático', cat: 'epica', type: 'troop', cost: 6, hp: 400, dmg: 30, range: 100, spd: 35, atkSpd: 1.5, tags: ['ranged', 'ground'], ability: 'aura_buff' },
     { id: 'e2', name: 'Striker Elétrico', cat: 'epica', type: 'troop', cost: 5, hp: 500, dmg: 80, range: 40, spd: 55, atkSpd: 1.2, tags:['melee', 'ground'], ability: 'death_stun' },
     { id: 'e3', name: 'Médica Nano', cat: 'epica', type: 'troop', cost: 5, hp: 300, dmg: -40, range: 150, spd: 40, atkSpd: 1.0, tags: ['ranged', 'ground', 'healer'] },
-    { id: 'e4', name: 'Sniper de Plasma', cat: 'epica', type: 'troop', cost: 4, hp: 150, dmg: 120, range: 250, spd: 30, atkSpd: 2.0, tags: ['ranged', 'ground'] },
+    { id: 'e4', name: 'Sniper de Plasma', cat: 'epica', type: 'troop', cost: 4, hp: 150, dmg: 120, range: 250, spd: 30, atkSpd: 2.0, tags:['ranged', 'ground'] },
     { id: 'e5', name: 'Lançador Tóxico', cat: 'epica', type: 'troop', cost: 6, hp: 600, dmg: 20, range: 120, spd: 35, atkSpd: 2.5, tags:['ranged', 'ground', 'tank'], ability: 'poison_pool' },
-    { id: 'l1', name: 'Mecha-Titã', cat: 'lendaria', type: 'troop', cost: 8, hp: 1500, dmg: 60, range: 100, spd: 25, atkSpd: 0.5, tags: ['ranged', 'ground', 'tank'], ability: 'aoe_laser' },
+    { id: 'l1', name: 'Mecha-Titã', cat: 'lendaria', type: 'troop', cost: 8, hp: 1500, dmg: 60, range: 100, spd: 25, atkSpd: 0.5, tags:['ranged', 'ground', 'tank'], ability: 'aoe_laser' },
     { id: 'l2', name: 'Barão do Lodo', cat: 'lendaria', type: 'troop', cost: 9, hp: 1800, dmg: 70, range: 40, spd: 20, atkSpd: 1.5, tags: ['melee', 'ground', 'tank'], ability: 'spawn_slimes' },
     { id: 'l3', name: 'Hacker de Sistemas', cat: 'lendaria', type: 'troop', cost: 7, hp: 350, dmg: 50, range: 120, spd: 40, atkSpd: 1.2, tags: ['ranged', 'ground'], ability: 'emp_spawn' },
     { id: 'l4', name: 'Mestre do Parkour', cat: 'lendaria', type: 'troop', cost: 8, hp: 550, dmg: 90, range: 40, spd: 80, atkSpd: 0.9, tags:['melee', 'ground'], ability: 'jump_backline' },
@@ -432,8 +434,8 @@ window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
     if(!name) return alert("NOME OBRIGATÓRIO."); name = name.toUpperCase();
     
-    // Safety check no botão para não dar crash (motivo do erro que não deixava entrar no sistema)
-    let loginBtn = document.querySelector('.modal-box button.btn-action:last-child');
+    // Safety check no botao (fix login crash)
+    let loginBtn = document.getElementById('btn-login');
     if(loginBtn) loginBtn.innerText = "CONECTANDO...";
     
     initStarterDeck();
@@ -520,7 +522,7 @@ window.toggleGPS = function() {
     if(trackingGeoId !== null) {
         navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null;
         btn.innerText = "Iniciar GPS (Gravar Rota)"; btn.style.background = "#223";
-        document.getElementById('task-desc').value += `[GPS Mediu: ${totalKm.toFixed(2)} km]`; return;
+        document.getElementById('task-desc').value += ` [GPS Mediu: ${totalKm.toFixed(2)} km]`; return;
     }
     if (!navigator.geolocation) return alert("Seu navegador não tem GPS nativo.");
     totalKm = 0; lastLat = null; lastLng = null; display.innerText = "0.00 km";
@@ -569,7 +571,7 @@ window.submitTaskEvidence = function() {
 }
 
 function postLogicExecution(desc, midiaURL, midiaType) {
-    hubProfile.xp += currentTaskConfig.xp; hubProfile.gold += currentTaskConfig.gold;
+    hubProfile.xp += currentTaskConfig.xp; hubProfile.gold = (parseInt(hubProfile.gold)||0) + currentTaskConfig.gold;
     if(hubProfile.buffs[currentTaskConfig.buffType] !== undefined) hubProfile.buffs[currentTaskConfig.buffType] += currentTaskConfig.buffAmount;
     saveHubStateLocal(); syncUIWithProfile(); playSound('gacha');
 
@@ -633,11 +635,14 @@ window.castVote = async function(postId, type) {
 };
 
 // =========================================================================
-// 6. GACHA E DECK BUILDER
+// 6. GACHA E DECK BUILDER (Corrigido Gold)
 // =========================================================================
 window.openCapsule = function() {
-    if(hubProfile.gold < 1000) return alert("Ouro Insuficiente! Treine ou vença na Arena para ganhar mais.");
-    hubProfile.gold -= 1000;
+    hubProfile.gold = parseInt(hubProfile.gold) || 0; // Transforma em numero para garantir logica matematica
+    let preco = 1000;
+    
+    if(hubProfile.gold < preco) return alert("Ouro Insuficiente! Treine ou vença na Arena para ganhar mais.");
+    hubProfile.gold -= preco;
     
     let r = Math.random(); let cat = 'comum';
     if(r > 0.95) cat = 'lendaria'; else if(r > 0.8) cat = 'epica'; else if(r > 0.5) cat = 'rara'; else if(r > 0.4) cat = 'spell';
@@ -737,7 +742,7 @@ window.submitDuelResult = function(duelId, UID_GANHADOR) {
             let winnerConfirmedUID = null;
             if(voteA === idA && voteB === 'OPONENTE_WIN') winnerConfirmedUID = idA; else if(voteB === idB && voteA === 'OPONENTE_WIN') winnerConfirmedUID = idB; else if(voteA === 'OPONENTE_WIN' && voteB === 'OPONENTE_WIN') winnerConfirmedUID = "TIE";
             if(winnerConfirmedUID && winnerConfirmedUID !== "TIE") { 
-                if(winnerConfirmedUID === hubProfile.uid) { alert("VITÓRIA DECLARADA! +5000 Gold, +1000 XP."); hubProfile.gold += 5000; hubProfile.xp += 1000; saveHubStateLocal(); syncUIWithProfile(); } 
+                if(winnerConfirmedUID === hubProfile.uid) { alert("VITÓRIA DECLARADA! +5000 Gold, +1000 XP."); hubProfile.gold = (parseInt(hubProfile.gold)||0) + 5000; hubProfile.xp += 1000; saveHubStateLocal(); syncUIWithProfile(); } 
                 else alert("Você perdeu de forma honesta. Sem recompensas massivas.");
             } else alert("VOTOS DIVERGENTES! Ambos desclassificados por desonestidade.");
         }
@@ -772,7 +777,7 @@ window.addEventListener('resize', () => { cw=window.innerWidth; ch=window.innerH
 
 let isGameRunning = false; let gameLoopId; let lastTime = 0;
 let energy = 0; const MAX_ENERGY = 10; let energyRegenRate = 0.5; let isAutoMode = false;
-let hand =[]; let drawPile = []; let entities = []; let particles =[]; let p1Base, p2Base;
+let hand =[]; let drawPile = []; let entities =[]; let particles =[]; let p1Base, p2Base;
 let enemyAI = { deck:[], inv: {}, buffs: {regen:0, hp:0, dmg:0, slow:0}, energy: 0 };
 let playerStats = { buffs: {regen:0, hp:0, dmg:0, slow:0}, inv: {} };
 let selectedCardId = null; 
@@ -858,7 +863,7 @@ class Projectile {
 class VisualEffect {
     constructor(x, y, text, color, life) { this.x=x; this.y=y; this.text=text; this.color=color; this.life=life; this.maxLife=life; }
     update(dt) { this.life -= dt; this.y -= 20*dt; }
-    draw(ctx) { ctx.globalAlpha=this.life/this.maxLife; ctx.fillStyle=this.color; ctx.font='bold 14px Share Tech Mono'; ctx.fillText(this.text, this.x, this.y); ctx.globalAlpha=1; }
+    draw(ctx) { ctx.globalAlpha = Math.max(0, this.life/this.maxLife); ctx.fillStyle=this.color; ctx.font='bold 14px Share Tech Mono'; ctx.fillText(this.text, this.x, this.y); ctx.globalAlpha=1; }
 }
 function createText(t, x, y, c) { particles.push(new VisualEffect(x, y, t, c, 1.0)); }
 function createExplosion(x, y, r, c='#f00') { ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle=c; ctx.globalAlpha=0.3; ctx.fill(); ctx.globalAlpha=1.0; }
@@ -899,12 +904,12 @@ function startBattle(enemyData) {
     playerStats = { buffs: hubProfile.buffs, inv: hubProfile.inventory };
     enemyAI = enemyData;
     p1Base = new Base(0, playerStats.buffs.hp); p2Base = new Base(1, enemyAI.buffs.hp);
-    entities = [p1Base, p2Base]; particles =[]; energy = 0; drawPile =[...hubProfile.deck]; hand =[];
+    entities =[p1Base, p2Base]; particles =[]; energy = 0; drawPile =[...hubProfile.deck]; hand =[];
     for(let i=0; i<4; i++) drawCard();
     renderHand(); lastTime = performance.now(); isGameRunning = true; gameLoopId = requestAnimationFrame(gameLoop);
 }
 
-function drawCard() { if(drawPile.length === 0) drawPile = [...hubProfile.deck]; let idx = Math.floor(Math.random() * drawPile.length); hand.push(drawPile.splice(idx, 1)[0]); }
+function drawCard() { if(drawPile.length === 0) drawPile =[...hubProfile.deck]; let idx = Math.floor(Math.random() * drawPile.length); hand.push(drawPile.splice(idx, 1)[0]); }
 function renderHand() {
     let hc = document.getElementById('hand-container'); hc.innerHTML = '';
     hand.forEach((id) => {
@@ -965,7 +970,13 @@ function gameLoop(now) {
     updateAI(dt); if(isAutoMode) updateAutoMode();
     
     for(let i=entities.length-1; i>=0; i--) { let e = entities[i]; if(e.update) e.update(dt); if(e.hp <= 0) { if(e.die) e.die(); entities.splice(i, 1); } }
-    for(let i=particles.length-1; i>=0; i--) { particles[i].update(dt); if(!particles[i].active && particles[i].life <= 0) particles.splice(i, 1); }
+    
+    // FIX CLASH CRASH: Remoção otimizada para balas e efeitos visuais
+    for(let i=particles.length-1; i>=0; i--) { 
+        let p = particles[i];
+        p.update(dt); 
+        if(p.active === false || p.life <= 0) particles.splice(i, 1); 
+    }
     
     ctx.clearRect(0, 0, cw, ch);
     ctx.strokeStyle = '#223'; ctx.setLineDash([10, 10]); ctx.beginPath(); ctx.moveTo(0, ch/2); ctx.lineTo(cw, ch/2); ctx.stroke(); ctx.setLineDash([]);
@@ -978,7 +989,7 @@ function gameLoop(now) {
     
     if(p1Base.hp <= 0 || p2Base.hp <= 0) {
         isGameRunning = false; let win = p2Base.hp <= 0;
-        if(win) { playSound('gacha'); alert("VITÓRIA! Oponente Derrotado. +1000 Gold | +500 XP"); hubProfile.gold += 1000; hubProfile.xp += 500; } else { playSound('hit'); alert("DERROTA! Sua base ruiu."); }
+        if(win) { playSound('gacha'); alert("VITÓRIA! Oponente Derrotado. +1000 Gold | +500 XP"); hubProfile.gold = (parseInt(hubProfile.gold)||0) + 1000; hubProfile.xp += 500; } else { playSound('hit'); alert("DERROTA! Sua base ruiu."); }
         saveHubStateLocal(); syncUIWithProfile(); document.getElementById('game-wrapper').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex'; return;
     }
     gameLoopId = requestAnimationFrame(gameLoop);
