@@ -3,425 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fitness RPG & Auto-Battler</title>
+    <title>Fitness RPG & Cyber Clash</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap');
         
-        body { margin: 0; overflow: hidden; background: #0a0a0f; user-select: none; font-family: 'Roboto', sans-serif; -webkit-touch-callout: none; color: #fff; touch-action: none;}
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ea;
+            --neon-green: #00ff66;
+            --neon-yellow: #ffea00;
+            --dark-bg: #0b0c10;
+            --panel-bg: #15161e;
+            --panel-border: #232533;
+        }
+
+        body { margin: 0; overflow: hidden; background: var(--dark-bg); user-select: none; font-family: 'Rajdhani', sans-serif; -webkit-touch-callout: none; color: #e0e0e0; touch-action: manipulation;}
         
-        /* SCROLLBAR CUSTOM */
         ::-webkit-scrollbar { width: 6px; height: 6px;}
-        ::-webkit-scrollbar-track { background: #111; }
-        ::-webkit-scrollbar-thumb { background: #0f0; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: var(--dark-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
         
-        button { cursor: pointer; border: none; font-family: 'Roboto', sans-serif; transition: 0.2s; border-radius: 6px; font-weight: bold; }
-        button:hover { filter: brightness(1.1); }
-        button:active { transform: scale(0.97); }
+        button { cursor: pointer; border: none; font-family: 'Orbitron', sans-serif; transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); border-radius: 4px; font-weight: bold; text-transform: uppercase;}
+        button:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        button:active { transform: translateY(1px); }
 
-        #hub-container { display: flex; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000; background: #0a0a0f; overflow: hidden;}
-        
-        /* ENGINE WRAPPER CYBER CLASH */
-        #game-wrapper { display: none; width: 100vw; height: 100vh; position: fixed; top:0; left:0; z-index: 1; background: #000;}
-        #arena-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: #12121a;}
-        
-        /* OVERLAYS ARENA */
-        #arena-ui { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between;}
-        .top-bar-arena { display: flex; justify-content: space-between; align-items: center; padding: 15px; font-family: 'Press Start 2P'; font-size: 0.6rem; color: #fff; pointer-events: auto; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);}
-        .btn-leave { background: #333; color: #fff; padding: 8px 12px; border-radius: 4px; border: 1px solid #555; font-family: 'Roboto', sans-serif;}
-        
-        .bottom-ui-arena { width: 100%; padding-bottom: 10px; pointer-events: auto; display: flex; flex-direction: column; align-items: center; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);}
-        
-        .energy-container { width: 90%; max-width: 500px; height: 18px; border: 2px solid #0ff; background: rgba(0,0,0,0.8); border-radius: 10px; margin-bottom: 10px; position: relative; overflow: hidden;}
-        .energy-fill { height: 100%; width: 0%; background: #0ff; transition: width 0.1s linear;}
-        .energy-text { position: absolute; top: 0; width:100%; text-align:center; font-family:'Press Start 2P'; font-size:0.6rem; line-height:18px; color:#000; font-weight: bold;}
-        
-        .cards-hand { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 600px; height: 85px;}
-        .battle-card { width: 65px; height: 100%; background: #1a1a24; border: 2px solid #444; border-radius: 8px; display:flex; flex-direction:column; justify-content: space-between; align-items:center; cursor:pointer; position:relative; box-sizing: border-box; overflow: hidden; pointer-events: auto;}
-        .battle-card.active { border-color: #0f0; transform: translateY(-10px); box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);}
-        .battle-card.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
-        .b-card-cost { font-family:'Press Start 2P'; font-size:0.5rem; background:#0ff; color:#000; padding:4px; position:absolute; top:0; left:0; border-bottom-right-radius: 6px;}
-        .b-card-lvl { font-size:0.65rem; font-weight: bold; color:yellow; position:absolute; top:4px; right:4px;}
-        .b-card-name { font-size:0.6rem; color:#fff; text-align:center; font-weight: bold; line-height: 1.1; margin-bottom:8px; padding: 0 2px;}
-        
-        .auto-btn { position: absolute; bottom: 120px; right: 15px; border: 2px solid #ffaa00; background: rgba(0,0,0,0.7); color: #ffaa00; font-size: 0.8rem; padding: 10px 15px; pointer-events: auto;}
-        .auto-btn.active { background: #ffaa00; color: #000;}
+        .glow-text { text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); color: var(--neon-blue); }
+        .glow-pink { text-shadow: 0 0 10px rgba(255, 0, 234, 0.6); color: var(--neon-pink); }
+        .glow-green { text-shadow: 0 0 10px rgba(0, 255, 102, 0.6); color: var(--neon-green); }
 
-        /* HUB CSS - SIDEBAR & GERAL */
-        .hub-sidebar { width: 280px; background: #14141e; border-right: 1px solid #2a2a35; display: flex; flex-direction: column; z-index: 1010; flex-shrink: 0; overflow-y: auto;}
-        .hub-profile-area { padding: 25px 20px; text-align: center; border-bottom: 1px solid #2a2a35;}
-        .hub-avatar { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #0ff; object-fit: cover; background: #222; margin: 0 auto 10px;}
-        .hub-username { font-size: 1.1rem; font-weight: bold; color: #fff; margin-bottom: 5px; word-wrap: break-word;}
-        .hub-lvl { color: #0ff; font-weight: bold; font-size: 0.9rem; margin-bottom: 5px;}
+        #hub-container { display: flex; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000; background: radial-gradient(circle at 50% 0%, #1a1a2e, var(--dark-bg)); overflow: hidden;}
         
-        .hub-stats-row { display: flex; justify-content: center; gap: 20px; font-size: 0.9rem; background: #1e1e2d; padding: 10px; border-radius: 8px; margin-top: 15px;}
-        .stat-item { text-align: center; color: #aaa; font-size: 0.7rem; text-transform: uppercase;}
-        .stat-item span { display: block; font-family: 'Press Start 2P'; font-size: 0.8rem; margin-top: 5px; color: #fff; }
+        /* SIDEBAR (NAV & PERFIL) */
+        .hub-sidebar { width: 280px; background: rgba(15, 16, 25, 0.95); border-right: 1px solid var(--panel-border); display: flex; flex-direction: column; z-index: 1010; flex-shrink: 0; backdrop-filter: blur(10px); box-shadow: 5px 0 30px rgba(0,0,0,0.5);}
+        .hub-profile-area { padding: 25px 20px; text-align: center; border-bottom: 1px solid var(--panel-border); position: relative;}
+        .hub-avatar-container { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; }
+        .hub-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #222; border: 2px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);}
+        .hub-lvl-badge { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); background: var(--neon-blue); color: #000; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: 900;}
+        .hub-username { font-size: 1.3rem; font-weight: bold; color: #fff; margin-bottom: 5px; font-family: 'Orbitron', sans-serif;}
         
-        .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px 10px; gap: 8px; }
-        .hub-nav-btn { background: transparent; color: #999; font-size: 1rem; text-align: left; padding: 12px 15px; border-radius: 6px;}
-        .hub-nav-btn:hover { background: #2a2a35; color: #fff;}
-        .hub-nav-btn.active { background: #232336; color: #0ff; font-weight: bold;}
+        .hub-stats-row { display: flex; justify-content: space-between; font-size: 0.9rem; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--panel-border);}
+        .stat-item { text-align: center; color: #888; font-size: 0.75rem; font-weight: 700;}
+        .stat-item span { display: block; font-family: 'Orbitron', sans-serif; font-size: 1rem; margin-top: 5px; color: var(--neon-yellow); }
         
-        .hub-start-arena { margin: 15px; padding: 18px; background: #0f0; color: #000; font-size: 1rem; text-transform: uppercase; box-shadow: 0 4px 15px rgba(0,255,0,0.3);}
-        .hub-start-arena:hover { background: #1aff1a; box-shadow: 0 6px 20px rgba(0,255,0,0.5);}
+        .hub-nav { flex: 1; display: flex; flex-direction: column; padding: 15px 15px; gap: 8px; overflow-y: auto;}
+        .hub-nav-btn { background: transparent; color: #999; font-size: 1rem; text-align: left; padding: 14px 20px; border-radius: 8px; border: 1px solid transparent; letter-spacing: 1px;}
+        .hub-nav-btn:hover { background: rgba(0, 243, 255, 0.05); color: #fff;}
+        .hub-nav-btn.active { background: rgba(0, 243, 255, 0.1); color: var(--neon-blue); border-color: rgba(0, 243, 255, 0.3); font-weight: bold; box-shadow: 0 0 15px rgba(0,243,255,0.1) inset;}
+        
+        .hub-start-arena { margin: 15px; padding: 18px; background: linear-gradient(45deg, var(--neon-blue), #00aaff); color: #000; font-size: 1rem; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); animation: pulseBtn 2s infinite;}
 
         /* CONTEÚDO PRINCIPAL HUB */
-        .hub-main-content { flex: 1; position: relative; padding: 30px; overflow-y: auto; background: #0a0a0f; }
-        .hub-tab { display: none; animation: fadeIn 0.3s; }
+        .hub-main-content { flex: 1; padding: 30px 40px; overflow-y: auto; scroll-behavior: smooth; position: relative;}
+        .hub-tab { display: none; animation: fadeIn 0.4s ease-out; }
         .hub-tab.active { display: block; }
-        .hub-title { font-size: 1.6rem; border-bottom: 2px solid #2a2a35; padding-bottom: 10px; margin-top: 0; margin-bottom: 20px; color: #fff; font-weight: bold;}
+        .hub-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 10px; margin-top: 0; margin-bottom: 25px; color: #fff; letter-spacing: 1px;}
 
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
-        .action-card { background: #1e1e2d; border: 1px solid #2a2a35; padding: 20px; border-radius: 10px; display: flex; flex-direction: column;}
-        .action-card h3 { font-size: 1rem; margin: 0 0 10px 0; color: #fff;}
-        .action-card p { font-size: 0.85rem; color: #aaa; margin-bottom: 15px; flex-grow: 1; line-height: 1.4;}
-        .card-reward { font-weight: bold; color: #0ff; font-size: 0.85rem; margin-bottom: 15px;}
+        /* CARDS DE AÇÃO (MISSÕES/LOJA) */
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;}
+        .action-card { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; transition: 0.3s; position: relative; overflow: hidden;}
+        .action-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background: var(--neon-blue); transition: width 0.3s;}
+        .action-card:hover::before { width: 100%; opacity: 0.05; }
+        .action-card:hover { border-color: rgba(0,243,255,0.4); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
+        .action-card.forca::before { background: var(--neon-pink); }
+        .action-card.dieta::before { background: var(--neon-green); }
+        .action-card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; margin: 0 0 10px 0; color: #fff; z-index: 2;}
+        .action-card p { font-size: 0.95rem; color: #aaa; margin-bottom: 15px; flex-grow: 1; line-height: 1.5; z-index: 2;}
+        .card-reward { font-weight: bold; color: var(--neon-yellow); font-size: 0.9rem; margin-bottom: 15px; z-index: 2;}
         
-        .btn-action { background: #2a2a35; color: #fff; padding: 12px; width: 100%; font-size: 0.9rem;}
-        .btn-action:hover { background: #3a3a4d; }
-        .btn-highlight { background: #0f0; color: #000; }
-        .btn-highlight:hover { background: #1aff1a; }
+        .btn-neon { background: transparent; border: 2px solid var(--neon-blue); color: var(--neon-blue); padding: 12px; width: 100%; z-index: 2;}
+        .btn-neon:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
+        .btn-neon.pink { border-color: var(--neon-pink); color: var(--neon-pink); } .btn-neon.pink:hover { background: var(--neon-pink); box-shadow: 0 0 15px var(--neon-pink); color: #000;}
+        .btn-neon.green { border-color: var(--neon-green); color: var(--neon-green); } .btn-neon.green:hover { background: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); color: #000;}
 
         /* FORMS E UPLOAD BOX */
-        .post-form-box { background: #14141e; border: 1px solid #2a2a35; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
-        .post-form-box input[type="text"], .post-form-box input[type="number"], .post-form-box select, .post-form-box input[type="file"] { width: 100%; padding: 12px; background: #0a0a0f; color: #fff; border: 1px solid #333; border-radius: 6px; margin-bottom: 15px; font-size: 0.95rem; box-sizing: border-box;}
-        
-        /* Painel GPS */
-        .gps-panel { background: #0a0a0f; padding: 15px; border-radius: 6px; border: 1px dashed #0ff; margin-bottom: 15px; text-align: center; display: none;}
-        .gps-status { color: #fff; font-size: 1rem; margin-top: 10px; display: block;}
-        .gps-status span { color: #0f0; font-weight: bold; font-size: 1.2rem;}
+        .post-form-box { background: rgba(20,20,30,0.6); border: 1px solid var(--neon-blue); border-radius: 12px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(5px);}
+        .input-cyber { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--panel-border); border-radius: 6px; margin-bottom: 15px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; box-sizing: border-box; transition: 0.3s;}
+        .input-cyber:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.2) inset;}
 
-        /* FEED SOCIAL */
-        .feed-filters { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px;}
-        .filter-btn { background: #1e1e2d; border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; white-space: nowrap;}
-        .filter-btn.active { background: #0ff; color: #000; border-color: #0ff; font-weight: bold;}
+        /* FEED SOCIAL E TRIBUNAL */
+        .feed-filters { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;}
+        .filter-btn { background: var(--panel-bg); border: 1px solid var(--panel-border); color: #888; padding: 10px 20px; border-radius: 20px; font-size: 0.95rem; white-space: nowrap;}
+        .filter-btn.active { background: var(--neon-blue); color: #000; font-weight: bold;}
         
-        .feed-container { display: flex; flex-direction: column; gap: 20px; }
-        .feed-post { background: #1e1e2d; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: flex; flex-direction: column; position: relative;}
-        .feed-post.revoked { opacity: 0.5; border-left: 5px solid #f00;}
-        .feed-post[data-category="Duelo"] { border-top: 3px solid #ffaa00; }
+        .feed-container { display: flex; flex-direction: column; gap: 25px; padding-bottom: 30px;}
+        .feed-post { background: var(--panel-bg); border-radius: 12px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); position: relative; border-top: 3px solid #333;}
+        .feed-post[data-cat="Força"] { border-top-color: var(--neon-pink); }
+        .feed-post[data-cat="Cardio"] { border-top-color: var(--neon-blue); }
+        .feed-post[data-cat="Dieta"] { border-top-color: var(--neon-green); }
+        .feed-post[data-cat="Duelo"] { border-top-color: var(--neon-yellow); background: rgba(20,20,10,0.8); }
         
-        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px;}
-        .post-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #0ff; object-fit: cover;}
-        .post-meta { display: flex; flex-direction: column; }
-        .post-author { font-weight: bold; color: #fff; font-size: 0.95rem; }
-        .post-type { color: #0ff; font-size: 0.75rem; text-transform: uppercase; margin-top: 2px;}
+        .post-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
+        .post-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #555;}
+        .post-author { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: bold; color: #fff;}
+        .post-type { font-size: 0.85rem; color: #888; font-weight: 700; text-transform: uppercase;}
         
-        .post-img-container { width: 100%; max-height: 400px; background: #0a0a0f; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-bottom: 15px;}
-        .post-img, .post-vid { width: 100%; max-height: 100%; object-fit: contain; outline: none; border-radius: 8px;}
+        .post-img-container { width: 100%; max-height: 450px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 15px; display: flex; justify-content: center;}
+        .post-img { width: 100%; height: 100%; object-fit: cover;}
         
-        .post-actions { display: flex; gap: 10px; border-top: 1px solid #2a2a35; padding-top: 15px; margin-top: 5px;}
-        .vote-btn { flex: 1; padding: 10px; border-radius: 6px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 5px; background: #2a2a35; color: #fff;}
-        .vote-btn.up:hover { background: #0f0; color: #000; }
-        .vote-btn.down:hover { background: #f00; color: #fff; }
+        .post-actions { display: flex; gap: 15px; border-top: 1px solid var(--panel-border); padding-top: 15px;}
+        .vote-btn { flex: 1; padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #ccc; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .vote-btn.up:hover { background: rgba(0, 255, 102, 0.2); color: var(--neon-green); }
+        .vote-btn.down:hover { background: rgba(255, 0, 0, 0.2); color: #ff5555; }
         
-        .post-comments { margin-top: 15px; background: #14141e; border-radius: 6px; padding: 15px;}
-        .comments-list { display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; margin-bottom: 10px;}
-        .comment-item { font-size: 0.85rem; color: #ccc; line-height: 1.4;}
-        .comment-item b { color: #0ff; font-size: 0.8rem; margin-right: 5px;}
-        .comment-input-area { display:flex; gap:8px;}
-        .comment-input-area input { flex:1; padding:10px; background:#0a0a0f; color:#fff; border:1px solid #333; border-radius: 6px;}
+        /* RADAR PVP (DIREITA) */
+        .hub-radar { width: 280px; background: rgba(15, 16, 25, 0.95); border-left: 1px solid var(--panel-border); display: flex; flex-direction: column; padding: 25px 20px; overflow-y: auto; flex-shrink: 0;}
+        .radar-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--neon-pink); text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--panel-border);}
+        .radar-player { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; transition: 0.3s;}
+        .radar-player:hover { border-color: var(--neon-pink); transform: translateX(-5px);}
+        .btn-duel { background: rgba(255, 0, 234, 0.1); border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 10px;}
+        .btn-duel:hover { background: var(--neon-pink); color: #000; box-shadow: 0 0 15px var(--neon-pink);}
+        
+        /* ENGINE AUTO BATTLER (CYBER CLASH) */
+        #game-wrapper { display: none; width: 100vw; height: 100vh; position: fixed; top:0; left:0; z-index: 1; background: #050508; touch-action: none;}
+        #arena-canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
+        
+        #arena-ui { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between;}
+        .top-bar-arena { display: flex; justify-content: space-between; align-items: center; padding: 20px; font-family: 'Orbitron', sans-serif; color: #fff; pointer-events: auto; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);}
+        .hp-hud { background: rgba(255,0,0,0.2); border: 1px solid red; padding: 8px 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: #ff5555;}
+        
+        .bottom-ui-arena { width: 100%; padding-bottom: 15px; pointer-events: auto; display: flex; flex-direction: column; align-items: center; background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, transparent);}
+        .energy-container { width: 90%; max-width: 600px; height: 22px; border: 2px solid var(--neon-blue); background: rgba(0,0,0,0.8); border-radius: 12px; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 0 10px rgba(0,243,255,0.3);}
+        .energy-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #0055ff, var(--neon-blue)); transition: width 0.2s linear;}
+        .energy-text { position: absolute; top: 0; width:100%; text-align:center; font-family:'Orbitron'; font-size:0.8rem; line-height:22px; color:#fff; text-shadow: 1px 1px 2px #000; font-weight: 900;}
+        
+        /* CARTAS E DECK BUILDER */
+        .cards-hand { display: flex; justify-content: center; gap: 10px; width: 100%; max-width: 800px; height: 110px;}
+        .battle-card { width: 80px; height: 100%; background: #15161e; border: 2px solid #333; border-radius: 10px; display:flex; flex-direction:column; justify-content: flex-end; align-items:center; cursor:pointer; position:relative; box-sizing: border-box; overflow: hidden; pointer-events: auto; transition: 0.2s;}
+        .battle-card::after { content:''; position:absolute; top:0;left:0;width:100%;height:100%; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.8)); pointer-events:none;}
+        .battle-card.active { border-color: var(--neon-blue); transform: translateY(-15px); box-shadow: 0 0 20px rgba(0,243,255,0.5);}
+        .battle-card.disabled { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
+        .b-card-cost { position:absolute; top:0; left:0; background:var(--neon-blue); color:#000; font-family:'Orbitron'; font-size:0.8rem; padding:4px 6px; border-bottom-right-radius:8px; z-index:2; font-weight:900;}
+        .b-card-lvl { position:absolute; top:4px; right:6px; color:var(--neon-yellow); font-family:'Orbitron'; font-size:0.7rem; font-weight:bold; z-index:2;}
+        .b-card-name { font-size:0.65rem; color:#fff; text-align:center; font-weight: bold; margin-bottom:8px; z-index:2; padding:0 2px; text-transform:uppercase;}
+        
+        .deck-builder-grid, .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--panel-border);}
+        .deck-slot { width: 100%; aspect-ratio: 3/4; border: 2px dashed #444; border-radius: 10px; display: flex; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;}
+        .deck-slot.filled { border: 2px solid var(--neon-blue); background: #1a1a24; }
 
-        /* RADAR PVP */
-        .hub-radar { width: 280px; background: #14141e; border-left: 1px solid #2a2a35; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; flex-shrink: 0;}
-        .radar-title { font-size: 1rem; color: #fff; text-align: center; margin-bottom: 20px; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 10px;}
-        .radar-list { display: flex; flex-direction: column; gap: 12px; }
-        .radar-player { background: #1e1e2d; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-left: 3px solid #0ff;}
-        .radar-name { color: #fff; font-size: 0.9rem; font-weight: bold;}
-        .btn-duel { background: #0ff; color: #000; padding: 8px; font-size: 0.8rem; border-radius: 4px;}
+        /* MODAIS E TELAS CHEIAS */
+        .hub-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
+        .modal-content { background: #15161e; border: 1px solid var(--neon-blue); border-radius: 12px; padding: 35px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 50px rgba(0,243,255,0.2);}
         
-        /* SISTEMA DE DECK (CARTAS E ESQUADRÃO) */
-        .deck-builder-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; background: #14141e; padding: 15px; border-radius: 10px;}
-        .deck-slot { width: 65px; height: 85px; border: 2px dashed #444; border-radius: 8px; display: flex; align-items:center; justify-content:center; cursor:pointer; background:#0a0a0f; position:relative; overflow: hidden;}
-        .deck-slot.filled { border-style: solid; border-color: #0ff; background: #1a1a24;}
-        .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; max-height: 250px; overflow-y:auto; border: 1px solid #2a2a35; border-radius: 10px; padding:15px; background:#14141e;}
-        
-        /* MODAIS E TELAS */
-        .hub-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px);}
-        .modal-content { background: #1e1e2d; border-radius: 12px; padding: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-        .modal-title { color: #fff; margin-top: 0; margin-bottom: 15px; font-size: 1.3rem;}
-        
-        #hub-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0f; z-index: 3000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        .login-box { width: 90%; max-width: 360px; background: #1e1e2d; padding: 40px 30px; border-radius: 12px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.4);}
-        .login-box h1 { font-size: 1.5rem; color: #fff; margin-bottom: 10px; font-weight: bold;}
-        
-        #death-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.95); z-index: 110; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px;}
-        .end-btn { background: #0f0; color: #000; padding: 15px 30px; font-size: 1rem; border-radius: 8px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,255,0,0.3);}
+        #hub-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0c10; z-index: 3000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .login-box { width: 90%; max-width: 400px; background: #15161e; padding: 40px; border-radius: 16px; border: 1px solid #333; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
+        .login-box h1 { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #fff; margin-bottom: 10px;}
 
-        /* RESPONSIVIDADE (Mobile Layout) */
+        /* RESPONSIVIDADE MOBILE */
         @media (max-width: 900px) {
             #hub-container { flex-direction: column; }
-            .hub-sidebar { width: 100%; order: -1; flex-direction: column; border-right: none; border-bottom: 1px solid #333; padding: 0; flex-shrink: 0;}
+            .hub-sidebar { width: 100%; order: -1; padding: 0; border-right: none; border-bottom: 1px solid #333;}
             .hub-profile-area { display: flex; align-items: center; text-align: left; padding: 15px;}
-            .hub-avatar { width: 50px; height: 50px; margin: 0 15px 0 0; border-width: 2px;}
-            .hub-stats-row { margin-top: 0; padding: 0; justify-content: flex-start; gap: 20px; background: transparent;}
-            .stat-item { text-align: left;}
-            #attributes-box { display: none; } 
+            .hub-avatar-container { width: 60px; height: 60px; margin: 0 15px 0 0; }
+            .hub-stats-row { margin: 0; padding: 0; justify-content: flex-start; gap: 20px; background: transparent; border:none;}
             
-            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 5px; padding: 10px; background: #14141e;}
-            .hub-nav-btn { font-size: 0.85rem; padding: 10px 15px; border-radius: 20px; background: #1e1e2d; white-space:nowrap;}
-            .hub-nav-btn.active { background: #0ff; color: #000;}
+            .hub-nav { flex-direction: row; width: 100%; overflow-x: auto; gap: 5px; padding: 10px;}
+            .hub-nav-btn { font-size: 0.9rem; padding: 10px 15px; white-space:nowrap; border:none; background:#1e1e2d;}
+            .hub-nav-btn.active { border-bottom: 2px solid var(--neon-blue); background:rgba(0,243,255,0.1);}
             
-            .hub-start-arena { margin: 10px; padding: 12px; border-radius: 8px;}
-            
-            .hub-radar { width: 100%; border-left: none; border-top: 1px solid #333; flex-direction: column; height: auto; padding: 15px;}
-            .radar-title { margin-bottom: 10px; border:none; padding:0;}
+            .hub-radar { width: 100%; border-left: none; border-top: 1px solid #333; flex-direction: row; overflow-x: auto; height:auto; padding:15px;}
+            .radar-title { display: none;}
+            .radar-list { flex-direction: row; gap: 15px;}
+            .radar-player { min-width: 220px; margin:0;}
             
             .hub-main-content { padding: 15px; }
-            .action-card { padding: 15px; }
-            .post-form-box { padding: 15px; }
-            .grid-cards { grid-template-columns: 1fr; }
+            .battle-card { width: 65px; height: 90px;}
+            .b-card-name { font-size: 0.55rem;}
         }
-        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        @keyframes pulseBtn { 0% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(0,243,255,0.7); } 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,243,255,0.4); } }
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
+    <!-- BOOT / LOGIN -->
     <div id="hub-login">
         <div class="login-box">
-            <h1>Acessar Central</h1>
-            <p style="color:#aaa; font-size: 0.9rem; margin-bottom: 25px;">Sincronize seu perfil para conectar os ganhos dos treinos físicos às suas tropas.</p>
-            
-            <input type="text" id="login-username" placeholder="Nome de usuário" style="width: 100%; padding: 15px; background: #0a0a0f; border: 1px solid #333; border-radius: 6px; color: #fff; text-align: center; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem;">
-            
-            <button class="btn-action" style="background:#333; color:#fff; margin-bottom:15px; font-size: 0.8rem;" onclick="window.requestPermissionsUI()">Habilitar Câmera/GPS (Para Missões)</button>
-            <div id="permission-status" style="font-size:0.75rem; color:#aaa; margin-bottom: 20px;">Necessário para validar fotos de treino e corrida.</div>
-            
-            <button id="btn-login-main" class="btn-action btn-highlight" style="font-size: 1.1rem; padding: 15px;" onclick="window.hubLogin()">Entrar</button>
+            <h1 class="glow-text">CYBER FITNESS</h1>
+            <p style="color:#aaa; font-size: 0.95rem; margin-bottom: 30px;">Conecte seus dados físicos para fortificar as tropas na Matriz.</p>
+            <input type="text" id="login-username" class="input-cyber" placeholder="Seu Vulgo" style="text-align: center;">
+            <button class="btn-neon" style="font-size: 1.1rem; padding: 15px; background: rgba(0,243,255,0.1);" onclick="window.hubLogin()">Sincronizar Dispositivo</button>
         </div>
     </div>
 
-    <!-- O HUB PRINCIPAL -->
+    <!-- HUB RPG WEB -->
     <div id="hub-container" style="display: none;">
         
+        <!-- SIDEBAR PERFIL -->
         <div class="hub-sidebar">
             <div class="hub-profile-area">
-                <img id="hub-avatar-img" class="hub-avatar" src="https://i.imgur.com/kKC1zaJ.png">
-                <div class="hub-profile-info">
-                    <div class="hub-username" id="hub-ui-name">JOGADOR</div>
-                    <div class="hub-lvl" id="hub-ui-lvl">NÍVEL 1</div>
-                    <div class="hub-stats-row">
-                        <div class="stat-item">XP <span id="hub-ui-xp" style="color:#0f0;">0</span></div>
-                        <div class="stat-item">Gold <span id="hub-ui-gold" style="color:#ffaa00;">0</span></div>
-                    </div>
+                <div class="hub-avatar-container">
+                    <img id="hub-avatar-img" class="hub-avatar" src="https://i.imgur.com/kKC1zaJ.png">
+                    <div class="hub-lvl-badge" id="hub-ui-lvl">LV.1</div>
                 </div>
-                
-                <div id="attributes-box" style="margin-top: 20px; border-top: 1px solid #2a2a35; padding-top: 15px;">
-                    <span style="font-size: 0.75rem; color: #0ff; font-weight: bold; text-transform: uppercase;">Meus Atributos Reais</span>
-                    <div style="display:flex; flex-direction:column; gap:8px; font-size: 0.85rem; color:#bbb; margin-top:10px; text-align:left;">
-                        <div>🏃 Cardio (Energia): <span id="hub-ui-spd" style="color:#0ff; font-weight:bold;">1.0</span></div>
-                        <div>💪 Força (Vida da Base): <span id="hub-ui-hp" style="color:#0f0; font-weight:bold;">+0</span></div>
-                        <div>🥗 Nutrição (Dano extra): <span id="hub-ui-dmg" style="color:#ffaa00; font-weight:bold;">1.0</span></div>
+                <div>
+                    <div class="hub-username" id="hub-ui-name">JOGADOR</div>
+                    <div class="hub-stats-row">
+                        <div class="stat-item">XP <span id="hub-ui-xp" class="glow-green">0</span></div>
+                        <div class="stat-item">Ouro <span id="hub-ui-gold" style="color:var(--neon-yellow); text-shadow: 0 0 10px rgba(255,234,0,0.5);">0</span></div>
                     </div>
                 </div>
             </div>
 
             <div class="hub-nav">
                 <button class="hub-nav-btn active" onclick="window.switchTab('tab-feed')">Comunidade</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-missoes')">Missões Físicas</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-deck')">Meu Deck</button>
-                <button class="hub-nav-btn" onclick="window.switchTab('tab-loja')">Loja e Gacha</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-missoes')">Registrar Treino</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-deck')">Meu Deck (Exército)</button>
+                <button class="hub-nav-btn" onclick="window.switchTab('tab-loja')">Loja Neon</button>
                 <button class="hub-nav-btn" onclick="window.switchTab('tab-perfil')">Configurações</button>
             </div>
             
-            <button class="hub-start-arena" onclick="window.startClash(false)">JOGAR BATALHA PVE</button>
+            <div style="padding: 15px; margin-top: auto;">
+                <button class="hub-start-arena" style="width: 100%;" onclick="window.startClash(false)">ENTRAR NA ARENA (PVE)</button>
+            </div>
         </div>
 
+        <!-- AREA CENTRAL DE TABS -->
         <div class="hub-main-content">
             
-            <!-- FEED SOCIAL -->
+            <!-- FEED SOCIAL E TRIBUNAL -->
             <div id="tab-feed" class="hub-tab active">
-                <h2 class="hub-title">Feed da Comunidade</h2>
+                <h2 class="hub-title">Feed do Sistema</h2>
                 
                 <div class="feed-filters">
-                    <button class="filter-btn active" onclick="window.filterFeed('todos', this)">Ver Tudo</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Cardio', this)">Corridas</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Força', this)">Treinos Livres</button>
+                    <button class="filter-btn active" onclick="window.filterFeed('todos', this)">Rede Global</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Força', this)">Treino/Força</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Cardio', this)">Cardio/Mobilidade</button>
                     <button class="filter-btn" onclick="window.filterFeed('Dieta', this)">Nutrição</button>
-                    <button class="filter-btn" onclick="window.filterFeed('Duelo', this)">PvP Reais</button>
+                    <button class="filter-btn" onclick="window.filterFeed('Duelo', this)" style="color:var(--neon-pink); border-color:var(--neon-pink);">Confrontos</button>
                 </div>
 
-                <div class="post-form-box" id="quick-post-box" style="display:none; border-color:#0f0;">
-                    <h3 style="color:#0f0; margin-top:0; font-size:1.1rem;" id="form-box-title">Registrar Nova Tarefa</h3>
-                    <input type="text" id="task-desc" placeholder="Escreva como foi o treino ou adicione detalhes...">
+                <!-- BOX DE CRIAR POST (Escondido até clicar em missões) -->
+                <div class="post-form-box" id="quick-post-box" style="display:none; border-color:var(--neon-green);">
+                    <h3 style="color:var(--neon-green); margin-top:0; font-family:'Orbitron';" id="form-box-title">VALIDAÇÃO DE ROTINA</h3>
+                    <input type="text" id="task-desc" class="input-cyber" placeholder="Escreva sobre o treino ou dieta feita...">
                     
-                    <div id="gps-panel" class="gps-panel">
-                        <button class="btn-action" id="btn-gps-toggle" onclick="window.toggleGPS()">📍 Iniciar Gravação de Rota</button>
-                        <div class="gps-status">Distância: <span id="gps-dist">0.00</span> km</div>
-                    </div>
-
-                    <p style="font-size:0.85rem; color:#aaa; margin-bottom:8px;">Envie uma foto (ou tire na hora) para comprovar:</p>
-                    <input type="file" id="task-file" accept="image/*,video/mp4" capture="environment">
+                    <p style="font-size:0.85rem; color:#aaa; margin-bottom:10px;">Adicione uma Imagem de Prova:</p>
+                    <input type="file" id="task-file" class="input-cyber" accept="image/*" capture="environment" style="padding: 10px;">
                     <canvas id="task-compress-canvas" style="display:none;"></canvas>
                     
-                    <button class="btn-action btn-highlight" id="btn-post-upload" style="margin-top:10px; font-size: 1rem;" onclick="window.submitTaskEvidence()">Publicar e Receber Recompensa</button>
-                    <button class="btn-action" style="margin-top:10px; background:#333; border:none; color:#ccc;" onclick="document.getElementById('quick-post-box').style.display='none'">Cancelar</button>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn-neon green" id="btn-post-upload" style="flex:2;" onclick="window.submitTaskEvidence()">COMPARTILHAR E GANHAR STATUS</button>
+                        <button class="btn-neon" style="flex:1; border-color:#555; color:#aaa;" onclick="document.getElementById('quick-post-box').style.display='none'">CANCELAR</button>
+                    </div>
                 </div>
-                
-                <div class="feed-container" id="feed-container-render"></div>
+
+                <div class="feed-container" id="feed-container-render">
+                    <div style="text-align:center; padding: 50px; color:#555;">Carregando histórico do servidor...</div>
+                </div>
             </div>
 
-            <!-- MISSÕES -->
+            <!-- TREINOS / MISSÕES IRL -->
             <div id="tab-missoes" class="hub-tab">
-                <h2 class="hub-title">Missões de Atributo Reais</h2>
+                <h2 class="hub-title">Registro Físico</h2>
+                <p style="color:#aaa; margin-bottom: 25px; font-size:1.05rem;">Treinos registrados aqui dão bônus passivos de Energia (Spd), Vida (HP) e Dano para suas cartas no jogo.</p>
                 
-                <h3 style="color:#0ff; font-size: 1rem; margin-top: 20px;">Ganho de Agilidade e Energia (Velocidade)</h3>
-                <div class="grid-cards" style="margin-bottom:20px;">
-                    <div class="action-card" style="border-top: 3px solid #0ff;">
-                        <h3 style="color:#0ff">Corrida Livre / Caminhada</h3>
-                        <p>Ande, corra ou pedale. Isso aumenta a regeneração de energia da sua base na Batalha, permitindo invocar cartas mais rápido.</p>
-                        <span class="card-reward">+500 XP | +$1000 | +0.2 de Energia</span>
-                        <button class="btn-action" onclick="window.openTaskUploader('cardio', 'Cardio')">Registrar Corrida</button>
+                <h3 style="color:var(--neon-blue); font-family:'Orbitron';">CARDIO E AGILIDADE (Recuperação de Energia +)</h3>
+                <div class="grid-cards" style="margin-bottom:30px;">
+                    <div class="action-card">
+                        <h3 class="glow-text">Corrida de Rua</h3>
+                        <p>Corra ao ar livre. Isso fará a barra de energia das suas cartas encher mais rápido no jogo.</p>
+                        <span class="card-reward">+500 XP | $1000 | +0.2 Energy Regen</span>
+                        <button class="btn-neon" onclick="window.openTaskUploader('Cardio', 'Cardio', this)">REGISTRAR CARDIO</button>
                     </div>
                 </div>
 
-                <h3 style="color:#f55; font-size: 1rem;">Ganho de Resistência (HP e Defesa)</h3>
-                <div class="grid-cards" style="margin-bottom:20px;">
-                    <div class="action-card" style="border-top: 3px solid #f55;">
-                        <h3 style="color:#f55;">Série de Calistenia</h3>
-                        <p>Barras fixas ou flexões. Blinda as muralhas da sua Base e dobra a vida natural das cartas do tipo 'Tank'.</p>
-                        <span class="card-reward">+600 XP | +$1500 | +100 Vida da Base</span>
-                        <button class="btn-action" onclick="window.openTaskUploader('forca', 'Força')">Registrar Calistenia</button>
+                <h3 style="color:var(--neon-pink); font-family:'Orbitron';">FORÇA E HIPERTROFIA (Vida da Base e Tanques +)</h3>
+                <div class="grid-cards" style="margin-bottom:30px;">
+                    <div class="action-card forca">
+                        <h3 class="glow-pink">Calistenia (Peso do Corpo)</h3>
+                        <p>Treino de Barras ou Flexões. Melhora diretamente a resistência e vida do seu personagem e cartas lentas.</p>
+                        <span class="card-reward">+600 XP | $1500 | +100 HP Max</span>
+                        <button class="btn-neon pink" onclick="window.openTaskUploader('Calistenia', 'Força', this)">REGISTRAR CALISTENIA</button>
                     </div>
-                    <div class="action-card" style="border-top: 3px solid #0f0;">
-                        <h3 style="color:#0f0;">Treino de Força</h3>
-                        <p>Faça seu treino regular de hipertrofia. Aumente o dano brutal das suas unidades corpo-a-corpo.</p>
-                        <span class="card-reward">+400 XP | +$1200 | +0.3 de Dano</span>
-                        <button class="btn-action" onclick="window.openTaskUploader('academia', 'Força')">Registrar Academia</button>
+                    <div class="action-card forca">
+                        <h3 class="glow-pink">Levantamento de Peso</h3>
+                        <p>Treino pesado em academia. Garante que todas as suas tropas atinjam o alvo com mais força bruta.</p>
+                        <span class="card-reward">+400 XP | $1200 | +0.4 Dano Crítico</span>
+                        <button class="btn-neon pink" onclick="window.openTaskUploader('Levantamento', 'Força', this)">REGISTRAR ACADEMIA</button>
                     </div>
                 </div>
 
-                <h3 style="color:#ffaa00; font-size: 1rem;">Dieta e Manutenção Global</h3>
+                <h3 style="color:var(--neon-green); font-family:'Orbitron';">NUTRIÇÃO E ROTINA PERSONALIZADA</h3>
                 <div class="grid-cards">
-                    <div class="action-card" style="border-top: 3px solid #0f0;">
-                        <h3 style="color:#0f0">Refeição Limpa</h3>
-                        <p>Ovos, carnes, carboidratos saudáveis. Comprovar dieta aumenta o dano base global de toda sua equipe.</p>
-                        <span class="card-reward">+300 XP | +$800 | +0.2 Dano Global</span>
-                        <button class="btn-action" onclick="window.openTaskUploader('dieta', 'Dieta')">Postar Refeição Saudável</button>
+                    <div class="action-card dieta">
+                        <h3 class="glow-green">Refeição Funcional</h3>
+                        <p>Registre proteína e alimentos inteiros. Uma boa nutrição escala os atributos globais de forma consistente.</p>
+                        <span class="card-reward">+200 XP | $500 | +0.2 Dano Global</span>
+                        <button class="btn-neon green" onclick="window.openTaskUploader('Dieta Saudável', 'Dieta', this)">POSTAR REFEIÇÃO</button>
                     </div>
-                    <div class="action-card" style="border-top: 3px solid red; background: #221111;">
-                        <h3 style="color:red">Dieta Lixo / Fast Food</h3>
-                        <p>Comida ruim gera penalidades de saúde. Diminui consideravelmente a velocidade de ataque dos seus heróis na Batalha.</p>
-                        <span class="card-reward" style="color:red">+50 XP | -0.2 Velocidade Global</span>
-                        <button class="btn-action" style="background:#500; border-color:red; color:white;" onclick="window.openTaskUploader('dieta_lixo', 'Dieta')">Assumir que furei a dieta</button>
+                    
+                    <div class="action-card" style="border-color: #ffaa00;">
+                        <h3 style="color:#ffaa00;">TREINO LIVRE (CUSTOMIZAR)</h3>
+                        <p style="margin-bottom:5px;">Crie seu próprio objetivo.</p>
+                        <input type="text" id="custom-task-name" class="input-cyber" placeholder="Ex: Fiz Yoga por 30min" style="padding:10px; margin-bottom:10px;">
+                        <select id="custom-task-type" class="input-cyber" style="padding:10px; margin-bottom:15px;">
+                            <option value="Cardio">Foco: Cardio (Aumenta Energia)</option>
+                            <option value="Força">Foco: Força (Aumenta Vida/Dano)</option>
+                            <option value="Dieta">Foco: Mente/Nutrição</option>
+                        </select>
+                        <button class="btn-neon" style="color:#ffaa00; border-color:#ffaa00;" onclick="window.createCustomTask()">ABRIR REPORTE</button>
                     </div>
                 </div>
             </div>
-            
-            <!-- DECK DE CARTAS -->
+
+            <!-- TAB DE DECK -->
             <div id="tab-deck" class="hub-tab">
-                <h2 class="hub-title">Meu Esquadrão (Deck Builder)</h2>
-                <p style="color:#aaa; font-size:0.9rem; margin-bottom: 20px;">Escolha 8 cartas (unidades ou feitiços) para levar à arena. Clique em uma carta ativa para removê-la, e depois em uma da coleção para substituí-la.</p>
+                <h2 class="hub-title">Consciências Cibernéticas (Deck)</h2>
+                <p style="color:#aaa; font-size:1.05rem; margin-bottom: 25px;">Gerencie suas cartas e feitiços. Apenas 8 são permitidas em batalha. Clique nelas para alocar e remover da sua Mão (Esquadrão).</p>
                 
-                <h3 style="color:#fff; font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px;">Mão Principal (8 Cartas Ativas)</h3>
+                <h3 style="color:var(--neon-blue); font-family:'Orbitron'; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">Equipe Ativa (Mão Principal)</h3>
                 <div class="deck-builder-grid" id="deck-active-render"></div>
                 
-                <h3 style="color:#fff; font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px;">Sua Coleção (Inativas)</h3>
+                <h3 style="color:#aaa; font-family:'Orbitron'; font-size: 1.1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">Acervo Completo</h3>
                 <div class="collection-grid" id="collection-render"></div>
             </div>
 
-            <!-- GACHA E LOJA -->
+            <!-- GACHA LOJA -->
             <div id="tab-loja" class="hub-tab">
-                <h2 class="hub-title">Mercado e Recompensas</h2>
+                <h2 class="hub-title">Mercado Neon (Gacha)</h2>
                 
                 <div class="grid-cards">
-                    <div class="action-card" style="border-top: 4px solid #ffaa00; align-items: center; text-align: center;">
-                        <h3 style="color:#ffaa00; font-size:1.2rem;">Cápsula de Cartas</h3>
-                        <p style="font-size:0.9rem; margin: 15px 0;">Gaste seu Ouro para abrir e sortear 3 cartas aleatórias novas. Se tirar uma carta que você já tem, o nível dela aumentará (mais HP e Dano base).</p>
-                        <span class="card-reward" style="font-size: 1.1rem; margin-bottom: 20px;">Preço: $1.000 Ouro</span>
-                        <button class="btn-action" style="background: #ffaa00; color: #000; border-color: #ffaa00; font-weight: bold; font-size: 1rem; padding: 15px;" onclick="window.rollGacha()">Abrir Cápsula agora</button>
+                    <div class="action-card" style="border-color: var(--neon-pink); align-items:center; text-align:center; grid-column: 1 / -1; max-width: 600px; margin: 0 auto;">
+                        <h3 style="font-size: 1.5rem;" class="glow-pink">Desfragmentador de Cartas</h3>
+                        <p style="font-size:1.1rem; margin: 20px 0;">Gaste seu Ouro para abrir um pacote de dados criptografado. Você ganhará 3 Cartas aleatórias (Comuns a Lendárias).<br><br><b>Cartas repetidas são mescladas e evoluem de nível automaticamente!</b></p>
                         
-                        <div id="gacha-result" style="margin-top:20px; display:flex; justify-content:center; gap:10px; flex-wrap: wrap;"></div>
+                        <button class="btn-neon pink" style="font-size: 1.3rem; padding: 20px; box-shadow: 0 0 20px rgba(255,0,234,0.4);" onclick="window.rollGacha()">ABRIR CÁPSULA (Custo: 1.000 Gold)</button>
+                        
+                        <div id="gacha-result" style="margin-top:25px; display:flex; justify-content:center; gap:15px; flex-wrap: wrap; min-height: 100px; width: 100%;"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- MEU PERFIL E CONFIGURACOES -->
+            <!-- PERFIL -->
             <div id="tab-perfil" class="hub-tab">
-                <h2 class="hub-title">Minha Conta</h2>
-                
+                <h2 class="hub-title">Configurações Base</h2>
                 <div class="post-form-box">
-                    <label style="color:#aaa; font-size:0.8rem; margin-bottom: 5px; display:block;">Nome Público</label>
-                    <input type="text" id="prof-edit-name" placeholder="Como quer ser chamado?">
+                    <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; display:block;">Vulgo de Operador</label>
+                    <input type="text" id="prof-edit-name" class="input-cyber" placeholder="Insira o nome...">
                     
-                    <label style="color:#aaa; font-size:0.8rem; margin-bottom: 5px; display:block; margin-top: 10px;">Mensagem de Status / Bio</label>
-                    <input type="text" id="prof-edit-bio" placeholder="Escreva uma frase de efeito..." maxlength="50">
+                    <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; margin-top:10px; display:block;">Mensagem Social (Bio)</label>
+                    <input type="text" id="prof-edit-bio" class="input-cyber" placeholder="Escreva algo épico..." maxlength="50">
                     
-                    <label style="color:#aaa; font-size:0.8rem; margin-bottom: 5px; display:block; margin-top: 10px;">Trocar Foto de Perfil</label>
-                    <input type="file" id="prof-edit-avatar-file" accept="image/*" style="background:#1a1a24; border:1px solid #333;">
+                    <label style="color:var(--neon-blue); font-weight:bold; margin-bottom:5px; margin-top:10px; display:block;">Alterar Imagem de Avatar</label>
+                    <input type="file" id="prof-edit-avatar-file" class="input-cyber" accept="image/*" style="padding: 10px;">
                     
-                    <button class="btn-action btn-highlight" style="margin-top: 15px;" onclick="window.saveProfileEdits()">Salvar Informações</button>
-                </div>
-
-                <div class="post-form-box" style="border: 1px solid #f00;">
-                    <h3 style="color:#f00; margin-top:0;">Reiniciar Progresso</h3>
-                    <p style="font-size:0.85rem; color:#aaa;">Isto limpará todos os seus dados salvos localmente caso você queira recomeçar a jornada física do zero.</p>
-                    <button class="btn-action" style="background:#400; border-color:#f00; color:#fff;" onclick="if(confirm('Isso apagará tudo. Tem certeza absoluta?')){ sessionStorage.clear(); localStorage.clear(); location.reload(); }">Apagar Dados da Conta</button>
+                    <button class="btn-neon" style="margin-top: 15px;" onclick="window.saveProfileEdits()">SALVAR DADOS PÚBLICOS</button>
                 </div>
             </div>
 
         </div>
 
-        <!-- RADAR PVP OFFCANVAS -->
+        <!-- RADAR PVP LADO DIREITO -->
         <div class="hub-radar">
-            <h3 class="radar-title">Rivalidades (PvP)</h3>
-            <div id="radar-loading" style="font-size:0.8rem; color:#aaa; text-align:center;">Procurando jogadores...</div>
+            <h3 class="radar-title glow-pink">DESAFIOS FÍSICOS (PVP)</h3>
+            <div id="radar-loading" style="font-size:0.85rem; color:#aaa; text-align:center;">Localizando outros competidores ativos...</div>
             <div class="radar-list" id="radar-list"></div>
-            <p style="font-size: 0.7rem; color: #777; margin-top: 20px; line-height: 1.4; text-align: center;">No PvP, você lutará contra a IA controlando as cartas e atributos do jogador selecionado.</p>
+            
+            <p style="font-size: 0.8rem; color: #666; margin-top: 25px; line-height: 1.5; border-top: 1px solid var(--panel-border); padding-top: 15px;">
+                Desafie os jogadores no <b>Mundo Real</b> para uma batalha de ego. Ambos decidem quem ganhou o treino duro na rua e levam lucro imenso para jogar.
+            </p>
         </div>
     </div>
 
-    <!-- MODAL -->
+    <!-- MODAL DO HUB -->
     <div class="hub-modal" id="system-modal">
         <div class="modal-content">
-            <h2 class="modal-title" id="modal-title">Aviso</h2>
-            <p id="modal-desc" style="color:#ccc; font-size:0.95rem; margin-bottom:25px; line-height: 1.5;"></p>
-            <div id="modal-actions" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;"></div>
+            <h2 class="modal-title glow-text" id="modal-title">Aviso de Sistema</h2>
+            <p id="modal-desc" style="color:#d0d0d0; font-size:1.05rem; margin-bottom:25px; line-height: 1.6;"></p>
+            <div id="modal-actions" style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;"></div>
         </div>
     </div>
 
-    <!-- ENGINE AUTO BATTLER 2D -->
+    <!-- ENGINE AUTO BATTLER CYBER CLASH 2D -->
     <div id="game-wrapper">
         <canvas id="arena-canvas"></canvas>
         <div id="arena-ui">
+            <!-- HUD SUPERIOR -->
             <div class="top-bar-arena">
-                <div id="enemy-hp-text" style="color:#ff5555; font-weight: bold; font-family: 'Roboto', sans-serif; font-size: 1.2rem;">Torre Inimiga HP: 0</div>
-                <button class="btn-leave" onclick="window.leaveArena()">Fugir</button>
+                <div style="display:flex; flex-direction:column;">
+                    <span style="font-size:0.6rem; color:#aaa; margin-bottom:5px;" id="enemy-name-display">Alvo</span>
+                    <div class="hp-hud" id="enemy-hp-text">HP: 2000</div>
+                </div>
+                <button class="btn-leave" onclick="window.leaveArena()">ABORTAR RUN</button>
             </div>
             
-            <div style="flex-grow:1; width: 100%;" id="arena-clickable-zone" onclick="window.arenaClick(event)"></div>
+            <div style="flex-grow:1; width:100%; position:relative;" id="arena-clickable-zone" onclick="window.arenaClick(event)">
+                <!-- ZONA DE JOGO CLICAVEL -->
+            </div>
             
+            <!-- HUD INFERIOR DA MÃO -->
             <div class="bottom-ui-arena">
                 <div class="energy-container">
                     <div class="energy-fill" id="mana-fill"></div>
-                    <div class="energy-text"><span id="mana-num">0</span> / 10 Energia</div>
+                    <div class="energy-text"><span id="mana-num">0</span> / 10</div>
                 </div>
-                <div class="cards-hand" id="arena-hand-ui">
-                    <!-- Cards via JS -->
-                </div>
+                <div class="cards-hand" id="arena-hand-ui"></div>
             </div>
-            <button class="auto-btn" id="btn-afk" onclick="window.toggleAFK()">Batalha Automática (OFF)</button>
+            
+            <button class="auto-btn" id="btn-afk" onclick="window.toggleAFK()">Modo Automático</button>
         </div>
         
-        <div id="death-screen">
-            <h1 id="end-title" style="color:#fff; font-size: 2rem; margin-bottom: 10px;">FIM DA BATALHA</h1>
-            <p id="end-flavor" style="color:#aaa; margin-bottom:25px; font-size: 1rem;"></p>
-            <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 25px;">
-                <span style="color:#aaa; font-size: 0.9rem;">Lucro Arrecadado:</span><br>
-                <span id="final-score" style="color:yellow; font-weight: bold; font-size: 1.5rem; display:block; margin-top:5px;">0</span>
+        <!-- END SCREEN DA BATALHA -->
+        <div id="death-screen" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,10,15,0.95); z-index:110; display:none; flex-direction:column; justify-content:center; align-items:center; font-family:'Orbitron'; padding: 30px; box-sizing:border-box; text-align:center;">
+            <h1 id="end-title" style="font-size: 2.5rem; margin-bottom: 10px; color:var(--neon-blue);">FIM DA EXECUÇÃO</h1>
+            <p id="end-flavor" style="color:#aaa; font-family:'Rajdhani'; font-size: 1.2rem; max-width:600px; margin-bottom: 30px; line-height:1.5;"></p>
+            
+            <div style="background: rgba(0,0,0,0.6); padding: 25px; border-radius: 12px; border: 1px solid #333; margin-bottom: 30px; width: 100%; max-width: 400px;">
+                <span style="color:#888; font-family:'Rajdhani'; font-size: 1.1rem; text-transform: uppercase;">Lucro Adquirido:</span><br>
+                <span id="final-score" class="glow-pink" style="font-size: 2rem; font-weight: 900; display:block; margin-top:10px;">0 Gold</span>
             </div>
-            <button class="btn-base" onclick="window.returnToHubAndSave()">Coletar e Voltar para a Base</button>
+            <button class="btn-neon" style="max-width:300px; font-size:1.1rem; padding:15px;" onclick="window.returnToHubAndSave()">RETORNAR PARA BASE</button>
         </div>
     </div>
 
+
 <script type="module">
 // =========================================================================
-// 1. IMPORTAÇÕES E CONFIGURAÇÃO FIREBASE (BLINDADA PARA LOCAL OFFLINE SEGURO)
+// 1. FIREBASE CONFIG, IMPORTS & FALLBACK LOCAL
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where, updateDoc, doc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-import { getDatabase, ref, set, onDisconnect, onValue, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+import { getDatabase, ref, set, onDisconnect, onValue, update, push, off } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
 const firebaseConfig = { apiKey: "AIzaSyCa3tr1mfYKvZ581A1omSQGFsVrIoQYOwQ", authDomain: "fishballserver.firebaseapp.com", projectId: "fishballserver", storageBucket: "fishballserver.firebasestorage.app", messagingSenderId: "626248800374", appId: "1:626248800374:web:fb912ed85fdfac23dba757" };
 let db, rtdb;
@@ -429,62 +432,59 @@ window.isFirebaseActive = false;
 let useLocalBypass = false; 
 
 try { 
-    const app = initializeApp(firebaseConfig); 
-    db = getFirestore(app); 
-    rtdb = getDatabase(app); 
+    const app = initializeApp(firebaseConfig); db = getFirestore(app); rtdb = getDatabase(app); 
     window.isFirebaseActive = true;
 } catch(e) { 
     useLocalBypass = true;
-    console.warn("Firebase Init Bypass:", e);
 }
 
 // =========================================================================
-// 2. BANCO DE CARTAS E PERFIL (INTEGRAÇÕES REAIS E CIBERNÉTICAS)
+// 2. BANCO DE CARTAS (20 CARTAS DA IA 2D CYBERPUNK)
 // =========================================================================
 const CARD_DB = {
     // 1 - COMUM
     "Brawler": { id: "Brawler", name: "Brawler Ld.", cost: 2, rarity: 1, type: "unit", hp: 350, dmg: 40, range: 40, ms: 60, as: 1.2 },
     "CorredorNeon": { id: "CorredorNeon", name: "Velocista", cost: 1, rarity: 1, type: "unit", hp: 150, dmg: 20, range: 40, ms: 140, as: 0.8 },
-    "DroneRastreador": { id: "DroneRastreador", name: "Drone Suporte", cost: 2, rarity: 1, type: "unit", hp: 200, dmg: 10, range: 120, ms: 80, as: 1.5, mechanics: ['expose'] },
+    "DroneRastreador": { id: "DroneRastreador", name: "Drone Suporte", cost: 2, rarity: 1, type: "unit", hp: 200, dmg: 10, range: 120, ms: 80, as: 1.5, mechanics:['expose'] },
     "FalcaoSucata": { id: "FalcaoSucata", name: "Heli-Falcão", cost: 2, rarity: 1, type: "unit", hp: 250, dmg: 35, range: 50, ms: 90, as: 1.0, isFlying: true },
 
     // 2 - RARA
     "Kamikaze": { id: "Kamikaze", name: "Bot Bomba", cost: 3, rarity: 2, type: "unit", hp: 200, dmg: 300, range: 60, ms: 110, as: 1.0, mechanics: ['explode'] },
     "BioTank": { id: "BioTank", name: "Bio Mutante", cost: 5, rarity: 2, type: "unit", hp: 1200, dmg: 60, range: 50, ms: 40, as: 2.0, isTank: true },
     "Fantasma": { id: "Fantasma", name: "Espírito I.A.", cost: 4, rarity: 2, type: "unit", hp: 300, dmg: 70, range: 50, ms: 75, as: 1.2, mechanics: ['dodge'] },
-    "Assassino": { id: "Assassino", name: "Assassino Oculto", cost: 4, rarity: 2, type: "unit", hp: 250, dmg: 150, range: 40, ms: 120, as: 1.5, mechanics:['stealth'] },
-    "Barricada": { id: "Barricada", name: "Barricada Fixa", cost: 3, rarity: 2, type: "building", hp: 800, dmg: 0, range: 0, ms: 0, as: 99, isTank: true },
+    "Assassino": { id: "Assassino", name: "Assassino", cost: 4, rarity: 2, type: "unit", hp: 250, dmg: 150, range: 40, ms: 120, as: 1.5, mechanics:['stealth'] },
+    "Barricada": { id: "Barricada", name: "Parede Holo", cost: 3, rarity: 2, type: "building", hp: 800, dmg: 0, range: 0, ms: 0, as: 99, isTank: true },
 
     // 3 - ÉPICA
-    "Comandante": { id: "Comandante", name: "Cte. Tático", cost: 6, rarity: 3, type: "unit", hp: 600, dmg: 40, range: 80, ms: 60, as: 1.5, mechanics: ['aura_buff'] },
+    "Comandante": { id: "Comandante", name: "Comandante", cost: 6, rarity: 3, type: "unit", hp: 600, dmg: 40, range: 80, ms: 60, as: 1.5, mechanics: ['aura_buff'] },
     "Striker": { id: "Striker", name: "Striker EMP", cost: 5, rarity: 3, type: "unit", hp: 450, dmg: 65, range: 50, ms: 100, as: 1.0, mechanics: ['death_stun'] },
     "Medica": { id: "Medica", name: "Médica Nano", cost: 5, rarity: 3, type: "unit", hp: 400, dmg: -30, range: 150, ms: 65, as: 1.5, targetType: 'ally' }, 
-    "Sniper": { id: "Sniper", name: "Atirador Elite", cost: 4, rarity: 3, type: "unit", hp: 180, dmg: 180, range: 250, ms: 50, as: 2.5 },
-    "Toxico": { id: "Toxico", name: "Artilharia Ácida", cost: 6, rarity: 3, type: "unit", hp: 500, dmg: 20, range: 120, ms: 55, as: 2.0, mechanics: ['acid_pool'] },
+    "Sniper": { id: "Sniper", name: "Atirador Cego", cost: 4, rarity: 3, type: "unit", hp: 180, dmg: 180, range: 250, ms: 50, as: 2.5 },
+    "Toxico": { id: "Toxico", name: "Arma Tóxica", cost: 6, rarity: 3, type: "unit", hp: 500, dmg: 20, range: 120, ms: 55, as: 2.0, mechanics: ['acid_pool'] },
 
     // 4 - LENDÁRIA
     "Mecha": { id: "Mecha", name: "Mecha-Titã", cost: 8, rarity: 4, type: "unit", hp: 1500, dmg: 40, range: 150, ms: 35, as: 0.5, mechanics:['cleave'], isTank: true },
-    "Barao": { id: "Barao", name: "Barão Chefe", cost: 9, rarity: 4, type: "unit", hp: 2000, dmg: 50, range: 60, ms: 30, as: 2.0, mechanics: ['slow_trail', 'spawn_drones'], isTank: true },
-    "Hacker": { id: "Hacker", name: "Hacker Mestre", cost: 7, rarity: 4, type: "unit", hp: 500, dmg: 80, range: 180, ms: 55, as: 1.5, mechanics:['spawn_emp_base'] },
-    "MestreParkour": { id: "MestreParkour", name: "Lenda Ágil", cost: 8, rarity: 4, type: "unit", hp: 700, dmg: 120, range: 50, ms: 150, as: 1.0, mechanics: ['jump_backline'] },
+    "Barao": { id: "Barao", name: "Barão do Lodo", cost: 9, rarity: 4, type: "unit", hp: 2000, dmg: 50, range: 60, ms: 30, as: 2.0, mechanics: ['slow_trail', 'spawn_drones'], isTank: true },
+    "Hacker": { id: "Hacker", name: "Hacker-Mor", cost: 7, rarity: 4, type: "unit", hp: 500, dmg: 80, range: 180, ms: 55, as: 1.5, mechanics:['spawn_emp_base'] },
+    "MestreParkour": { id: "MestreParkour", name: "Neo Parkour", cost: 8, rarity: 4, type: "unit", hp: 700, dmg: 120, range: 50, ms: 150, as: 1.0, mechanics: ['jump_backline'] },
 
     // 5 - SPELLS
-    "MagiaCrio": { id: "MagiaCrio", name: "Granada Congelante", cost: 3, rarity: 3, type: "spell", range: 100, mechanics:['spell_freeze'] },
-    "MagiaOrbital": { id: "MagiaOrbital", name: "Raio Orbital", cost: 4, rarity: 4, type: "spell", range: 60, dmg: 500, mechanics: ['spell_dmg'] },
-    "MagiaAcido": { id: "MagiaAcido", name: "Chuva Radioativa", cost: 5, rarity: 3, type: "spell", range: 150, mechanics: ['spell_dot'] },
-    "MagiaRewind": { id: "MagiaRewind", name: "Teleporte Cura", cost: 4, rarity: 4, type: "spell", range: 200, mechanics: ['spell_heal_teleport'] },
-    "MagiaOverclock": { id: "MagiaOverclock", name: "Soro Overclock", cost: 2, rarity: 2, type: "spell", range: 60, mechanics: ['spell_haste'] }
+    "MagiaCrio": { id: "MagiaCrio", name: "Feitiço Crio", cost: 3, rarity: 3, type: "spell", range: 100, mechanics:['spell_freeze'] },
+    "MagiaOrbital": { id: "MagiaOrbital", name: "Orbital M.", cost: 4, rarity: 4, type: "spell", range: 60, dmg: 500, mechanics: ['spell_dmg'] },
+    "MagiaAcido": { id: "MagiaAcido", name: "Chuva Ácida", cost: 5, rarity: 3, type: "spell", range: 150, mechanics: ['spell_dot'] },
+    "MagiaRewind": { id: "MagiaRewind", name: "Rewind (Cura)", cost: 4, rarity: 4, type: "spell", range: 200, mechanics:['spell_heal_teleport'] },
+    "MagiaOverclock": { id: "MagiaOverclock", name: "Pílula Ação", cost: 2, rarity: 2, type: "spell", range: 60, mechanics: ['spell_haste'] }
 };
 
 let hubProfile = { 
-    uid: null, username: "Jogador", bio: "O esforço vence o talento.", lvl: 1, xp: 0, gold: 500, avatar: "https://i.imgur.com/kKC1zaJ.png",
+    uid: null, username: "Player_Alpha", bio: "Foco extremo na evolução celular.", lvl: 1, xp: 0, gold: 500, avatar: "https://i.imgur.com/kKC1zaJ.png",
     buffs: { hp: 0, dmg: 0.0, spd: 0.0 }, 
     cardsOwned:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'], 
     cardLevels: { 'Brawler': 1, 'CorredorNeon': 1, 'DroneRastreador':1, 'Barricada':1 },
     deck:['Brawler', 'CorredorNeon', 'DroneRastreador', 'Barricada'] 
 };
 
-// Start logic para recuperar sessao da SPA limpa
+// SESSION CACHE
 if(sessionStorage.getItem('hubProfile_JSON')) {
     hubProfile = { ...hubProfile, ...JSON.parse(sessionStorage.getItem('hubProfile_JSON')) };
     if(hubProfile.uid && hubProfile.uid.startsWith('local_')) useLocalBypass = true;
@@ -496,68 +496,26 @@ if(sessionStorage.getItem('hubProfile_JSON')) {
 
 
 // =========================================================================
-// PARTE 3: GESTÃO DO HUB FÍSICO, POSTS E MODAIS
+// 3. LOGIN & MÁQUINA PRINCIPAL HUB
 // =========================================================================
-
-window.requestPermissionsUI = async function() {
-    let status = document.getElementById('permission-status');
-    status.innerText = "Autorizando sensores...";
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            () => { status.innerText = "GPS Ativo."; status.style.color = "#0f0"; }, 
-            (e) => { status.innerText = "GPS Não Permitido. Gravações de rota desativadas."; }
-        );
-    }
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        status.innerText += " Câmera Lincada."; status.style.color = "#0f0";
-        stream.getTracks().forEach(track => track.stop()); 
-    } catch(e) {}
-};
-
-let trackingGeoId = null; let lastLat = null, lastLng = null; let totalKm = 0;
-function calcDist(lat1, lon1, lat2, lon2) { const p = 0.017453292519943295; const c = Math.cos; const a = 0.5 - c((lat2 - lat1) * p)/2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p))/2; return 12742 * Math.asin(Math.sqrt(a)); }
-
-window.toggleGPS = function() {
-    const btn = document.getElementById('btn-gps-toggle'); const display = document.getElementById('gps-dist');
-    if(trackingGeoId !== null) {
-        navigator.geolocation.clearWatch(trackingGeoId); trackingGeoId = null;
-        btn.innerText = "📍 Iniciar Gravação de Rota Diária"; btn.style.background = "#333";
-        let cText = document.getElementById('task-desc').value;
-        document.getElementById('task-desc').value = cText + `[Rota Marcada GPS: ${totalKm.toFixed(2)} km executados].`;
-        return;
-    }
-    if (!navigator.geolocation) return alert("Sensor GPS do dispositivo não acessível.");
-    
-    totalKm = 0; lastLat = null; lastLng = null; display.innerText = "0.00";
-    btn.innerText = "⏸ Parar e Salvar Rota"; btn.style.background = "#622";
-    trackingGeoId = navigator.geolocation.watchPosition((pos) => {
-        let lat = pos.coords.latitude; let lng = pos.coords.longitude;
-        if(lastLat !== null) { let d = calcDist(lastLat, lastLng, lat, lng); if(d > 0.005) { totalKm += d; lastLat = lat; lastLng = lng; } } else { lastLat = lat; lastLng = lng; }
-        display.innerText = totalKm.toFixed(2);
-    }, (err) => { }, { enableHighAccuracy: true, maximumAge: 10000 });
-};
 
 window.hubLogin = async function() {
     let name = document.getElementById('login-username').value.trim();
-    if(!name) { alert("Por favor, adicione seu nome primeiro."); return; }
+    if(!name) { alert("Nome obrigatório para registro."); return; }
     name = name.toUpperCase(); 
-    let btn = document.getElementById('btn-login-main');
-    btn.innerText = "Buscando base de dados..."; btn.disabled = true;
+    document.querySelector('.login-box button.btn-neon').innerText = "Processando Banco...";
     
     try {
-        if(!db) throw new Error("Conexão offline");
+        if(!db) throw new Error("Offline db");
         const qs = await getDocs(query(collection(db, "hub_users"), where("username", "==", name)));
         if (!qs.empty) { hubProfile = { ...hubProfile, ...qs.docs[0].data() }; hubProfile.uid = qs.docs[0].id; } 
         else { const res = await addDoc(collection(db, "hub_users"), hubProfile); hubProfile.uid = res.id; hubProfile.username = name; }
     } catch(err) {
-        useLocalBypass = true;
-        hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name;
-        alert("O servidor da nuvem não respondeu perfeitamente. Iniciando no MODO OFFLINE seguro. Todo o seu esforço será arquivado localmente.");
+        useLocalBypass = true; hubProfile.uid = 'local_' + Math.floor(Math.random()*100000); hubProfile.username = name;
+        showModal("Modo Offline Ativado", "Sua conexão não autorizou nuvem (Firewall / Sem permissões). Injetando o software no armazenamento local. Nada será perdido se mantiver o Cache do navegador vivo.");
     }
     
-    document.getElementById('hub-login').style.display = 'none'; 
-    document.getElementById('hub-container').style.display = 'flex';
+    document.getElementById('hub-login').style.display = 'none'; document.getElementById('hub-container').style.display = 'flex';
     saveHubStateLocal(); syncUIWithProfile(); setupHubRealtime();
 };
 
@@ -569,7 +527,7 @@ function saveHubStateLocal() {
 function syncUIWithProfile() {
     hubProfile.lvl = 1 + Math.floor(hubProfile.xp / 1000);
     document.getElementById('hub-ui-name').innerText = hubProfile.username;
-    document.getElementById('hub-ui-lvl').innerText = "Lvl " + hubProfile.lvl;
+    document.getElementById('hub-ui-lvl').innerText = "LV." + hubProfile.lvl;
     document.getElementById('hub-ui-xp').innerText = Math.floor(hubProfile.xp); 
     document.getElementById('hub-ui-gold').innerText = "$ " + Math.floor(hubProfile.gold);
     document.getElementById('hub-ui-spd').innerText = (1.0 + hubProfile.buffs.spd).toFixed(1); 
@@ -581,37 +539,173 @@ function syncUIWithProfile() {
     renderDeckBuilder();
 }
 
-window.saveProfileEdits = function() {
-    let n = document.getElementById('prof-edit-name').value.trim();
-    let bio = document.getElementById('prof-edit-bio').value.trim();
-    let f = document.getElementById('prof-edit-avatar-file');
-    if(n) hubProfile.username = n; if(bio) hubProfile.bio = bio;
-
-    if(f.files && f.files[0]) {
-        let r = new FileReader(); r.onload = e=>{
-            let img = new Image(); img.onload = ()=>{ const cv=document.createElement('canvas'); const mx=120; const sc=mx/img.width; cv.width=mx; cv.height=img.height*sc; cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); hubProfile.avatar=cv.toDataURL('image/jpeg',0.8); finishPf(); }; img.src = e.target.result;
-        }; r.readAsDataURL(f.files[0]);
-    } else finishPf();
-    function finishPf(){ saveHubStateLocal(); syncUIWithProfile(); alert("Perfil Atualizado."); }
-}
-
 window.switchTab = function(tabId) { document.querySelectorAll('.hub-tab, .hub-nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
 
+window.showModal = function(title, desc, btnsHTML) { 
+    document.getElementById('modal-title').innerText=title; 
+    document.getElementById('modal-desc').innerHTML=desc; 
+    document.getElementById('modal-actions').innerHTML = btnsHTML || '<button class="btn-neon" style="width:200px;" onclick="document.getElementById(\'system-modal\').style.display=\'none\'">Entendido</button>';
+    document.getElementById('system-modal').style.display='flex'; 
+}
+
+
 // =========================================================================
-// DECK BUILDER & GACHA LOJA (CARTAS AUTO-BATTLER)
+// 4. MISSÕES, COMPRESSOR CANVAS E UPLOAD DE PROVAS 
+// =========================================================================
+
+// Memory Offline Fallback for Feeds
+function saveLocalFeed(postObj) { let l =[]; try { if(localStorage.getItem('localFeed')) l = JSON.parse(localStorage.getItem('localFeed')); }catch(e){} l.unshift(postObj); if(l.length > 20) l = l.slice(0, 20); localStorage.setItem('localFeed', JSON.stringify(l)); }
+function getLocalFeed() { try { if(localStorage.getItem('localFeed')) return JSON.parse(localStorage.getItem('localFeed')); }catch(e){} return[]; }
+
+let curTaskConfig = null; let curTaskCat = "Força"; 
+window.openTaskUploader = function(titulo, categoria) {
+    // Basic pre-definition mapping or dynamic acceptance
+    curTaskConfig = { name: titulo, xp: 500, gold: 800 }; curTaskCat = categoria;
+    
+    // Apply buff depending on the category opened
+    if(categoria === 'Cardio') curTaskConfig.buffSpd = 0.2;
+    if(categoria === 'Força') { curTaskConfig.buffHp = 100; curTaskConfig.buffDmg = 0.2; }
+    if(categoria === 'Dieta') { curTaskConfig.buffDmg = 0.3; if(titulo.includes("Lixo")) curTaskConfig.buffSpd = -0.3; }
+
+    document.getElementById('form-box-title').innerText = `FINALIZAR TREINO: ${titulo.toUpperCase()}`;
+    document.getElementById('quick-post-box').style.display = 'block'; 
+    window.switchTab('tab-feed');
+};
+
+window.createCustomTask = function() {
+    let name = document.getElementById('custom-task-name').value.trim();
+    let type = document.getElementById('custom-task-type').value; 
+    if(!name) return alert("Descreva um treino primeiro.");
+    window.openTaskUploader(`TREINO CUSTOMIZADO: ${name}`, type);
+}
+
+window.submitTaskEvidence = function() {
+    if(!curTaskConfig) return;
+    const file = document.getElementById('task-file').files[0];
+    if(!file) return alert("Você DEVE enviar uma fotografia comprovando o esforço! É as regras do Clube.");
+    
+    document.getElementById('btn-post-upload').innerText = "Codificando Provas...";
+    document.getElementById('btn-post-upload').disabled = true;
+    const desc = document.getElementById('task-desc').value; 
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image(); 
+        img.onload = function() {
+            // Compress Image Heavy
+            const cvs = document.getElementById('task-compress-canvas'); const maxW = 350; const scale = maxW/img.width; cvs.width = maxW; cvs.height = img.height*scale; const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
+            executePostInjection(desc, cvs.toDataURL('image/jpeg', 0.5));
+        }; 
+        img.src = e.target.result;
+    }; reader.readAsDataURL(file);
+}
+
+function executePostInjection(desc, midiaURL) {
+    hubProfile.xp += curTaskConfig.xp||0; hubProfile.gold += curTaskConfig.gold||0;
+    if(curTaskConfig.buffHp) hubProfile.buffs.hp += curTaskConfig.buffHp; if(curTaskConfig.buffDmg) hubProfile.buffs.dmg += curTaskConfig.buffDmg; if(curTaskConfig.buffSpd) hubProfile.buffs.spd += curTaskConfig.buffSpd;
+    saveHubStateLocal(); syncUIWithProfile(); 
+
+    let feedObj = { uid: hubProfile.uid, author: hubProfile.username, avatar: hubProfile.avatar, taskName: curTaskConfig.name, category: curTaskCat, desc: desc, midiaURL: midiaURL, rewardLog: curTaskConfig, upvotes: {}, downvotes: {}, comments:[], active: true, timestamp: Date.now() };
+
+    let btn = document.getElementById('btn-post-upload'); btn.innerText = "COMPARTILHAR E GANHAR STATUS"; btn.disabled = false;
+    document.getElementById('quick-post-box').style.display = 'none'; document.getElementById('task-file').value = ""; document.getElementById('task-desc').value = "";
+    
+    try {
+        if(useLocalBypass) throw new Error("Offline Intentional");
+        feedObj.timestamp = serverTimestamp(); 
+        addDoc(collection(db, "hub_feed"), feedObj).then(() => { showModal("Tudo Certo!", "Foto processada pelo algoritmo social e adicionada."); }).catch(()=>{ throw new Error("Fallback on write fail"); });
+    } catch(e) {
+        feedObj.id = "localpost_" + Math.random().toString(36).substring(2,9); saveLocalFeed(feedObj); 
+        window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); 
+    }
+}
+
+// FEED RENDERING & FILTER
+window.currentFeedFilter = "todos";
+window.filterFeed = function(tipo, btnEl) { window.currentFeedFilter = tipo; document.querySelectorAll('.filter-btn').forEach(e => e.classList.remove('active')); btnEl.classList.add('active'); renderFeedItems(); }
+
+window.lastCloudSnapshot =[]; 
+function listenToFeed() {
+    if(useLocalBypass) { window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); return; }
+    try {
+        onSnapshot(query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(25)), (snap) => {
+            window.lastCloudSnapshot =[]; snap.forEach((ds) => { let d = ds.data(); d.id = ds.id; window.lastCloudSnapshot.push(d); });
+            renderFeedItems();
+        }, (error) => { useLocalBypass = true; window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); });
+    } catch(e) { useLocalBypass = true; window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
+}
+
+function renderFeedItems() {
+    const c = document.getElementById('feed-container-render'); c.innerHTML = "";
+    let dataSource = useLocalBypass ? getLocalFeed() : window.lastCloudSnapshot;
+    
+    if(dataSource.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 30px; color:#666;">Nenhum humano forjou evidências físicas nesta comunidade ainda.</div>`; return; }
+
+    dataSource.forEach((d) => {
+        if(window.currentFeedFilter !== "todos" && d.category !== window.currentFeedFilter) return;
+        let upArr = Object.keys(d.upvotes || {}); let dnArr = Object.keys(d.downvotes || {});
+        let av = d.avatar ? d.avatar : "https://i.imgur.com/kKC1zaJ.png";
+        
+        let commentsHTML = (d.comments||[]).map(c => `<div class="comment-item"><b>${c.author}:</b> ${c.text}</div>`).join('');
+        
+        let el = document.createElement('div'); el.className = `feed-post ${!d.active ? 'revoked' : ''}`; el.setAttribute("data-cat", d.category||""); 
+        el.innerHTML = `
+            <div class="post-header"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">${d.taskName}</span> </div> </div>
+            <div style="color:#ccc; margin-bottom:15px; font-size:0.95rem; line-height: 1.5;">${d.desc}</div>
+            ${ d.midiaURL ? `<div class="post-img-container"><img class="post-img" src="${d.midiaURL}"></div>` : '' }
+            <div class="post-actions">
+                <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">MÉRITO VERDADEIRO (${upArr.length})</button> 
+                <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">FRAUDE (${dnArr.length})</button>
+            </div>
+            <div class="post-comments">
+                <div class="comments-list">${commentsHTML}</div>
+                <div class="comment-input-area"><input type="text" id="cmt-${d.id}" placeholder="Escreva a análise da atividade..." class="input-cyber" style="margin:0;"><button class="btn-neon" style="width:auto; padding:10px;" onclick="window.addComment('${d.id}')">ENVIAR</button></div>
+            </div>
+        `;
+        c.appendChild(el);
+    });
+}
+
+window.castVote = async function(postId, type) {
+    if(useLocalBypass) return alert("Seus likes virtuais funcionam apenas com conexão Firebase estabelecida.");
+    try {
+        const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef); if(!pSn.exists()) return; let p = pSn.data(); if(!p.active) return;
+        if(type === 'up') { p.upvotes = p.upvotes || {}; p.upvotes[hubProfile.uid] = true; delete (p.downvotes||{})[hubProfile.uid]; } else { p.downvotes = p.downvotes || {}; p.downvotes[hubProfile.uid] = true; delete (p.upvotes||{})[hubProfile.uid]; }
+        let uCnt = Object.keys(p.upvotes).length; let dCnt = Object.keys(p.downvotes).length; if( (uCnt+dCnt) >= 3 && dCnt > uCnt ) { p.active = false; alert("Membros definiram esta prova como falsa. As bênçãos foram retiradas."); }
+        await updateDoc(pRef, p);
+    } catch(e) { console.log(e); }
+};
+
+window.addComment = async function(postId) {
+    let txt = document.getElementById('cmt-'+postId).value.trim(); if(!txt) return;
+    let cmt = { uid: hubProfile.uid, author: hubProfile.username, text: txt, timestamp: Date.now() };
+    if(useLocalBypass) {
+        let lf = getLocalFeed(); let idx = lf.findIndex(x => x.id === postId);
+        if(idx > -1) { if(!lf[idx].comments) lf[idx].comments =[]; lf[idx].comments.push(cmt); localStorage.setItem('localFeed', JSON.stringify(lf)); window.lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
+        return;
+    }
+    try {
+        const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef);
+        if(pSn.exists()) { let pData = pSn.data(); if(!pData.comments) pData.comments =[]; pData.comments.push(cmt); await updateDoc(pRef, { comments: pData.comments }); document.getElementById('cmt-'+postId).value = "";}
+    } catch(e){}
+}
+
+// =========================================================================
+// DECK BUILDER E GACHA (CARTAS)
 // =========================================================================
 
 function renderDeckBuilder() {
     hubProfile.deck = (hubProfile.deck ||[]).filter(cId => hubProfile.cardsOwned.includes(cId));
     let dC = document.getElementById('deck-active-render'); dC.innerHTML="";
-    
     for(let i=0; i<8; i++) {
         let sid = hubProfile.deck[i];
         let el = document.createElement('div'); el.className = 'deck-slot' + (sid ? ' filled' : '');
         if(sid) {
             let cData = CARD_DB[sid]; let lvl = hubProfile.cardLevels[sid] || 1;
-            el.innerHTML = `<span style="font-size:0.6rem;font-weight:bold;color:yellow;position:absolute;top:3px;right:4px;">L${lvl}</span><span style="font-size:0.55rem; text-align:center; padding: 0 2px;">${cData.name}</span><div style="font-size:0.5rem;position:absolute;bottom:0;width:100%;text-align:center;background:#0ff;color:#000;font-weight:bold;padding:2px 0;">${cData.cost} NRG</div>`;
+            el.innerHTML = `<div class="b-card-lvl">L${lvl}</div><div class="b-card-name" style="margin-top:20px;">${cData.name}</div><div class="b-card-cost">${cData.cost} N</div>`;
             el.onclick = () => { hubProfile.deck.splice(i,1); saveHubStateLocal(); renderDeckBuilder(); };
+        } else {
+            el.innerHTML = `<span style="color:#444; font-size:0.6rem;">VAZIO</span>`;
         }
         dC.appendChild(el);
     }
@@ -621,22 +715,21 @@ function renderDeckBuilder() {
     dedup.forEach(cId => {
         if(hubProfile.deck.includes(cId)) return;
         let cData = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1;
-        let cCol = cData.rarity == 4 ? '#ff00de' : (cData.rarity == 3 ? '#ffaa00' : (cData.rarity == 2 ? '#00aaff' : '#777'));
+        let cCol = cData.rarity == 4 ? 'var(--neon-pink)' : (cData.rarity == 3 ? 'var(--neon-yellow)' : (cData.rarity == 2 ? 'var(--neon-blue)' : '#888'));
         
-        let cv = document.createElement('div'); cv.className="battle-card"; cv.style.borderColor = cCol; cv.style.cursor="pointer";
-        cv.innerHTML = `<div class="b-card-cost">${cData.cost}</div><div class="b-card-lvl">L${lvl}</div><div class="b-card-name" style="margin-top:25px; font-size:0.5rem;">${cData.name}</div>`;
-        cv.onclick = () => { if(hubProfile.deck.length >= 8) return alert("Seu Baralho Ativo está cheio. Remova uma carta de cima clicando nela primeiro."); hubProfile.deck.push(cId); saveHubStateLocal(); renderDeckBuilder(); };
+        let cv = document.createElement('div'); cv.className="battle-card"; cv.style.borderColor = cCol;
+        cv.innerHTML = `<div class="b-card-cost" style="background:${cCol};color:#000;">${cData.cost}</div><div class="b-card-lvl" style="color:${cCol};">L${lvl}</div><div class="b-card-name" style="margin-top:30px;">${cData.name}</div>`;
+        cv.onclick = () => { if(hubProfile.deck.length >= 8) return alert("Remova uma carta da Mão Ativa clicando nela primeiro!"); hubProfile.deck.push(cId); saveHubStateLocal(); renderDeckBuilder(); };
         cC.appendChild(cv);
     });
 }
 
 window.rollGacha = function() {
-    if(hubProfile.gold < 1000) return alert("Ouro insuficiente para abrir Cápsulas da Sorte. Farme indo em Missões Físicas ou Batalhas.");
+    if(hubProfile.gold < 1000) return alert("Finanças insuficientes.");
     hubProfile.gold -= 1000;
     let cardIds = Object.keys(CARD_DB); let drops =[];
-    
     const resUI = document.getElementById('gacha-result');
-    resUI.innerHTML = `<span style="color:#0ff; font-size:0.9rem;">Rodando engrenagens na loja secreta...</span>`;
+    resUI.innerHTML = `<span style="color:var(--neon-pink); font-family:'Orbitron'; font-size:1rem; animation: pulseBtn 1s infinite;">ABRINDO CONTAINERS DE LUZ...</span>`;
     
     setTimeout(()=> {
         resUI.innerHTML = "";
@@ -654,155 +747,29 @@ window.rollGacha = function() {
         
         drops.forEach(c => {
             let el = document.createElement('div');
-            let bgC = c.rarity == 4 ? '#ff00de' : (c.rarity == 3 ? '#ffaa00' : (c.rarity == 2 ? '#00aaff' : '#999'));
-            el.innerHTML = `<div style="border:2px solid ${bgC}; padding:10px; background:#1a1a24; border-radius: 6px; color:${bgC}; font-size:0.75rem; text-align:center; min-width: 60px;">${c.name}<br><b>+1 Lvl</b></div>`;
+            let bgC = c.rarity == 4 ? 'var(--neon-pink)' : (c.rarity == 3 ? 'var(--neon-yellow)' : (c.rarity == 2 ? 'var(--neon-blue)' : '#fff'));
+            el.innerHTML = `<div style="border:2px solid ${bgC}; padding:15px; background:rgba(0,0,0,0.5); border-radius: 8px; color:${bgC}; font-size:0.9rem; text-align:center; min-width: 80px; font-weight:bold; box-shadow: 0 0 10px ${bgC} inset;">${c.name}<br><span style="font-size:0.7rem; color:#fff;">(+1)</span></div>`;
             resUI.appendChild(el);
         });
         saveHubStateLocal(); syncUIWithProfile(); renderDeckBuilder();
-    }, 1200);
+    }, 1500);
 }
+
 
 // =========================================================================
-// PARTE 4: SISTEMA DE UPLOAD PROVAS & RENDER DO FEED DA COMUNIDADE
-// =========================================================================
-
-function saveLocalFeed(postObj) { let l =[]; try { if(localStorage.getItem('localFeed')) l = JSON.parse(localStorage.getItem('localFeed')); }catch(e){} l.unshift(postObj); if(l.length > 20) l = l.slice(0, 20); localStorage.setItem('localFeed', JSON.stringify(l)); }
-function getLocalFeed() { try { if(localStorage.getItem('localFeed')) return JSON.parse(localStorage.getItem('localFeed')); }catch(e){} return[]; }
-
-let curTaskConfig = null; let curTaskCat = "Força"; 
-
-window.openTaskUploader = function(t, c="Força") {
-    const map = { 'cardio': { name: "Cardio e Mobilidade", xp: 500, gold: 1000, buffSpd: 0.2 }, 'forca': { name: "Treino Resiliente", xp: 600, gold: 1500, buffHp: 100 }, 'academia': { name: "Treino Muscular", xp: 400, gold: 1200, buffDmg: 0.3 }, 'dieta': { name: "Ingestão Honesta", xp: 200, gold: 500, buffDmg: 0.2 }, 'dieta_lixo': { name: "Confissão Açucarada", xp: 50, gold: 0, buffSpd: -0.3 }};
-    curTaskConfig = map[t]; curTaskCat = c; document.getElementById('form-box-title').innerText = `PUBLICAR TAREFA: ${curTaskConfig.name}`;
-    document.getElementById('quick-post-box').style.display = 'block'; 
-    if(c === 'Cardio') document.getElementById('gps-panel').style.display = 'block'; else document.getElementById('gps-panel').style.display = 'none';
-    window.switchTab('tab-feed');
-};
-
-window.submitTaskEvidence = function() {
-    if(!currentTaskConfig) return;
-    const file = document.getElementById('task-file').files[0];
-    if(!file && curTaskCat !== 'Duelo') return alert("Por favor, tire ou adicione uma foto real que prove o seu esforço.");
-    
-    let btnUpload = document.getElementById('btn-post-upload');
-    btnUpload.innerText = "Empacotando Mídias e Comprimindo..."; btnUpload.disabled = true;
-    const desc = document.getElementById('task-desc').value; 
-    
-    if(file && file.type.startsWith("video/")) { const vURL = URL.createObjectURL(file); postLogicExecution(desc, vURL, "video"); } 
-    else if(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image(); img.onload = function() {
-                const cvs = document.getElementById('task-compress-canvas'); const maxW = 350; const scale = maxW/img.width; cvs.width = maxW; cvs.height = img.height*scale; const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
-                postLogicExecution(desc, cvs.toDataURL('image/jpeg', 0.6), "image");
-            }; img.src = e.target.result;
-        }; reader.readAsDataURL(file);
-    } else { postLogicExecution(desc, "", "none"); } 
-}
-
-function postLogicExecution(desc, midiaURL, midiaType) {
-    hubProfile.xp += curTaskConfig.xp||0; hubProfile.gold += curTaskConfig.gold||0;
-    if(curTaskConfig.buffHp) hubProfile.buffs.hp += curTaskConfig.buffHp; if(curTaskConfig.buffDmg) hubProfile.buffs.dmg += curTaskConfig.buffDmg; if(curTaskConfig.buffSpd) hubProfile.buffs.spd += curTaskConfig.buffSpd;
-    saveHubStateLocal(); syncUIWithProfile(); 
-
-    let feedObj = { uid: hubProfile.uid, author: hubProfile.username, avatar: hubProfile.avatar, taskName: curTaskConfig.name, category: curTaskCat, desc: desc, midiaURL: midiaURL, midiaType: midiaType, rewardLog: curTaskConfig, upvotes: {}, downvotes: {}, comments:[], active: true, timestamp: Date.now() };
-
-    let btnUpload = document.getElementById('btn-post-upload'); btnUpload.innerText = "Publicar e Receber Recompensa"; btnUpload.disabled = false;
-    document.getElementById('quick-post-box').style.display = 'none';
-    
-    try {
-        if(useLocalBypass) throw new Error("Triggered Offline Intentional");
-        feedObj.timestamp = serverTimestamp(); 
-        addDoc(collection(db, "hub_feed"), feedObj).then(() => { showModal("Tarefa Aceita", "Suas mídias subiram para a aprovação dos Guerreiros globais do Hub."); }).catch(()=>{ throw new Error("Fallback on write fail"); });
-    } catch(e) {
-        feedObj.id = "localpost_" + Math.random().toString(36).substring(2,9); saveLocalFeed(feedObj); 
-        showModal("Modo Offline Ativado", "Tudo foi salvo apenas no seu perfil para sua experiência local. Você subiu de status mesmo sem aprovação online.");
-        lastCloudSnapshot = getLocalFeed(); renderFeedItems(); 
-    }
-}
-
-window.currentFeedFilter = "todos";
-window.filterFeed = function(tipo, btnEl) { window.currentFeedFilter = tipo; document.querySelectorAll('.filter-btn').forEach(e => e.classList.remove('active')); btnEl.classList.add('active'); renderFeedItems(); }
-
-let lastCloudSnapshot =[]; 
-function listenToFeed() {
-    if(useLocalBypass) { lastCloudSnapshot = getLocalFeed(); renderFeedItems(); return; }
-    try {
-        onSnapshot(query(collection(db, "hub_feed"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
-            lastCloudSnapshot =[]; snap.forEach((ds) => { let d = ds.data(); d.id = ds.id; lastCloudSnapshot.push(d); });
-            renderFeedItems();
-        }, (error) => { useLocalBypass = true; lastCloudSnapshot = getLocalFeed(); renderFeedItems(); });
-    } catch(e) { useLocalBypass = true; lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
-}
-
-function renderFeedItems() {
-    const c = document.getElementById('feed-container-render'); c.innerHTML = "";
-    let dataSource = useLocalBypass ? getLocalFeed() : lastCloudSnapshot;
-    
-    if(dataSource.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 30px; color:#666;">Silêncio neste setor. Seja o primeiro a completar uma Prova.</div>`; return; }
-
-    dataSource.forEach((d) => {
-        if(window.currentFeedFilter !== "todos" && d.category !== window.currentFeedFilter) return;
-        let upArr = Object.keys(d.upvotes || {}); let dnArr = Object.keys(d.downvotes || {});
-        let av = d.avatar ? d.avatar : "https://i.imgur.com/kKC1zaJ.png";
-        
-        let midiaTag = "";
-        if(d.midiaType === 'video') midiaTag = `<video class="post-vid" controls src="${d.midiaURL}"></video>`; else if(d.midiaURL && d.midiaURL!=="") midiaTag = `<img class="post-img" src="${d.midiaURL}">`;
-
-        let commentsHTML = (d.comments||[]).map(c => `<div class="comment-item"><b>${c.author}:</b> ${c.text}</div>`).join('');
-        
-        let el = document.createElement('div'); el.className = `feed-post ${!d.active ? 'revoked' : ''}`; el.setAttribute("data-category", d.category); 
-        el.innerHTML = `
-            <div class="post-header"> <img class="post-avatar" src="${av}"> <div class="post-meta"> <span class="post-author">${d.author}</span> <span class="post-type">Atividade Concluída:[${(d.category||'Geral')}]</span> </div> </div>
-            <div style="color:#ddd; margin-bottom:12px; font-size:0.9rem; line-height: 1.4;">${d.desc}</div>
-            ${ midiaTag ? `<div class="post-img-container">${midiaTag}</div>` : '' }
-            <div class="post-reward">Recompensa Aceita: XP +${d.rewardLog?.xp||0} e Ouro Adicionado.</div>
-            <div class="post-actions">
-                <button class="vote-btn up" onclick="window.castVote('${d.id}', 'up')">Aprovar Post (${upArr.length})</button> 
-                <button class="vote-btn down" onclick="window.castVote('${d.id}', 'down')">É Mentira (${dnArr.length})</button>
-            </div>
-            <div class="post-comments">
-                <div class="comments-list">${commentsHTML}</div>
-                <div class="comment-input-area"><input type="text" id="cmt-${d.id}" placeholder="Escreva sua opinião..."><button class="btn-action btn-highlight" style="width:auto; padding:8px 12px; font-size:0.8rem;" onclick="window.addComment('${d.id}')">COMENTAR</button></div>
-            </div>
-        `;
-        c.appendChild(el);
-    });
-}
-
-window.castVote = async function(postId, type) {
-    if(useLocalBypass) return alert("Os votos da comunidade são restritos a conexões ativas na internet.");
-    try {
-        const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef); if(!pSn.exists()) return; let p = pSn.data(); if(!p.active) return alert("Esse posto já sofreu embargo definitivo.");
-        if(type === 'up') { p.upvotes = p.upvotes || {}; p.upvotes[hubProfile.uid] = true; delete (p.downvotes||{})[hubProfile.uid]; } else { p.downvotes = p.downvotes || {}; p.downvotes[hubProfile.uid] = true; delete (p.upvotes||{})[hubProfile.uid]; }
-        let uCnt = Object.keys(p.upvotes).length; let dCnt = Object.keys(p.downvotes).length; if( (uCnt+dCnt) >= 3 && dCnt > uCnt ) { p.active = false; alert("Postagem classificada como mentira pela massa! Atributos revogados."); }
-        await updateDoc(pRef, p);
-    } catch(e) { console.log(e); }
-};
-
-window.addComment = async function(postId) {
-    let txt = document.getElementById('cmt-'+postId).value.trim(); if(!txt) return;
-    let cmt = { uid: hubProfile.uid, author: hubProfile.username, text: txt, timestamp: Date.now() };
-    if(useLocalBypass) {
-        let lf = getLocalFeed(); let idx = lf.findIndex(x => x.id === postId);
-        if(idx > -1) { if(!lf[idx].comments) lf[idx].comments = []; lf[idx].comments.push(cmt); localStorage.setItem('localFeed', JSON.stringify(lf)); lastCloudSnapshot = getLocalFeed(); renderFeedItems(); }
-        return;
-    }
-    try {
-        const pRef = doc(db, "hub_feed", postId); const pSn = await getDoc(pRef);
-        if(pSn.exists()) { let pData = pSn.data(); if(!pData.comments) pData.comments =[]; pData.comments.push(cmt); await updateDoc(pRef, { comments: pData.comments }); }
-        document.getElementById('cmt-'+postId).value = "";
-    } catch(e){}
-}
-
-// =========================================================================
-// PARTE 5: RADAR PVP E INVOCADOR DE DUELOS PARA BATTLES ASSINCRONOS
+// PARTE 5: RADAR PVP SOCIAL (DUELO FÍSICO COMUNICAÇÃO FIREBASE)
 // =========================================================================
 
 function setupHubRealtime() {
     if(useLocalBypass) {
-        document.getElementById('radar-loading').innerText = "Radares cegos por falha de banco. Duelos Fictícios Habilitados.";
-        setTimeout(()=> { document.getElementById('radar-list').innerHTML = `<div class="radar-player" style="border-color:#555;"><span class="radar-name" style="color:#aaa;">♦ Inteligência Artificial Fantasma</span><button class="btn-duel" style="border-color:#aaa; color:#aaa;" onclick="window.startClash(true, {name:'Adversário IA', lvl:10, buffs:{hp:50, spd:0.3, dmg:0.2}, deck:['Kamikaze','Barao','Hacker','Sniper']})">SIMULAR INVASÃO HOLOGRÁFICA AGORA</button></div>`; }, 1000);
+        document.getElementById('radar-loading').innerText = "Radares sem sinal online. O Duelo de Treino Fantasma abaixo está disponível para treinar sua base tática da IA.";
+        setTimeout(()=> { document.getElementById('radar-list').innerHTML = `
+            <div class="radar-player" style="border-color:#555;">
+                <span class="radar-name" style="color:#ccc; font-size:1.1rem; font-family:'Orbitron';">♦ Robô Cyberpunk Ghost</span>
+                <span style="font-size:0.7rem; color:#888; margin-bottom:10px;">Lvl Mestre - Base Offline. HP e Danos altos de simulação de combate de máquina.</span>
+                <button class="btn-action" style="background:#500; border-color:#f00; color:#fff; font-size:0.8rem; padding:12px;" onclick="window.startClash(true, {name:'Máquina Inimiga', lvl:35, buffs:{hp:500, spd:0.3, dmg:0.4}, deck:['Kamikaze','Barao','Hacker','Sniper','Striker'], cardLevels:{'Kamikaze':4,'Barao':2}})">LUTAR NO AUTO-BATTLER</button>
+            </div>`; 
+        }, 1000);
         listenToFeed(); return;
     }
     
@@ -814,43 +781,100 @@ function setupHubRealtime() {
             document.getElementById('radar-loading').style.display = 'none'; document.getElementById('radar-list').innerHTML = ""; let d = snap.val()||{}; 
             Object.keys(d).forEach(k => { 
                 if(k!==hubProfile.uid) {
-                    // Start Battle enviando os dados do openente de forma serializada local para instanciar no jogo local auto-battle Assincrono.
                     let oppD = { name: d[k].name, lvl: d[k].lvl, buffs: d[k].buffs || {hp:0, dmg:0, spd:0}, deck: d[k].deck || [], cardLevels: d[k].cardLevels || {} };
-                    let btnHTML = `<button class="btn-duel" onclick='window.startClash(true, ${JSON.stringify(oppD)})'>Lutar PvP (Asincrono)</button>`;
-                    document.getElementById('radar-list').innerHTML += `<div class="radar-player"><span class="radar-name">♦ ${d[k].name} Nv.${d[k].lvl}</span>${btnHTML}</div>`; 
+                    
+                    let htmlBts = `
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn-neon pink" style="font-size:0.7rem; padding:8px;" onclick="window.sendRealDuel('${k}', '${d[k].name}')">DESAFIO REAL (IRL)</button>
+                        <button class="btn-neon" style="font-size:0.7rem; padding:8px;" onclick='window.startClash(true, ${JSON.stringify(oppD)})'>LUTAR (JOGO)</button>
+                    </div>`;
+                    
+                    document.getElementById('radar-list').innerHTML += `<div class="radar-player"><span class="radar-name">♦ ${d[k].name} Lvl ${d[k].lvl}</span>${htmlBts}</div>`; 
                 }
             });
         });
+        
+        // Listeners do Duelo Real
+        onChildAdded(ref(rtdb, 'hub_duels'), (snap) => { 
+            let d = snap.val(); 
+            if(d.targetId === hubProfile.uid && d.state === 'request') {
+                showModal(`🔥 DESAFIO FÍSICO!`, `O operador(a) <b>${d.challengerName}</b> quer testar quem de fato domina na rua! (Ex: Flexões até o limite ou Corrida livre). Ele te jogou o convite. Você arca com o custo de recusa ou vira Mestre?`, 
+                `<button class="btn-neon green" style="margin:5px;" onclick="window.acceptRealDuel('${snap.key}')">TÔ DENTRO (BORA LÁ)</button> 
+                 <button class="btn-neon pink" style="margin:5px;" onclick="window.declineRealDuel('${snap.key}')">RECUSAR CONFRONTO</button>`);
+            }
+        });
+        
         listenToFeed();
     } catch(e) {}
 }
 
-function showModal(t, d) { document.getElementById('modal-title').innerText=t; document.getElementById('modal-desc').innerText=d; document.getElementById('modal-actions').innerHTML = '<button class="btn-action" onclick="document.getElementById(\'system-modal\').style.display=\'none\'">Ciente</button>'; document.getElementById('system-modal').style.display='flex'; }
+window.sendRealDuel = function(tId, tN) { 
+    let keyId = push(ref(rtdb, 'hub_duels')).key; set(ref(rtdb, 'hub_duels/'+keyId), { challengerId: hubProfile.uid, challengerName: hubProfile.username, targetId: tId, targetName: tN, state: 'request' }); window.showModal("Convite Lançado", `Se o jogador[${tN}] tiver coragem de abrir o duelo real as opções serão acesas.`);
+    
+    const duelListener = onValue(ref(rtdb, 'hub_duels/'+keyId), (s) => {
+        let v = s.val(); if(!v) return;
+        if(v.state === 'declined') { showModal("RECUSA!", "Aquele humano recusou suar hoje."); off(ref(rtdb, 'hub_duels/'+keyId), 'value', duelListener); }
+        if(v.state === 'ongoing' && !v.resolvedChallengerAlert) { 
+            update(ref(rtdb, `hub_duels/${s.key}`), { resolvedChallengerAlert: true }); 
+            showModal("ELE ACEITOU!! VÁ A LUTA!", "Faça a prova acertada entre vocês fisicamente. O que ganhar dirá sua recompensa e o oponente o chancelará depois se concordar. Cumpra o esforço e abra o Painel Físico do Duelo abaixo depois de suar sangue:", 
+            `<button class="btn-neon green" onclick="window.monitorOngoingDuel('${s.key}', '${tN}')">ABRIR TELA DA DECISÃO DO DUELO E VOTAR</button>`); 
+        }
+    });
+};
+window.acceptRealDuel = function(keyId) {
+    document.getElementById('system-modal').style.display='none';
+    update(ref(rtdb, `hub_duels/${keyId}`), { state: 'ongoing' });
+    showModal("LUTA ABERTA!", "Coloquem os corpos pra sofrer no mundo. Cumpra o esforço brutal e vote em quem venceu quando voltar pra cá para colher recursos maciços (Se ele não for fraude de empatar).", 
+    `<button class="btn-neon pink" onclick="window.monitorOngoingDuel('${keyId}', 'Inimigo')">ABRIR TELA DA DECISÃO DO DUELO E VOTAR</button>`);
+};
+window.declineRealDuel = function(keyId) { document.getElementById('system-modal').style.display='none'; update(ref(rtdb, `hub_duels/${keyId}`), { state: 'declined' }); }
 
+window.monitorOngoingDuel = function(duelId, opName) {
+    document.getElementById('system-modal').style.display='none';
+    showModal("CONCLUSÃO FÍSICA E HONRARIA", `O ar acabou nos pulmões? Escolham a verdade. Ambos têm de colocar a mesma resposta de Ganhador de fato para a máquina lhes dar acesso à caixa forte de Ouro.<br><br>Seu oponente: ${opName}`, 
+    `<button class="btn-neon green" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', '${hubProfile.uid}', '${opName}')">FUI DEUS (EU VENCI O ESFORÇO DA SESSÃO!)</button>
+     <button class="btn-neon pink" style="margin:5px; width:100%;" onclick="window.submitDuelResult('${duelId}', 'OPONENTE_WIN', '${opName}')">ELE ME AFUNDOU FÁCIL (O OPONENTE MERECE O LOOT)</button>`);
+}
+
+window.submitDuelResult = function(duelId, vpick, opName) {
+    update(ref(rtdb, 'hub_duels/'+duelId+'/votes/'+hubProfile.uid), { pick: vpick }); document.getElementById('system-modal').style.display = 'none'; showModal("AGUARDE...", "Seu testemunho ocular de dor física entrou pra nuvem. Se ele disser igual, ambos levam. Caso discorram em mentiras egocêntricas de vitória pra ambos... a Máquina pune a todos sem lucro.");
+    
+    let isTreated = false;
+    onValue(ref(rtdb, 'hub_duels/'+duelId), (snap) => {
+        let d = snap.val(); if(!d.votes || isTreated) return; let vArr = Object.keys(d.votes);
+        if(vArr.length >= 2 && !d.resolved) {
+            update(ref(rtdb, 'hub_duels/'+duelId), { resolved: true }); isTreated = true;
+            let voteA = d.votes[vArr[0]].pick; let voteB = d.votes[vArr[1]].pick; 
+            let wonId = null; if(voteA === vArr[0] && voteB === 'OPONENTE_WIN') wonId = vArr[0]; else if(voteB === vArr[1] && voteA === 'OPONENTE_WIN') wonId = vArr[1]; 
+            
+            if(wonId) { 
+                if(wonId === hubProfile.uid) { hubProfile.gold += 12000; hubProfile.buffs.spd += 0.5; hubProfile.xp += 2000; saveHubStateLocal(); syncUIWithProfile();
+                    showModal("GLÓRIA ESTREMA!", `Ambos corroboram: Suas correntes de suor falaram mais alto. O XP e os + $12000 em Barras de ouro da Base desabaram na sua vida do Engine!! Quer criar publicacao massiva pro feed esmurrando ele visualmente?`, `<button class="btn-neon green" style="width:100%;" onclick="window.openTaskUploader('VITÓRIA NO CONFRONTO REAL VS ${opName}', 'Duelo')">BOMBAR NO FEED AGORA</button>`);
+                } else { showModal("TROPAS MORTAS. FRACASSO LIMPO", "Ele levou de fato. Você assume e a Justiça cibernética da Nuvem os recompensa da punição pelo orgulho perdido. Treine pra amanha."); }
+            } else { showModal("AVISO: TENSÃO FÍSICA INCOMPATÍVEL!", "Ambos atestaram resultados em que 'Eles venceram'. Esse ego destrói a coesão do universo Hub. RECOMPENSA EXPURGADA, SEM GANHOS PARA OS DOIS E CANCELADO!!"); }
+        }
+    });
+}
 
 // ==================================================================================
-// PARTE 6: CYBER CLASH - AUTO BATTLER ENGINE (FRONT DOM / CANVAS 2D OTIMIZADA)
-// NENHUMA LÓGICA E FOI REMOVIDA DEPOIS DA TRANSIÇÃO
+// ENGINE CYBER CLASH - 2D AUTO BATTLER CANVAS LOOP E GERAÇÕES
 // ==================================================================================
 
 let cvs, ctx; let engineState = 'MENU'; let lastTime = 0; let energy = 0; let MAX_ENERGY = 10;
-let arenaW = 400; let arenaH = 700; let opponentAI = null; let isAFK = false;
+let arenaW = 500; let arenaH = 900; let opponentAI = null; let isAFK = false;
 let entities = []; let projectiles = []; let effects =[]; let spawnEffects =[]; let playerBase, enemyBase;
 
-const audioCtx = new (window.AudioContext||window.webkitAudioContext)(); function playSound(t) { try{ if(engineState === 'DEAD')return; const o=audioCtx.createOscillator(),g=audioCtx.createGain(),n=audioCtx.currentTime; o.connect(g);g.connect(audioCtx.destination); if(t=='shoot'){o.frequency.setValueAtTime(200,n);o.frequency.exponentialRampToValueAtTime(50,n+0.2);g.gain.setValueAtTime(0.1,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.1);o.type='triangle';}else if(t=='hit'){o.frequency.setValueAtTime(100,n);g.gain.setValueAtTime(0.1,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.1);o.type='square';}else if(t=='buy'){o.frequency.setValueAtTime(400,n);o.frequency.linearRampToValueAtTime(600,n+0.2);g.gain.setValueAtTime(0.1,n);g.gain.linearRampToValueAtTime(0,n+0.2);o.type='triangle';}o.start(n);o.stop(n+0.3);}catch(e){} }
-document.addEventListener('click', ()=> { if(audioCtx.state === 'suspended') audioCtx.resume(); });
-
 window.startClash = function(isPvP = false, oppData = null) {
-    if(hubProfile.deck.length === 0) return alert("Você precisa colocar ao menos 1 carta ativa em 'Meu Deck' para combater.");
+    if(hubProfile.deck.length === 0) return showModal("ALERTA TÁTICO", "Compre cartas com o ouro do esforço em Lootboxes primeiro e posicione-as na Mão Ativa na seção de Baralho!");
     
-    document.getElementById('hub-container').style.display = 'none'; document.getElementById('game-wrapper').style.display = 'block';
+    document.getElementById('hub-container').style.display = 'none'; let gw = document.getElementById('game-wrapper'); gw.style.display = 'block';
     
     cvs = document.getElementById('arena-canvas'); ctx = cvs.getContext('2d');
     let winW = window.innerWidth; let winH = window.innerHeight; let ratio = arenaW / arenaH;
     if(winW / winH > ratio) { cvs.width = winH * ratio; cvs.height = winH; } else { cvs.width = winW; cvs.height = winW / ratio; }
     ctx.scale(cvs.width/arenaW, cvs.height/arenaH);
 
-    opponentAI = oppData || { name: "Máquina Provisória PVE", lvl: hubProfile.lvl, buffs: { hp: 40 * hubProfile.lvl, spd: 0.05 * hubProfile.lvl, dmg: 0.05 * hubProfile.lvl }, deck:['Brawler', 'Kamikaze', 'CorredorNeon'], cardLevels: {} };
+    opponentAI = oppData || { name: "Simulação Sombra da Matriz (PVE)", lvl: hubProfile.lvl, buffs: { hp: 50 * hubProfile.lvl, spd: 0.1 * hubProfile.lvl, dmg: 0.1 * hubProfile.lvl }, deck:['CorredorNeon','BioTank','Sniper', 'Comandante'], cardLevels: {} };
     isAFK = false; document.getElementById('btn-afk').classList.remove('active');
 
     resetArena(); renderCardsHandUI();
@@ -868,17 +892,18 @@ function resetArena() {
     entities = []; projectiles = []; effects =[]; spawnEffects =[]; energy = 2; 
     let pB = getPlayerBuffs(); let oB = opponentAI.buffs || {hp:0, dmg:0, spd:0};
     
-    playerBase = new Entity(CARD_DB["Barricada"], 'player', 200, arenaH - 40, pB, 1); playerBase.type = 'base'; playerBase.name="BASE LOCAL"; playerBase.maxHp = 2000 * (1+(pB.hp/200)); playerBase.hp = playerBase.maxHp; playerBase.w = 80; playerBase.h = 40; playerBase.range = 100; playerBase.dmg = 15 * (1+(pB.dmg||0)); playerBase.atkSpeed = 1.0;
-    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', 200, 40, oB, opponentAI.lvl || 1); enemyBase.type = 'base'; enemyBase.name = opponentAI.name; enemyBase.maxHp = 2000 * (1+(oB.hp/200)); enemyBase.hp = enemyBase.maxHp; enemyBase.w = 80; enemyBase.h = 40; enemyBase.range = 100; enemyBase.dmg = 15 * (1+(oB.dmg||0)); enemyBase.atkSpeed = 1.0;
+    playerBase = new Entity(CARD_DB["Barricada"], 'player', arenaW/2, arenaH - 50, pB, 1); playerBase.type = 'base'; playerBase.name="TORRE DO JOGADOR"; playerBase.maxHp = 2000 * (1+(pB.hp/200)); playerBase.hp = playerBase.maxHp; playerBase.w = 120; playerBase.h = 60; playerBase.range = 100; playerBase.dmg = 15 * (1+(pB.dmg||0)); playerBase.atkSpeed = 1.0;
+    enemyBase = new Entity(CARD_DB["Barricada"], 'enemy', arenaW/2, 50, oB, opponentAI.lvl || 1); enemyBase.type = 'base'; enemyBase.name = opponentAI.name; enemyBase.maxHp = 2000 * (1+(oB.hp/200)); enemyBase.hp = enemyBase.maxHp; enemyBase.w = 120; enemyBase.h = 60; enemyBase.range = 100; enemyBase.dmg = 15 * (1+(oB.dmg||0)); enemyBase.atkSpeed = 1.0;
     
     entities.push(playerBase); entities.push(enemyBase);
-    document.getElementById('enemy-hp-text').innerText = `${opponentAI.name} HP: ${Math.floor(enemyBase.hp)}`; document.getElementById('death-screen').style.display = 'none';
+    document.getElementById('enemy-name-display').innerText = opponentAI.name.toUpperCase();
+    document.getElementById('death-screen').style.display = 'none';
 }
 
 function renderCardsHandUI() {
     let ui = document.getElementById('arena-hand-ui'); ui.innerHTML = "";
     hubProfile.deck.forEach((cId, index) => {
-        let dbC = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1; let cCol = dbC.rarity == 4 ? '#ff00de' : (dbC.rarity == 3 ? '#ffaa00' : (dbC.rarity == 2 ? '#00aaff' : '#aaa'));
+        let dbC = CARD_DB[cId]; let lvl = hubProfile.cardLevels[cId] || 1; let cCol = dbC.rarity == 4 ? 'var(--neon-pink)' : (dbC.rarity == 3 ? 'var(--neon-yellow)' : (dbC.rarity == 2 ? 'var(--neon-blue)' : '#aaa'));
         let d = document.createElement('div'); d.className = 'battle-card'; d.style.borderColor = cCol; d.id = `card-ui-${index}`; d.innerHTML = `<div class="b-card-cost">${dbC.cost}</div> <div class="b-card-lvl">L${lvl}</div> <div class="b-card-name" style="margin-top:15px;">${dbC.name}</div>`; d.onclick = (e) => { e.stopPropagation(); selectCardToPlay(index); };
         ui.appendChild(d);
     });
@@ -886,24 +911,25 @@ function renderCardsHandUI() {
 
 let activeCardIdx = null;
 function selectCardToPlay(idx) {
-    if(isAFK) return; let cId = hubProfile.deck[idx]; if(energy < CARD_DB[cId].cost) { playSound('hit'); return; } 
-    if(activeCardIdx !== null) document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx = idx; document.getElementById(`card-ui-${idx}`).classList.add('active'); playSound('buy');
+    if(isAFK) return; let cId = hubProfile.deck[idx]; if(energy < CARD_DB[cId].cost) { return; } 
+    if(activeCardIdx !== null) document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx = idx; document.getElementById(`card-ui-${idx}`).classList.add('active');
 }
 
 window.arenaClick = function(e) {
     if(activeCardIdx === null || isAFK) return;
     let rect = cvs.getBoundingClientRect(); let sX = arenaW / rect.width; let sY = arenaH / rect.height; let cx = (e.clientX - rect.left) * sX; let cy = (e.clientY - rect.top) * sY;
     let cId = hubProfile.deck[activeCardIdx]; let cD = CARD_DB[cId];
-    if(cD.type !== 'spell' && cy < arenaH * 0.55) { return alert("Invocações apenas da metade do campo para trás!"); }
+    if(cD.type !== 'spell' && cy < arenaH * 0.55) { return alert("Limites Táticos de Terreno: Spawne no seu lado da linha divisória central."); }
     
     deployCard(cId, 'player', cx, cy, hubProfile.cardLevels[cId]||1, getPlayerBuffs()); energy -= cD.cost; document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx = null;
+    spawnEffects.push({t:'exp', x:cx, y:cy, life:0.4, col:'#0ff'});
 }
 
-window.toggleAFK = function() { isAFK = !isAFK; let b = document.getElementById('btn-afk'); if(isAFK) { b.classList.add('active'); b.innerText = "Batalha Automática (ON)"; if(activeCardIdx!==null) { document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx=null; } } else { b.classList.remove('active'); b.innerText = "Batalha Automática (OFF)"; } }
+window.toggleAFK = function() { isAFK = !isAFK; let b = document.getElementById('btn-afk'); if(isAFK) { b.classList.add('active'); b.innerText = "Piloto IA Automatico On (Ativo)"; if(activeCardIdx!==null) { document.getElementById(`card-ui-${activeCardIdx}`).classList.remove('active'); activeCardIdx=null; } } else { b.classList.remove('active'); b.innerText = "Assumir Comando Off"; } }
 
 class Entity {
     constructor(dbData, team, x, y, ownerBuffs, level = 1) {
-        this.db = dbData; this.team = team; this.x = x; this.y = y; this.w = 12; this.h = 12; this.level = level; this.mechanics = dbData.mechanics ||[]; this.type = dbData.type; this.isFlying = dbData.isFlying || false; this.isTank = dbData.isTank || false; this.targetType = dbData.targetType || 'enemy';
+        this.db = dbData; this.team = team; this.x = x; this.y = y; this.w = 16; this.h = 16; this.level = level; this.mechanics = dbData.mechanics ||[]; this.type = dbData.type; this.isFlying = dbData.isFlying || false; this.isTank = dbData.isTank || false; this.targetType = dbData.targetType || 'enemy';
         let mutSpd = 1.0; if(ownerBuffs.spd < 0) mutSpd = Math.max(0.2, 1.0 - Math.abs(ownerBuffs.spd)); 
         let fHpMod = Math.pow(1.1, level - 1) * (this.isTank ? (1 + (ownerBuffs.hp/100)) : 1);
         this.maxHp = dbData.hp * fHpMod; this.hp = this.maxHp;
@@ -919,7 +945,7 @@ class Entity {
         if(this.type === 'building' || this.type === 'base') return; 
         
         if(this.mechanics.includes('spawn_drones') && Math.random() < 0.01) { deployCard('DroneRastreador', this.team, this.x, this.y, this.level, getPlayerBuffs()); }
-        if(this.mechanics.includes('slow_trail') && Math.random() < 0.05) { effects.push(new EffectArea(this.x, this.y, 25, 'slow', 3, this.team)); }
+        if(this.mechanics.includes('slow_trail') && Math.random() < 0.05) { effects.push(new EffectArea(this.x, this.y, 30, 'slow', 3, this.team)); }
 
         let target = this.findTarget();
         if(target) {
@@ -943,19 +969,21 @@ class Entity {
     
     attack(target) {
         if(this.mechanics.includes('cleave') && this.db.id==='Mecha') { spawnEffects.push({t:'laser', x1:this.x, y1:this.y, x2:target.x, y2:target.y, life:0.3}); for(let e of entities) { if(e.team!==this.team && Math.hypot(e.x-target.x, e.y-target.y) < 40) e.receiveDmg(this.dmg, this); } } 
-        else if (this.range > 60) { projectiles.push({ x:this.x, y:this.y, tx:target.x, ty:target.y, speed: 300, dmg:this.dmg, shooter:this, tObj:target }); } 
+        else if (this.range > 60) { projectiles.push({ x:this.x, y:this.y, tx:target.x, ty:target.y, speed: 450, dmg:this.dmg, shooter:this, tObj:target }); } 
         else { spawnEffects.push({t:'hit', x:target.x, y:target.y, life:0.2}); target.receiveDmg(this.dmg, this); }
-        playSound('shoot');
     }
     
     receiveDmg(amt, sourceEntity) {
-        if(this.mechanics.includes('dodge') && Math.random() < 0.5) { spawnEffects.push({t:'text', txt:'ESQUIVA', x:this.x, y:this.y-10, life:0.6}); return; }
+        if(this.mechanics.includes('dodge') && Math.random() < 0.5) { spawnEffects.push({t:'text', txt:'ESQUIVOU', x:this.x, y:this.y-10, life:0.6}); return; }
         if(this.exposed) amt *= 1.2; 
         this.hp -= amt;
+        spawnEffects.push({t:'text', txt:`-${Math.floor(amt)}`, x:this.x + (Math.random()*15), y:this.y-(Math.random()*15), life:0.4, col: '#f55'});
+        
         if(this.hp <= 0 && this.type !== 'base') {
-            if(this.mechanics.includes('explode')) { effects.push(new EffectArea(this.x, this.y, 80, 'damage', 0.2, this.team, 300)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.4});}
-            if(this.mechanics.includes('death_stun')) { effects.push(new EffectArea(this.x, this.y, 100, 'stun', 0.5, this.team, 2)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.4, col:'#ff0'});}
-            if(this.mechanics.includes('acid_pool')) { effects.push(new EffectArea(this.x, this.y, 60, 'acid_dot', 4, this.team, 20)); }
+            if(this.mechanics.includes('explode')) { effects.push(new EffectArea(this.x, this.y, 90, 'damage', 0.2, this.team, 300)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.5});}
+            if(this.mechanics.includes('death_stun')) { effects.push(new EffectArea(this.x, this.y, 110, 'stun', 0.5, this.team, 2.5)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.5, col:'#ff0'});}
+            if(this.mechanics.includes('acid_pool')) { effects.push(new EffectArea(this.x, this.y, 75, 'acid_dot', 5, this.team, 25)); }
+            spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.3, col: this.color});
         }
     }
     
@@ -963,8 +991,8 @@ class Entity {
         c.fillStyle = this.color;
         if(this.type === 'base') { c.fillRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h); }
         else { c.beginPath(); c.arc(this.x, this.y, this.w, 0, Math.PI*2); c.fill(); if(this.stealth) { c.globalAlpha=0.4; c.fillStyle="#fff"; c.fill(); c.globalAlpha=1; } }
-        let hPct = Math.max(0, this.hp / this.maxHp); c.fillStyle = '#f00'; c.fillRect(this.x - 10, this.y - this.h - 5, 20, 3); c.fillStyle = '#0f0'; c.fillRect(this.x - 10, this.y - this.h - 5, 20 * hPct, 3);
-        if(this.stunTimer>0) { c.fillStyle='#ff0'; c.font='8px Arial'; c.fillText('STUN', this.x-10, this.y-this.h-8); }
+        let hPct = Math.max(0, this.hp / this.maxHp); c.fillStyle = '#f00'; c.fillRect(this.x - 12, this.y - this.w - 8, 24, 4); c.fillStyle = '#0f0'; c.fillRect(this.x - 12, this.y - this.w - 8, 24 * hPct, 4);
+        if(this.stunTimer>0) { c.fillStyle='#ffaa00'; c.font='10px Orbitron'; c.fillText('STUN', this.x-15, this.y-this.w-12); }
     }
 }
 
@@ -977,15 +1005,14 @@ class EffectArea {
 function deployCard(cId, team, tx, ty, lvl, buffsRef) {
     let dbC = CARD_DB[cId];
     if(dbC.type === 'spell') {
-        playSound('buy');
         if(cId === 'MagiaCrio') effects.push(new EffectArea(tx, ty, dbC.range, 'freeze_spell', 3, team, 3));
-        if(cId === 'MagiaOrbital') { spawnEffects.push({t:'laser', x1:tx, y1:0, x2:tx, y2:ty, life:0.5, col:'#f0f', w:20}); for(let e of entities) { if(e.team!==team && Math.hypot(e.x-tx, e.y-ty)<dbC.range) e.receiveDmg(dbC.dmg, null); } }
+        if(cId === 'MagiaOrbital') { spawnEffects.push({t:'laser', x1:tx, y1:0, x2:tx, y2:ty, life:0.6, col:'var(--neon-pink)', w:30}); for(let e of entities) { if(e.team!==team && Math.hypot(e.x-tx, e.y-ty)<dbC.range) e.receiveDmg(dbC.dmg, null); } }
         if(cId === 'MagiaAcido') effects.push(new EffectArea(tx, ty, dbC.range, 'acid_dot', 6, team, 25));
-        if(cId === 'MagiaRewind') { let bestE=null; let lowest=999; for(let e of entities) { if(e.team===team && e.type==='unit' && e.hp<lowest) { lowest=e.hp; bestE=e;} } if(bestE){ bestE.x = team==='player'?200:200; bestE.y = team==='player'? arenaH-100: 100; bestE.hp += bestE.maxHp*0.3; } }
+        if(cId === 'MagiaRewind') { let bestE=null; let lowest=9999; for(let e of entities) { if(e.team===team && e.type==='unit' && e.hp<lowest) { lowest=e.hp; bestE=e;} } if(bestE){ bestE.x = team==='player'?arenaW/2:arenaW/2; bestE.y = team==='player'? arenaH-120: 120; bestE.hp += bestE.maxHp*0.3; spawnEffects.push({t:'exp', x:bestE.x, y:bestE.y, life:0.5, col:'var(--neon-blue)'}); } }
         if(cId === 'MagiaOverclock') { for(let e of entities) { if(e.team===team && Math.hypot(e.x-tx,e.y-ty)<dbC.range){ e.cooldown=0; e.atkSpeed/=2;} } }
     } else {
         let unit = new Entity(dbC, team, tx, ty, buffsRef, lvl);
-        if(unit.mechanics.includes('spawn_emp_base')) { let tgB = team==='player'?enemyBase:playerBase; tgB.stunTimer=3; spawnEffects.push({t:'text', txt:'HACKED!', x:tgB.x, y:tgB.y, life:1.5}); }
+        if(unit.mechanics.includes('spawn_emp_base')) { let tgB = team==='player'?enemyBase:playerBase; tgB.stunTimer=3; spawnEffects.push({t:'text', txt:'HACKED!', x:tgB.x, y:tgB.y, life:2}); spawnEffects.push({t:'exp', x:tgB.x, y:tgB.y, life:0.8, col:'#0ff'});}
         entities.push(unit);
     }
 }
@@ -997,7 +1024,7 @@ function updateAI(dt) {
         aiTimer = 1.0 + Math.random()*2; 
         if(opponentAI.deck && opponentAI.deck.length > 0) {
             let rndCard = opponentAI.deck[Math.floor(Math.random()*opponentAI.deck.length)]; let dbC = CARD_DB[rndCard];
-            if(aiMana >= dbC.cost && dbC) { aiMana -= dbC.cost; let tX = 50 + Math.random()*300; let tY = dbC.type==='spell' ? arenaH - 80 : 50 + Math.random()*150; let cLvl = opponentAI.cardLevels[rndCard] || 1; deployCard(rndCard, 'enemy', tX, tY, cLvl, oBuffs); }
+            if(aiMana >= dbC.cost && dbC) { aiMana -= dbC.cost; let tX = 50 + Math.random()*(arenaW-100); let tY = dbC.type==='spell' ? arenaH - 100 : 80 + Math.random()*150; let cLvl = opponentAI.cardLevels[rndCard] || 1; deployCard(rndCard, 'enemy', tX, tY, cLvl, oBuffs); spawnEffects.push({t:'exp', x:tX, y:tY, life:0.3, col:'#f00'});}
         }
     }
 }
@@ -1007,24 +1034,24 @@ function clashLoop() {
     let now = performance.now(); let dt = (now - lastTime) / 1000; lastTime = now; if(dt > 0.1) dt = 0.033; 
 
     let myBuffs = getPlayerBuffs();
-    if(energy < MAX_ENERGY) energy += (1.0 + (myBuffs.spd||0)*0.5) * dt; 
+    if(energy < MAX_ENERGY) energy += (1.0 + (myBuffs.spd||0)*0.4) * dt; 
     updateUIRealtime();
 
     if(isAFK && hubProfile.deck.length > 0) {
         let rndCard = hubProfile.deck[Math.floor(Math.random()*hubProfile.deck.length)]; let dbC = CARD_DB[rndCard];
-        if(energy >= dbC.cost && dbC) { energy -= dbC.cost; let tX = 50 + Math.random()*300; let tY = dbC.type==='spell' ? 80 : arenaH - 50 - Math.random()*100; deployCard(rndCard, 'player', tX, tY, hubProfile.cardLevels[rndCard]||1, myBuffs); }
+        if(energy >= dbC.cost && dbC) { energy -= dbC.cost; let tX = 50 + Math.random()*(arenaW-100); let tY = dbC.type==='spell' ? 100 : arenaH - 80 - Math.random()*150; deployCard(rndCard, 'player', tX, tY, hubProfile.cardLevels[rndCard]||1, myBuffs); spawnEffects.push({t:'exp', x:tX, y:tY, life:0.3, col:'#0f0'});}
     }
 
     updateAI(dt);
 
     for(let i=entities.length-1; i>=0; i--) { let e = entities[i]; if(e.hp <= 0) { entities.splice(i, 1); continue; } e.update(dt); }
     
-    if(enemyBase.hp <= 0) { endGame("SUCESSO", "Base adversária implodida. Nossos sensores computaram a vitória."); return; }
-    if(playerBase.hp <= 0) { endGame("NÃO FOI DESSA VEZ", "Treine duro amanhã. Sem mais resistência muscular a barreira não aguenta."); return; }
+    if(enemyBase.hp <= 0) { endGame("SUCESSO CIBERNÉTICO!", "As defesas do inimigo despencaram como água. Receba Gold para a evolução."); return; }
+    if(playerBase.hp <= 0) { endGame("SISTEMAS INVADIDOS", "Seu core quebrou na batalha de campo! Lute ou trabalhe fora daqui e fortifique essa barreira."); return; }
 
     for(let i=projectiles.length-1; i>=0; i--) {
         let p = projectiles[i]; let d = Math.hypot(p.tx-p.x, p.ty-p.y);
-        if(d < 5) { p.tObj.receiveDmg(p.dmg, p.shooter); if(p.shooter.mechanics.includes('expose')) p.tObj.exposed = true; spawnEffects.push({t:'hit', x:p.tx, y:p.ty, life:0.2}); projectiles.splice(i,1); } 
+        if(d < 15) { p.tObj.receiveDmg(p.dmg, p.shooter); if(p.shooter.mechanics.includes('expose')) p.tObj.exposed = true; spawnEffects.push({t:'hit', x:p.tx, y:p.ty, life:0.2}); projectiles.splice(i,1); } 
         else { p.x += (p.tx-p.x)/d * p.speed * dt; p.y += (p.ty-p.y)/d * p.speed * dt; }
     }
     for(let i=effects.length-1; i>=0; i--) { effects[i].update(dt); if(effects[i].life<=0) effects.splice(i,1); }
@@ -1036,25 +1063,29 @@ function clashLoop() {
 
 function drawArena() {
     ctx.clearRect(0,0,arenaW,arenaH);
-    ctx.strokeStyle = "rgba(0, 255, 255, 0.05)"; ctx.lineWidth=1;
+    ctx.strokeStyle = "rgba(0, 243, 255, 0.05)"; ctx.lineWidth=1;
     for(let x=0; x<arenaW; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,arenaH); ctx.stroke(); }
     for(let y=0; y<arenaH; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(arenaW,y); ctx.stroke(); }
-    ctx.fillStyle = "rgba(255,255,255,0.05)"; ctx.fillRect(0, arenaH/2 - 2, arenaW, 4);
+    
+    // Divisoria
+    ctx.fillStyle = "rgba(255,0,234,0.15)"; ctx.fillRect(0, arenaH/2 - 2, arenaW, 4);
 
     effects.forEach(e => e.render(ctx)); entities.forEach(e => e.render(ctx));
-    ctx.fillStyle = '#fff'; projectiles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, 6.28); ctx.fill(); });
+    
+    // Tiros brilhosos
+    projectiles.forEach(p => { ctx.fillStyle='#0ff'; ctx.shadowColor='#0ff'; ctx.shadowBlur=10; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, 6.28); ctx.fill(); ctx.shadowBlur=0;});
     
     spawnEffects.forEach(s => {
-        if(s.t==='hit') { ctx.fillStyle='#ff0'; ctx.beginPath(); ctx.arc(s.x, s.y, 6*(1-s.life), 0, 6.28); ctx.fill(); }
-        if(s.t==='exp') { ctx.fillStyle=s.col||'#f00'; ctx.globalAlpha=s.life; ctx.beginPath(); ctx.arc(s.x, s.y, 30, 0, 6.28); ctx.fill(); ctx.globalAlpha=1; }
-        if(s.t==='text') { ctx.fillStyle='#0ff'; ctx.font='12px Arial'; ctx.fillText(s.txt, s.x, s.y - (1-s.life)*20); }
-        if(s.t==='laser') { ctx.strokeStyle=s.col||'#0ff'; ctx.lineWidth=s.w||5; ctx.globalAlpha=s.life; ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke(); ctx.globalAlpha=1;}
+        if(s.t==='hit') { ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(s.x, s.y, 8*(1-s.life), 0, 6.28); ctx.fill(); }
+        if(s.t==='exp') { ctx.fillStyle=s.col||'#f00'; ctx.globalAlpha=s.life; ctx.beginPath(); ctx.arc(s.x, s.y, 45, 0, 6.28); ctx.fill(); ctx.globalAlpha=1; }
+        if(s.t==='text') { ctx.fillStyle=s.col||'#0ff'; ctx.font='bold 14px Orbitron'; ctx.shadowBlur=5; ctx.shadowColor='#000'; ctx.fillText(s.txt, s.x, s.y - (1-s.life)*30); ctx.shadowBlur=0;}
+        if(s.t==='laser') { ctx.strokeStyle=s.col||'var(--neon-blue)'; ctx.lineWidth=s.w||6; ctx.globalAlpha=s.life; ctx.shadowBlur=15; ctx.shadowColor=s.col||'#0ff'; ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke(); ctx.globalAlpha=1; ctx.shadowBlur=0;}
     });
 }
 
 function updateUIRealtime() {
     let p = Math.min(100, (energy/MAX_ENERGY)*100);
-    document.getElementById('mana-fill').style.width = p + '%'; document.getElementById('mana-num').innerText = Math.floor(energy); document.getElementById('enemy-hp-text').innerText = `${opponentAI.name} HP: ${Math.floor(enemyBase.hp)}`;
+    document.getElementById('mana-fill').style.width = p + '%'; document.getElementById('mana-num').innerText = Math.floor(energy); document.getElementById('enemy-hp-text').innerText = `HP BASE [${Math.floor(enemyBase.hp)}]`;
     for(let i=0; i<8; i++) {
         let cardDOM = document.getElementById(`card-ui-${i}`);
         if(cardDOM && hubProfile.deck[i]) { let cost = CARD_DB[hubProfile.deck[i]].cost; if(energy < cost) cardDOM.classList.add('disabled'); else cardDOM.classList.remove('disabled'); }
@@ -1063,9 +1094,9 @@ function updateUIRealtime() {
 
 function endGame(tit, flv) {
     engineState = 'DEAD';
-    let recompensa = (enemyBase.hp <= 0) ? (1500 + Math.floor(Math.random()*1000)) : 250; 
-    document.getElementById('end-title').innerText = tit; document.getElementById('end-flavor').innerText = flv; document.getElementById('final-score').innerText = `$ ${recompensa} Ouro`; 
-    hubProfile.gold += recompensa; hubProfile.xp += 100;
+    let recompensa = (enemyBase.hp <= 0) ? (2000 + Math.floor(Math.random()*1500)) : 300; 
+    document.getElementById('end-title').innerText = tit; document.getElementById('end-flavor').innerText = flv; document.getElementById('final-score').innerText = `$ ${recompensa}`; 
+    hubProfile.gold += recompensa; hubProfile.xp += (enemyBase.hp<=0) ? 300 : 50;
     document.getElementById('death-screen').style.display='flex';
 }
 </script>
