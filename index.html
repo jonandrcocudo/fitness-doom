@@ -255,63 +255,51 @@
 <body>
 
     <script>
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // =========================================================================
+        // MOTOR DE SOM COM ARQUIVOS REAIS (MP3 / WAV)
+        // Crie uma pasta 'sounds/' no seu projeto e adicione esses arquivos nela.
+        // =========================================================================
         
-        // MOTOR DE SOM APRIMORADO E VICIANTE
+const audioUrls = {
+            'click': 'sounds/03 - SND Cursor.mp3',               
+            'deploy': 'sounds/Jump.mp3',                         
+            'hit': 'sounds/NPC_Hit_1.wav',                       
+            'shoot': 'sounds/Item_114.wav',                      
+            'explosion': 'sounds/Item_122.wav',                  
+            'victory': 'sounds/12 - SND Trophy.mp3',             
+            'epic': 'sounds/Coins.wav',                          
+            'scan': 'sounds/Item_162.wav',                       
+            'boss_hit': 'sounds/NPC_Hit_8.wav',                  
+            'error': 'sounds/dd2_kobold_explosion_0.wav',        
+            'success': 'sounds/Item_36.wav'                      
+        };
+
+        const sfxCache = {};
+        const lastPlayed = {}; // Limitador de spam
+
+        // Preload de áudios
+        for (let key in audioUrls) {
+            let audioObj = new Audio(audioUrls[key]);
+            sfxCache[key] = audioObj;
+            lastPlayed[key] = 0;
+        }
+
         window.playSound = function(type) {
-            if(audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
-            const masterGain = audioCtx.createGain();
-            masterGain.gain.value = 0.5; // Controle de volume mestre equilibrado
-            masterGain.connect(audioCtx.destination);
+            let now = performance.now();
+            
+            // Sistema Anti-Spam: Define um cooldown (em milissegundos) para evitar que o som estoure os ouvidos
+            let cooldown = 0;
+            if (type === 'hit' || type === 'boss_hit') cooldown = 80;
+            else if (type === 'shoot') cooldown = 60;
+            else if (type === 'explosion') cooldown = 100;
 
-            function playOsc(freqStart, freqEnd, typeOsc, dur, vol) {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = typeOsc;
-                osc.connect(gain);
-                gain.connect(masterGain);
-                
-                osc.frequency.setValueAtTime(freqStart, now);
-                if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, now + dur);
-                
-                gain.gain.setValueAtTime(vol, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
-                
-                osc.start(now);
-                osc.stop(now + dur);
-            }
-
-            if(type === 'click') {
-                playOsc(600, 800, 'sine', 0.1, 0.3);
-            } else if(type === 'deploy') {
-                playOsc(300, 800, 'triangle', 0.3, 0.4);
-                playOsc(200, 600, 'sine', 0.3, 0.3);
-            } else if(type === 'hit') {
-                playOsc(150, 40, 'square', 0.15, 0.3);
-            } else if(type === 'shoot') {
-                playOsc(1200, 600, 'sine', 0.1, 0.2);
-            } else if(type === 'explosion') {
-                playOsc(100, 20, 'square', 0.4, 0.5);
-                playOsc(80, 10, 'sawtooth', 0.4, 0.3);
-            } else if(type === 'victory') {
-                playOsc(440, 660, 'sine', 0.3, 0.3);
-                setTimeout(() => playOsc(554, 880, 'sine', 0.4, 0.3), 150);
-                setTimeout(() => playOsc(660, 1100, 'sine', 0.6, 0.4), 300);
-            } else if(type === 'epic') {
-                playOsc(300, 1200, 'sawtooth', 0.8, 0.3);
-                playOsc(200, 800, 'triangle', 0.8, 0.3);
-            } else if(type === 'scan') {
-                playOsc(800, 1200, 'sine', 0.2, 0.2);
-                setTimeout(() => playOsc(1200, 1600, 'sine', 0.2, 0.2), 100);
-            } else if(type === 'boss_hit') {
-                playOsc(80, 30, 'square', 0.3, 0.6);
-            } else if(type === 'error') {
-                playOsc(200, 150, 'sawtooth', 0.2, 0.3);
-                setTimeout(() => playOsc(150, 100, 'sawtooth', 0.3, 0.3), 150);
-            } else if(type === 'success') {
-                playOsc(400, 600, 'sine', 0.2, 0.3);
-                setTimeout(() => playOsc(600, 800, 'sine', 0.3, 0.3), 100);
+            if (now - (lastPlayed[type] || 0) < cooldown) return; // Bloqueia o som se for spam
+            
+            if (sfxCache[type]) {
+                lastPlayed[type] = now;
+                let soundInstance = sfxCache[type].cloneNode();
+                soundInstance.volume = 0.2; // Volume reduzido para ficar confortável (estava 0.5)
+                soundInstance.play().catch(e => {});
             }
         };
 
@@ -699,7 +687,7 @@ const CARD_DB = {
     "CorredorNeon": { id: "CorredorNeon", name: "Corredor Rápido", icon: "⚡", cost: 1, rarity: 1, type: "unit", hp: 150, dmg: 20, range: 40, ms: 140, as: 0.8 },
     "DroneRastreador": { id: "DroneRastreador", name: "Drone Suporte", icon: "🚁", cost: 2, rarity: 1, type: "unit", hp: 200, dmg: 10, range: 120, ms: 80, as: 1.5, mechanics:['expose'], isFlying: true },
     "FalcaoSucata": { id: "FalcaoSucata", name: "Falcão Pássaro", icon: "🦅", cost: 2, rarity: 1, type: "unit", hp: 250, dmg: 35, range: 50, ms: 90, as: 1.0, isFlying: true },
-    "Kamikaze": { id: "Kamikaze", name: "Bot Explosivo", icon: "💣", cost: 3, rarity: 2, type: "unit", hp: 200, dmg: 300, range: 60, ms: 110, as: 1.0, mechanics: ['explode'] },
+    "Kamikaze": { id: "Kamikaze", name: "Bot Explosivo", icon: "💣", cost: 3, rarity: 2, type: "unit", hp: 200, dmg: 300, range: 60, ms: 110, as: 1.0, mechanics:['explode'] },
     "BioTank": { id: "BioTank", name: "Mutante Pesado", icon: "🧌", cost: 5, rarity: 2, type: "unit", hp: 1200, dmg: 60, range: 50, ms: 40, as: 2.0, isTank: true },
     "Fantasma": { id: "Fantasma", name: "Espírito Esquiva", icon: "👻", cost: 4, rarity: 2, type: "unit", hp: 300, dmg: 70, range: 50, ms: 75, as: 1.2, mechanics: ['dodge'] },
     "Assassino": { id: "Assassino", name: "Assassino Oculto", icon: "🥷", cost: 4, rarity: 2, type: "unit", hp: 250, dmg: 150, range: 40, ms: 120, as: 1.5, mechanics:['stealth'] },
@@ -725,8 +713,8 @@ const CARD_DB = {
 
 const PVE_CAMPAIGN =[
     { name: "Setor 1: Gangue dos Brawlers", lvl: 1, buffs: {hp: 0, dmg: 0, spd: 0}, deck: ['Brawler', 'CorredorNeon'], cardLevels: {} },
-    { name: "Setor 2: Patrulha de Drones", lvl: 3, buffs: {hp: 50, dmg: 0.1, spd: 0.1}, deck: ['DroneRastreador', 'Sniper', 'Barricada'], cardLevels: {} },
-    { name: "Setor 3: Mutação Tóxica", lvl: 6, buffs: {hp: 200, dmg: 0.2, spd: 0.1}, deck: ['BioTank', 'Toxico', 'Kamikaze'], cardLevels: {} },
+    { name: "Setor 2: Patrulha de Drones", lvl: 3, buffs: {hp: 50, dmg: 0.1, spd: 0.1}, deck:['DroneRastreador', 'Sniper', 'Barricada'], cardLevels: {} },
+    { name: "Setor 3: Mutação Tóxica", lvl: 6, buffs: {hp: 200, dmg: 0.2, spd: 0.1}, deck:['BioTank', 'Toxico', 'Kamikaze'], cardLevels: {} },
     { name: "Setor 4: Elite Hacker", lvl: 10, buffs: {hp: 500, dmg: 0.3, spd: 0.3}, deck:['Hacker', 'Striker', 'Fantasma', 'Mecha'], cardLevels: {} },
     { name: "Setor 5: O Cérebro Matriz", lvl: 15, buffs: {hp: 1000, dmg: 0.5, spd: 0.5}, deck:['Barao', 'MestreParkour', 'MagiaOrbital', 'TitanRaio'], cardLevels: {} }
 ];
@@ -1144,7 +1132,7 @@ function createPlayerCardHTML(k, d, isOnline) {
     <div class="action-card" style="border-color: ${isOnline ? 'var(--neon-pink)' : '#444'}; padding: 15px;">
         <div style="cursor:pointer; position:relative; z-index:2;" onclick="window.showProfileModal('${pData}')">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="glow-text" style="font-size:1.1rem; color:${isOnline ? 'var(--neon-pink)' : '#aaa'}">${isOnline ? '🟢' : '⚪'} [${safeName}] Lvl ${d.lvl||1}</span>
+                <span class="glow-text" style="font-size:1.1rem; color:${isOnline ? 'var(--neon-pink)' : '#aaa'}">${isOnline ? '🟢' : '⚪'}[${safeName}] Lvl ${d.lvl||1}</span>
             </div>
             <span style="font-size:0.8rem; color:#aaa; font-family:'Orbitron'; display:block; margin-top:5px;">Facção: ${d.faction || 'Sindicato Neon'}</span>
         </div>
@@ -1287,7 +1275,7 @@ window.startClash = function(isPvP = false, matchData = null) {
     opponentAI.username = opponentAI.username || opponentAI.name || "Inimigo Desconhecido";
     opponentAI.lvl = opponentAI.lvl || 1;
     opponentAI.buffs = opponentAI.buffs || {hp:0, dmg:0, spd:0, magic:0};
-    opponentAI.deck = opponentAI.deck || ['CorredorNeon','BioTank','Sniper'];
+    opponentAI.deck = opponentAI.deck ||['CorredorNeon','BioTank','Sniper'];
     opponentAI.cardLevels = opponentAI.cardLevels || {};
 
     isAFK = false; document.getElementById('btn-afk').classList.remove('active'); document.getElementById('btn-afk').innerText = "Piloto IA (OFF)";
@@ -1383,12 +1371,22 @@ class Entity {
         else if (this.range > 60) { window.playSound('shoot'); projectiles.push({ x:this.x, y:this.y, tx:target.x, ty:target.y, speed: 450, dmg:this.dmg, shooter:this, tObj:target, col:this.color }); } 
         else { spawnEffects.push({t:'hit', x:target.x, y:target.y, life:0.2}); target.receiveDmg(this.dmg, this); if(this.mechanics.includes('lifesteal')) this.hp = Math.min(this.maxHp, this.hp + this.dmg*0.5); }
     }
-    receiveDmg(amt, sourceEntity) {
-        if(this.mechanics.includes('dodge') && Math.random() < 0.5) { spawnEffects.push({t:'text', txt:'ESQUIVOU', x:this.x, y:this.y-10, life:0.6}); return; }
-        if(this.exposed) amt *= 1.2; this.hp -= amt; window.playSound(this.type === 'base' ? 'boss_hit' : 'hit');
-        if(amt > 100 && this.team === 'player' && this.type === 'base') window.shakeScreen();
-        spawnEffects.push({t:'text', txt:`-${Math.floor(amt)}`, x:this.x + (Math.random()*15), y:this.y-(Math.random()*15), life:0.4, col: '#f55'});
-        for(let j=0; j<3; j++) spawnEffects.push({t:'debris', x: this.x, y: this.y, vx: (Math.random()-0.5)*150, vy: (Math.random()-0.5)*150, life: 0.4, col: this.color});
+    receiveDmg(amt, sourceEntity, isSilent = false) {
+        if(this.mechanics.includes('dodge') && Math.random() < 0.5) { 
+            if(!isSilent) spawnEffects.push({t:'text', txt:'ESQUIVOU', x:this.x, y:this.y-10, life:0.6}); 
+            return; 
+        }
+        if(this.exposed) amt *= 1.2; 
+        this.hp -= amt; 
+        
+        // Só toca som e solta números se NÃO for silencioso (evita spam de magia de ácido)
+        if(!isSilent) {
+            window.playSound(this.type === 'base' ? 'boss_hit' : 'hit');
+            if(amt > 100 && this.team === 'player' && this.type === 'base') window.shakeScreen();
+            spawnEffects.push({t:'text', txt:`-${Math.floor(amt)}`, x:this.x + (Math.random()*15), y:this.y-(Math.random()*15), life:0.4, col: '#f55'});
+            for(let j=0; j<3; j++) spawnEffects.push({t:'debris', x: this.x, y: this.y, vx: (Math.random()-0.5)*150, vy: (Math.random()-0.5)*150, life: 0.4, col: this.color});
+        }
+
         if(this.hp <= 0 && this.type !== 'base') {
             window.playSound('explosion');
             if(this.mechanics.includes('explode')) { effects.push(new EffectArea(this.x, this.y, 90, 'damage', 0.2, this.team, 300)); spawnEffects.push({t:'exp', x:this.x, y:this.y, life:0.5});}
@@ -1491,10 +1489,25 @@ class Entity {
 
 class EffectArea {
     constructor(x, y, radius, type, lifetime, team, power=0) { this.x=x; this.y=y; this.r=radius; this.type=type; this.life=lifetime; this.maxLife=lifetime; this.team=team; this.pow=power; }
-    update(dt) { this.life -= dt; for(let e of entities) { if(e.team === this.team) continue; let d = Math.hypot(e.x-this.x, e.y-this.y); if(d < this.r) { if(this.type === 'slow' && e.moveSpeed > 10) e.moveSpeed *= 0.8; if(this.type === 'damage') { e.receiveDmg(this.pow, null); this.life = 0; } if(this.type === 'stun') { e.stunTimer = this.pow; this.life = 0; } if(this.type === 'acid_dot') e.receiveDmg(this.pow*dt, null); if(this.type === 'freeze_spell') { e.stunTimer = this.pow; } } } }
+    update(dt) { 
+        this.life -= dt; 
+        for(let e of entities) { 
+            if(e.team === this.team) continue; 
+            let d = Math.hypot(e.x-this.x, e.y-this.y); 
+            if(d < this.r) { 
+                if(this.type === 'slow' && e.moveSpeed > 10) e.moveSpeed *= 0.8; 
+                if(this.type === 'damage') { e.receiveDmg(this.pow, null); this.life = 0; } 
+                if(this.type === 'stun') { e.stunTimer = this.pow; this.life = 0; } 
+                
+                // Aplicamos o terceiro argumento 'true' para sinalizar dano silencioso contínuo:
+                if(this.type === 'acid_dot') e.receiveDmg(this.pow*dt, null, true); 
+                
+                if(this.type === 'freeze_spell') { e.stunTimer = this.pow; } 
+            } 
+        } 
+    }
     render(c) { c.globalAlpha = Math.max(0, this.life/this.maxLife) * 0.4; c.beginPath(); c.arc(this.x, this.y, this.r, 0, Math.PI*2); if(this.type === 'slow') c.fillStyle = '#8B4513'; if(this.type === 'acid_dot') c.fillStyle = 'var(--neon-green)'; if(this.type === 'freeze_spell') c.fillStyle = 'var(--neon-blue)'; c.fill(); c.globalAlpha = 1.0; }
 }
-
 function deployCard(cId, team, tx, ty, lvl, buffsRef) {
     let dbC = CARD_DB[cId]; if(!dbC) return; window.playSound('deploy');
     if(dbC.type === 'spell') {
